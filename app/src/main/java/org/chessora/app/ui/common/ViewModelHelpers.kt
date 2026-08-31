@@ -20,7 +20,7 @@ import org.chessora.app.ChessoraApplication
  * ```
  */
 @Composable
-fun <VM : ViewModel> chessoraViewModel(create: (ChessoraApplication) -> VM): VM {
+inline fun <reified VM : ViewModel> chessoraViewModel(crossinline create: (ChessoraApplication) -> VM): VM {
     val app = LocalContext.current.applicationContext as ChessoraApplication
     return viewModel(factory = viewModelFactory { initializer { create(app) } })
 }

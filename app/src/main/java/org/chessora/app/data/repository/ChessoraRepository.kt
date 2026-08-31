@@ -19,7 +19,8 @@ import org.chessora.app.data.remote.dto.VideoNewsItem
 import org.chessora.app.data.remote.dto.VideoRow
 
 /**
- * Unico punto di accesso alla rete usato dai ViewModel (vedi ui/*\/*ViewModel.kt):
+ * Unico punto di accesso alla rete usato dai ViewModel (vedi i vari
+ * ui/…/…ViewModel.kt):
  * incapsula [ChessoraApi] dietro `Result<T>` cosi' i ViewModel non maneggiano mai
  * direttamente eccezioni Retrofit/IOException, solo `.onSuccess { }.onFailure { }`.
  * Nessuna cache locale in questa prima versione (vedi README.md "Cosa NON è

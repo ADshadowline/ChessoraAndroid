@@ -32,8 +32,8 @@ import retrofit2.http.Query
  * punto di chiamata in data/repository/ChessoraRepository.kt.
  *
  * NON aggiungere qui endpoint che richiedono autenticazione admin (tutto ciò
- * che sta sotto /api/*\/admin o /api/platform/*): l'app non ha login, per
- * design (vedi docs/android-app-spec.md §1 "Fuori scope").
+ * che sta sotto un percorso "…/admin" oppure "api/platform/…"): l'app non ha
+ * login, per design (vedi docs/android-app-spec.md §1 "Fuori scope").
  */
 interface ChessoraApi {
 

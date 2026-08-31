@@ -207,6 +207,7 @@ fun ChessoraNavHost() {
  * solo il nome del brand Chessora finché [branding] non è ancora stato
  * caricato da GET /api/site-settings (vedi SessionViewModel.loadBranding).
  */
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 private fun ClubBrandingTopBar(branding: SiteBranding?) {
     TopAppBar(
