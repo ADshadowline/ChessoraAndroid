@@ -33,6 +33,13 @@ object NetworkModule {
         // coerente con l'idea che un campo nullable/opzionale assente nel JSON
         // non deve far fallire la deserializzazione.
         explicitNulls = false
+        // BUG REALE trovato testando su dispositivo (31/08/2026): senza questo,
+        // kotlinx.serialization NON serializza i campi che hanno il valore di
+        // default dichiarato (es. RegisterDeviceRequest.platform = "android"),
+        // quindi POST /api/devices/register partiva senza "platform" nel body e
+        // il server rispondeva 400 "The Platform field is required." - il campo
+        // era lì nel DTO Kotlin, semplicemente non veniva mai scritto nel JSON.
+        encodeDefaults = true
     }
 
     private val okHttpClient: OkHttpClient by lazy {
