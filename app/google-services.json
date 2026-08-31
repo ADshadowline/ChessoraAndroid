@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "669405496305",
+    "project_id": "chessora-app",
+    "storage_bucket": "chessora-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:669405496305:android:255129bba019cfcd57ba50",
+        "android_client_info": {
+          "package_name": "org.chessora.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAncZITa9j9CpF5fGZkD8KgfYlsCGbKyfA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
