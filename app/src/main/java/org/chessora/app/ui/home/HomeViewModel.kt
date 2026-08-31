@@ -10,6 +10,7 @@ import org.chessora.app.data.remote.dto.NewsArticle
 import org.chessora.app.data.remote.dto.NextTournament
 import org.chessora.app.data.repository.ChessoraRepository
 import org.chessora.app.ui.common.UiState
+import org.chessora.app.ui.common.toFriendlyMessage
 
 data class HomeData(
     val nextTournament: NextTournament?,
@@ -39,7 +40,7 @@ class HomeViewModel(private val repository: ChessoraRepository) : ViewModel() {
             _state.value = UiState.Loading
             val newsResult = repository.getNews(idClub, limit = 5)
             if (newsResult.isFailure) {
-                _state.value = UiState.Error(newsResult.exceptionOrNull()?.message ?: "Errore sconosciuto")
+                _state.value = UiState.Error(newsResult.exceptionOrNull()?.toFriendlyMessage() ?: "Errore sconosciuto")
                 return@launch
             }
             val nextTournament = repository.getNextUpcomingTournament(idClub).getOrNull()

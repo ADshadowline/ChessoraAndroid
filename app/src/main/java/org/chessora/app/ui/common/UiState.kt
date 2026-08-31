@@ -16,5 +16,15 @@ sealed interface UiState<out T> {
 fun <T> Result<T>.toUiState(): UiState<T> =
     fold(
         onSuccess = { UiState.Success(it) },
-        onFailure = { UiState.Error(it.message ?: "Errore sconosciuto") },
+        onFailure = { UiState.Error(it.toFriendlyMessage()) },
     )
+
+/**
+ * Messaggio mostrato all'utente per qualunque errore di rete: mai il dettaglio
+ * tecnico dell'eccezione (es. "HTTP 400 Bad Request" di retrofit2.HttpException,
+ * o "Unable to resolve host" di una UnknownHostException) - contro quel dettaglio
+ * l'utente non può fare nulla se non riprovare più tardi, quindi il messaggio è
+ * sempre lo stesso, generico e in italiano.
+ */
+fun Throwable.toFriendlyMessage(): String =
+    "Il server al momento non risponde. Riprova più tardi."
