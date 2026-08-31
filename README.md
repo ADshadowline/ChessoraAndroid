@@ -15,44 +15,50 @@ fare e quali endpoint usa).
 
 ## Stato del progetto e limitazioni
 
-Questo progetto è stato scaffoldato da zero (Domain layer, networking,
-DataStore, FCM, navigazione, tutte le 9 schermate previste dalla specifica)
-in un ambiente **senza JDK, Gradle o Android SDK installati** - solo i file
-sorgente sono stati scritti, **nessuna riga di codice è mai stata compilata o
-eseguita**. Questo è il primo compito da fare aprendo il progetto in Android
-Studio:
+Il progetto è stato scaffoldato da zero e **poi effettivamente compilato e
+impacchettato con successo**: `gradlew assembleDebug` completa senza errori e
+produce `app/build/outputs/apk/debug/app-debug.apk` (verificato installando
+JDK 17 + Android SDK cmdline-tools da riga di comando in un ambiente che ne
+era privo - vedi sotto per i dettagli, utile se serve rifarlo altrove).
+Tre bug reali sono stati trovati e corretti in questo primo giro di
+compilazione (vedi il commit "Fix bug reali trovati dalla prima compilazione
+riuscita" nella cronologia git per il dettaglio) - il più insidioso: **Kotlin,
+a differenza di Java/C, supporta i commenti a blocco annidati**, quindi
+scrivere un percorso con un asterisco dentro un commento KDoc (es.
+`api/*/admin`) apre un commento annidato che, se non richiuso esplicitamente,
+fa fallire l'intero file con "Unclosed comment" - tienilo a mente scrivendo
+nuovi commenti che citano percorsi/pattern con `*`.
 
-1. Apri la cartella con Android Studio (versione recente, 2024.x+). Ti
-   proporrà di generare/scaricare il Gradle wrapper mancante (vedi sotto) e
-   sincronizzare - accetta.
-2. **`app/google-services.json` è già presente** (progetto Firebase
-   "chessora-app", package `org.chessora.app` - vedi
-   `Chessora/scripts/deploy.settings.json` chiave `firebaseServiceAccountJson`
-   per la controparte server, stesso progetto Firebase). Non serve
-   ri-scaricarlo, a meno che l'app venga ri-registrata con un package name
-   diverso in futuro.
-3. `gradle/wrapper/gradle-wrapper.jar` è MANCANTE (impossibile generarlo senza
-   Gradle/JVM installati in questo ambiente) - `gradle/wrapper/gradle-wrapper.properties`
-   e `gradlew.bat` ci sono già, puntano a Gradle 8.9. Android Studio lo
-   genera in automatico al primo sync ("Sync Project with Gradle Files").
-   Se serve rigenerarlo a mano con Gradle già installato altrove: `gradle
-   wrapper --gradle-version 8.9`. **Una volta generato, va committato** (non
-   è nel `.gitignore` - il wrapper esiste apposta per essere versionato, cosi'
-   chiunque clona il repo builda con la stessa versione di Gradle senza
-   doverla installare a parte).
-4. Solo `gradlew.bat` è presente (sviluppo su Windows) - se serve sviluppare
-   anche da Mac/Linux, genera `gradlew` (script Unix) con lo stesso comando
-   `gradle wrapper` del punto precedente.
-5. Nessuna icona "vera" per l'app: `app/src/main/res/drawable/ic_launcher_foreground.xml`
+**Non ancora verificato**: l'app non è mai stata installata/avviata su un
+vero dispositivo o emulatore (questo ambiente non ha un emulatore Android né
+un device fisico collegato) - "compila" non vuol dire "funziona a runtime".
+Il primo test vero va fatto in Android Studio con un emulatore o un telefono
+reale collegato via USB (`adb install app-debug.apk` funziona altrettanto
+bene se non serve il debugger).
+
+Ambiente di compilazione, se serve ricostruirlo (Windows):
+- JDK: Eclipse Temurin 17, installato in `C:\Program Files\Eclipse Adoptium\jdk-17.0.20.101-hotspot`.
+- Android SDK: cmdline-tools + platform-tools + `platforms;android-35` +
+  `build-tools;35.0.0`, installati in `C:\Android\Sdk` (fuori da questo
+  repository - percorso riferito da `local.properties`, che è
+  macchina-specifico e non committato).
+- Gradle wrapper: generato e committato (`gradlew`, `gradlew.bat`,
+  `gradle/wrapper/gradle-wrapper.jar`) - da qui in poi basta `.\gradlew.bat
+  assembleDebug` (Windows) o `./gradlew assembleDebug` (Mac/Linux), senza
+  bisogno di installare Gradle separatamente.
+- Se il progetto viene spostato su un'altra macchina, va rigenerato solo
+  `local.properties` (Android Studio lo fa da solo al primo sync, altrimenti
+  una riga `sdk.dir=<percorso Android SDK>`).
+
+Cose ancora da fare, non bloccanti per compilare:
+1. Nessuna icona "vera" per l'app: `app/src/main/res/drawable/ic_launcher_foreground.xml`
    è un placeholder (una pedina stilizzata disegnata a mano in XML vettoriale,
    vedi il commento nel file) - da sostituire con un'icona disegnata prima di
    pubblicare su Play Store.
-6. **Zero test scritti** (né unit né strumentali) - solo lo scaffolding di
+2. **Zero test scritti** (né unit né strumentali) - solo lo scaffolding di
    default delle dipendenze di test in `app/build.gradle.kts`.
-7. Nessuna build è mai stata lanciata: aspettati piccoli errori di sintassi o
-   import mancanti/superflui alla prima compilazione (scritto a mano,
-   controllato a occhio, ma senza un compilatore a verificare). Sistemali via
-   via che emergono, non serve riscrivere la struttura per questo.
+3. Mai testato a runtime (vedi sopra) - possibili bug di comportamento (non
+   di compilazione) ancora da scoprire con un uso reale dell'app.
 
 ## Cosa fa l'app (in breve)
 
@@ -128,8 +134,11 @@ super-amministratore della piattaforma.
 
 In ordine indicativo di priorità:
 
-1. **Verificare che il progetto compili** in Android Studio e correggere gli
-   inevitabili piccoli errori (vedi "Stato del progetto e limitazioni" sopra).
+1. **Installare ed eseguire l'app su un emulatore/dispositivo reale** e
+   verificare il comportamento a runtime (compilare non basta - vedi "Stato
+   del progetto e limitazioni" sopra): scelta circolo, contenuti delle 9
+   schermate, arrivo di una notifica push di test dalla pagina "Notifiche
+   App" del super-admin.
 2. Test: zero scritti finora. Almeno qualche test di `ChessoraRepository`
    (con un `MockWebServer` di OkHttp) e dei ViewModel più semplici sarebbe il
    primo investimento sensato.
