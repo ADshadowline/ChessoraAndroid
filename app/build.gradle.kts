@@ -2,6 +2,8 @@
 // Compose (Material 3) + Retrofit/OkHttp + kotlinx.serialization + Coil + Jetpack
 // DataStore + Firebase Cloud Messaging - esattamente lo stack raccomandato in
 // docs/android-app-spec.md (nel repository server Chessora) §2.
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -9,6 +11,16 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")
     id("com.google.gms.google-services")
 }
+
+// Credenziali della chiave di firma release, lette da keystore.properties
+// (mai committato - vedi .gitignore e il commento in quel file). Se manca
+// (es. clone fresco senza ancora una chiave di release), releaseSigning
+// resta null e la release build FALLISCE con un errore chiaro invece di
+// produrre silenziosamente un pacchetto non firmato o firmato col debug key.
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val releaseSigning: Properties? = if (keystorePropertiesFile.exists()) {
+    Properties().apply { load(keystorePropertiesFile.inputStream()) }
+} else null
 
 android {
     namespace = "org.chessora.app"
@@ -31,10 +43,24 @@ android {
         buildConfigField("String", "API_BASE_URL", "\"https://api.chessora.org/\"")
     }
 
+    signingConfigs {
+        if (releaseSigning != null) {
+            create("release") {
+                storeFile = rootProject.file(releaseSigning.getProperty("storeFile"))
+                storePassword = releaseSigning.getProperty("storePassword")
+                keyAlias = releaseSigning.getProperty("keyAlias")
+                keyPassword = releaseSigning.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            if (releaseSigning != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 
