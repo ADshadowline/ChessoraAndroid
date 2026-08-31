@@ -25,17 +25,12 @@ Studio:
 1. Apri la cartella con Android Studio (versione recente, 2024.x+). Ti
    proporrà di generare/scaricare il Gradle wrapper mancante (vedi sotto) e
    sincronizzare - accetta.
-2. **`app/google-services.json` è MANCANTE ed è OBBLIGATORIO**: il plugin
-   Gradle `com.google.gms.google-services` fallisce la build se questo file
-   non esiste. Il progetto Firebase esiste già (progetto "Chessora App",
-   package `org.chessora.app`, creato durante lo sviluppo lato server per le
-   notifiche push - vedi `Chessora/scripts/deploy.settings.json` chiave
-   `firebaseServiceAccountJson` per la controparte server). Se l'app Android
-   era già stata registrata in quel progetto Firebase, il file va scaricato
-   da Firebase Console → Project Settings → General → "Your apps" → l'app
-   Android → scarica di nuovo `google-services.json` - e messo in `app/`.
-   Se l'app Android non risultasse ancora registrata lì, registrala (stesso
-   package name, `org.chessora.app`) e scarica il file da lì.
+2. **`app/google-services.json` è già presente** (progetto Firebase
+   "chessora-app", package `org.chessora.app` - vedi
+   `Chessora/scripts/deploy.settings.json` chiave `firebaseServiceAccountJson`
+   per la controparte server, stesso progetto Firebase). Non serve
+   ri-scaricarlo, a meno che l'app venga ri-registrata con un package name
+   diverso in futuro.
 3. `gradle/wrapper/gradle-wrapper.jar` è MANCANTE (impossibile generarlo senza
    Gradle/JVM installati in questo ambiente) - `gradle/wrapper/gradle-wrapper.properties`
    e `gradlew.bat` ci sono già, puntano a Gradle 8.9. Android Studio lo
