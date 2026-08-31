@@ -1,0 +1,22 @@
+# Build output
+*.iml
+.gradle/
+build/
+app/build/
+/captures
+.externalNativeBuild/
+.cxx/
+local.properties
+
+# Android Studio / IntelliJ
+.idea/
+*.hprof
+
+# Keystore (mai committare la chiave di firma release - vedi README.md
+# "Firma e pubblicazione")
+*.jks
+*.keystore
+keystore.properties
+
+# File locali con segreti/config macchina-specifica
+google-services.json.bak

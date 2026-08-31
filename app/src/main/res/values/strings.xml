@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">Chessora</string>
+
+    <!-- Id del canale di notifica Android usato per i messaggi push generici
+         inviati dal super-amministratore (vedi push/ChessoraFirebaseMessagingService.kt
+         e AndroidManifest.xml meta-data "default_notification_channel_id"). -->
+    <string name="default_notification_channel_id">chessora_general</string>
+    <string name="default_notification_channel_name">Notifiche Chessora</string>
+    <string name="default_notification_channel_description">Comunicazioni dal circolo e dalla piattaforma Chessora</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">Scegli il tuo circolo</string>
+    <string name="onboarding_search_hint">Cerca per nome o città…</string>
+    <string name="onboarding_code_hint">…oppure inserisci un codice circolo</string>
+    <string name="onboarding_code_button">Cerca per codice</string>
+    <string name="onboarding_empty">Nessun circolo trovato.</string>
+
+    <!-- Navigazione a schede (bottom bar) -->
+    <string name="nav_home">Home</string>
+    <string name="nav_news">News</string>
+    <string name="nav_calendar">Calendario</string>
+    <string name="nav_tornei">Tornei</string>
+    <string name="nav_ranking">Classifica</string>
+    <string name="nav_more">Altro</string>
+
+    <!-- Home -->
+    <string name="home_next_tournament">Prossimo torneo</string>
+    <string name="home_no_tournament">Nessun torneo in programma</string>
+    <string name="home_latest_news">Ultime news</string>
+
+    <!-- Errori generici -->
+    <string name="error_generic">Qualcosa è andato storto. Riprova.</string>
+    <string name="error_retry">Riprova</string>
+    <string name="loading">Caricamento…</string>
+
+    <!-- Impostazioni -->
+    <string name="settings_title">Impostazioni</string>
+    <string name="settings_change_club">Cambia circolo</string>
+    <string name="settings_notifications">Notifiche push</string>
+    <string name="settings_about">Informazioni sull\'app</string>
+</resources>

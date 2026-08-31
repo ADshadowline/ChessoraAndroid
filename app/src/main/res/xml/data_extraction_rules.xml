@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Regole richieste da Android 12+ per backup su cloud e trasferimento
+     dispositivo-dispositivo. Stesso ragionamento di backup_rules.xml: nessuna
+     esclusione necessaria, non c'è nulla di sensibile da proteggere. -->
+<data-extraction-rules>
+    <cloud-backup>
+    </cloud-backup>
+    <device-transfer>
+    </device-transfer>
+</data-extraction-rules>

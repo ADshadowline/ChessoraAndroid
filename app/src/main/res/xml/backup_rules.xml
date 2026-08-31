@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nessun dato locale sensibile da escludere dal backup automatico: l'unico
+     stato persistito (DataStore: idClub scelto) è innocuo da ripristinare su un
+     nuovo dispositivo. Vedi data/local/ClubPreferences.kt. -->
+<full-backup-content>
+</full-backup-content>

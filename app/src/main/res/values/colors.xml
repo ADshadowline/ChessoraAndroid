@@ -1,0 +1,10 @@
+<resources>
+    <!-- Palette di fallback usata SOLO finché il tema del circolo scelto non è
+         ancora stato caricato da /api/site-settings (vedi ui/theme/Theme.kt):
+         una volta noto il circolo, i colori "veri" del suo sito vengono
+         applicati a runtime, non letti da qui. -->
+    <color name="chessora_gold">#E5BE34</color>
+    <color name="chessora_ink">#1F1A17</color>
+    <color name="chessora_ink_2">#2A231E</color>
+    <color name="chessora_cream">#F7F3EC</color>
+</resources>

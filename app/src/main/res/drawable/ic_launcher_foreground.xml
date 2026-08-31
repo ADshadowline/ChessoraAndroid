@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    PLACEHOLDER: semplice pedina stilizzata in oro, solo per avere un'icona
+    funzionante fin dal primo build. Da sostituire con un'icona disegnata
+    prima della pubblicazione su Play Store (vedi docs/android-app-spec.md §8
+    "Icona dell'app" nel repository server e README.md "Cosa NON è stato fatto").
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Base della pedina -->
+    <path
+        android:fillColor="#E5BE34"
+        android:pathData="M38,78 L70,78 L74,86 L34,86 Z" />
+    <!-- Corpo -->
+    <path
+        android:fillColor="#E5BE34"
+        android:pathData="M44,60 L64,60 L70,78 L38,78 Z" />
+    <!-- Collo -->
+    <path
+        android:fillColor="#E5BE34"
+        android:pathData="M48,48 L60,48 L64,60 L44,60 Z" />
+    <!-- Testa -->
+    <path
+        android:fillColor="#E5BE34"
+        android:pathData="M54,22 m-13,0 a13,13 0 1,0 26,0 a13,13 0 1,0 -26,0" />
+</vector>
