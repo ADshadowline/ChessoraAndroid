@@ -1,0 +1,232 @@
+<title>Privacy Chessora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --gold:#C8A24A;         /* testo/accento su fondo chiaro: la versione "deep" per contrasto */
+    --gold-bright:#E5BE34;  /* solo decorativo (regole, badge) */
+    --ink:#1F1A17;
+    --ink-2:#2A231E;
+    --bg:#FBF8F2;
+    --surface:#FFFFFF;
+    --text:#1F1A17;
+    --text-muted:#6E6459;
+    --border:#E9E0CF;
+    --note-bg:#FBF1D9;
+    --note-border:#E5BE34;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --gold:#E5BE34;
+      --bg:#1F1A17;
+      --surface:#2A231E;
+      --text:#F7F3EC;
+      --text-muted:#B8AEA0;
+      --border:#3C332A;
+      --note-bg:#3A2F1C;
+      --note-border:#E5BE34;
+    }
+  }
+  :root[data-theme="dark"]{
+    --gold:#E5BE34;
+    --bg:#1F1A17;
+    --surface:#2A231E;
+    --text:#F7F3EC;
+    --text-muted:#B8AEA0;
+    --border:#3C332A;
+    --note-bg:#3A2F1C;
+    --note-border:#E5BE34;
+  }
+
+  *{ box-sizing:border-box; }
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Inter",system-ui,-apple-system,Segoe UI,sans-serif;
+    line-height:1.65;
+  }
+  .page{
+    max-width:700px;
+    margin:0 auto;
+    padding:4rem 1.5rem 6rem;
+  }
+
+  .mark{
+    display:flex;
+    align-items:center;
+    gap:.55rem;
+    margin-bottom:2.5rem;
+  }
+  .mark svg{ width:22px; height:22px; flex:none; }
+  .mark span{
+    font-family:"Playfair Display",Georgia,serif;
+    font-weight:700;
+    font-size:1.05rem;
+    letter-spacing:.02em;
+    color:var(--gold);
+  }
+
+  h1{
+    font-family:"Playfair Display",Georgia,serif;
+    font-weight:700;
+    font-size:clamp(1.9rem,4.5vw,2.6rem);
+    line-height:1.15;
+    margin:0 0 .6rem;
+    text-wrap:balance;
+  }
+  .meta{
+    color:var(--text-muted);
+    font-size:.9rem;
+    margin:0 0 2.75rem;
+  }
+  .meta strong{ color:var(--text); font-weight:600; }
+
+  .lede{
+    font-size:1.05rem;
+    color:var(--text);
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:1.25rem 1.4rem;
+    margin-bottom:3rem;
+  }
+  .lede p{ margin:0 0 .7rem; }
+  .lede p:last-child{ margin-bottom:0; }
+
+  section{
+    padding-top:2.4rem;
+    margin-top:2.4rem;
+    border-top:1px solid var(--border);
+  }
+  section:first-of-type{ border-top:none; margin-top:0; padding-top:0; }
+
+  h2{
+    font-family:"Playfair Display",Georgia,serif;
+    font-weight:600;
+    font-size:1.3rem;
+    margin:0 0 .9rem;
+    display:flex;
+    align-items:baseline;
+    gap:.6rem;
+  }
+  h2 .n{
+    font-family:"Inter",sans-serif;
+    font-weight:600;
+    font-size:.8rem;
+    color:var(--gold);
+    letter-spacing:.06em;
+  }
+
+  p{ margin:0 0 .9rem; color:var(--text); }
+  p:last-child{ margin-bottom:0; }
+  ul{ margin:0 0 .9rem; padding-left:1.2rem; }
+  li{ margin-bottom:.45rem; }
+  li:last-child{ margin-bottom:0; }
+  strong{ font-weight:600; }
+  a{ color:var(--gold); text-decoration-color: color-mix(in srgb, var(--gold) 40%, transparent); }
+  a:hover{ text-decoration-color:currentColor; }
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+  .note{
+    background:var(--note-bg);
+    border:1px solid var(--note-border);
+    border-radius:8px;
+    padding:1rem 1.15rem;
+    font-size:.92rem;
+    margin-top:1rem;
+  }
+  .note .tag{
+    display:inline-block;
+    font-size:.72rem;
+    font-weight:600;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--ink);
+    background:var(--gold-bright);
+    padding:.15rem .5rem;
+    border-radius:4px;
+    margin-bottom:.5rem;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]) .note .tag{ color:var(--ink); }
+  }
+
+  footer{
+    margin-top:3.5rem;
+    padding-top:2rem;
+    border-top:1px solid var(--border);
+    color:var(--text-muted);
+    font-size:.9rem;
+  }
+  footer a{ font-weight:600; }
+</style>
+
+<div class="page">
+
+  <div class="mark">
+    <svg viewBox="0 0 108 108" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill="currentColor" style="color:var(--gold)" d="M54 20a11 11 0 1 1 0 22 11 11 0 0 1 0-22Zm-8 25h16c1 5 3 9 5 13-3 3-4 8-4 13 0 4 1 8 3 12H40c2-4 3-8 3-12 0-5-1-10-4-13 2-4 4-8 5-13Zm-9 42h34l3 9H34l3-9Z"/>
+    </svg>
+    <span>Chessora</span>
+  </div>
+
+  <h1>Informativa sulla Privacy</h1>
+  <p class="meta">App Android Chessora · <strong>Ultimo aggiornamento: 31 agosto 2026</strong></p>
+
+  <div class="lede">
+    <p>Chessora è un'app di sola consultazione per circoli scacchistici: si sceglie un circolo e si leggono news, calendario, tornei, classifiche e informazioni sul direttivo. <strong>Non esiste un account personale, non si effettua alcun login</strong> e l'app non raccoglie nome, email, numero di telefono o dati di localizzazione.</p>
+    <p>Questa pagina spiega nel dettaglio i pochi dati trattati e perché.</p>
+  </div>
+
+  <section>
+    <h2><span class="n">01</span> Titolare del trattamento</h2>
+    <p>Il titolare del trattamento dei dati è <strong>A.S.D. Libero Torneificio del Borgo</strong>, P.IVA 13038400019, contattabile all'indirizzo indicato in fondo alla pagina.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span> Quali dati vengono trattati</h2>
+    <p>L'app tratta solo i dati strettamente necessari al suo funzionamento:</p>
+    <ul>
+      <li><strong>Circolo selezionato</strong> — salvato esclusivamente sul dispositivo (nessun invio a terzi se non come parametro delle richieste per mostrare i contenuti del circolo scelto).</li>
+      <li><strong>Preferenza "notifiche attive/disattive"</strong> — salvata esclusivamente sul dispositivo.</li>
+      <li><strong>Token del dispositivo per le notifiche push</strong> — se le notifiche sono attive, un identificativo tecnico generato da Firebase Cloud Messaging (Google) viene inviato e conservato sui server Chessora, per poter recapitare le notifiche inviate dagli amministratori dei circoli. Non è un dato anagrafico e non identifica la persona, solo l'installazione dell'app su quel dispositivo.</li>
+    </ul>
+    <p>Non vengono raccolti: nome, email, telefono, posizione geografica, contatti, foto, cronologia di navigazione nell'app, identificativi pubblicitari. <strong>Nell'app non è integrato alcun servizio di analisi statistica (analytics) né pubblicità.</strong></p>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span> Perché (base giuridica)</h2>
+    <p>Il circolo selezionato e la preferenza notifiche sono trattati per fornire il servizio richiesto dall'utente stesso (consultazione dei contenuti del circolo). L'invio del token dispositivo avviene solo se l'utente attiva volontariamente le notifiche nelle Impostazioni dell'app: la base giuridica è quindi il <strong>consenso</strong>, revocabile in ogni momento disattivando il relativo interruttore.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span> Con chi vengono condivisi i dati</h2>
+    <p>Il token dispositivo viene condiviso con <strong>Google LLC</strong>, in qualità di fornitore del servizio tecnico Firebase Cloud Messaging usato per recapitare le notifiche push. È l'unico soggetto terzo coinvolto: nessun altro dato viene ceduto, venduto o condiviso con altre aziende. L'infrastruttura Google può instradare i dati anche fuori dall'Unione Europea, secondo le clausole contrattuali standard adottate da Google per i propri servizi.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span> Per quanto tempo</h2>
+    <p>Il circolo selezionato e la preferenza notifiche restano sul dispositivo finché non si disinstalla l'app o non si cancellano i dati dell'app dalle impostazioni del telefono. Il token dispositivo resta registrato sui server Chessora finché le notifiche restano attive; disattivandole, il dispositivo smette di re-inviare il proprio token. Per richiedere la cancellazione di un token già registrato scrivere all'indirizzo in fondo alla pagina.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">06</span> I tuoi diritti</h2>
+    <p>Puoi in qualsiasi momento richiedere accesso, rettifica, cancellazione o limitazione dei dati trattati, oppure opporti al trattamento, scrivendo all'indirizzo di contatto indicato sotto. Puoi inoltre disattivare le notifiche push direttamente dalle Impostazioni dell'app, senza bisogno di contattare nessuno.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">07</span> Minori</h2>
+    <p>Chessora non richiede né verifica l'età di chi usa l'app e non raccoglie consapevolmente dati anagrafici di alcun utente, minorenne o meno.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">08</span> Modifiche a questa informativa</h2>
+    <p>Questa informativa può essere aggiornata nel tempo. La data in cima alla pagina indica sempre la versione più recente.</p>
+  </section>
+
+  <footer>
+    <p>Domande su questa informativa o richieste relative ai tuoi dati:<br>
+    <a href="mailto:marcom.ltbscacchi@gmail.com">marcom.ltbscacchi@gmail.com</a></p>
+  </footer>
+
+</div>
