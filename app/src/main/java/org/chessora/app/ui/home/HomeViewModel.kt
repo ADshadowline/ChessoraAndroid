@@ -30,20 +30,20 @@ class HomeViewModel(private val repository: ChessoraRepository) : ViewModel() {
     private val _state = MutableStateFlow<UiState<HomeData>>(UiState.Loading)
     val state: StateFlow<UiState<HomeData>> = _state.asStateFlow()
 
-    private var loadedForClubId: Int? = null
+    private var loadedForClub: String? = null
 
-    fun load(idClub: Int) {
-        if (loadedForClubId == idClub && _state.value is UiState.Success) return
-        loadedForClubId = idClub
+    fun load(club: String) {
+        if (loadedForClub == club && _state.value is UiState.Success) return
+        loadedForClub = club
 
         viewModelScope.launch {
             _state.value = UiState.Loading
-            val newsResult = repository.getNews(idClub, limit = 5)
+            val newsResult = repository.getNews(club, limit = 5)
             if (newsResult.isFailure) {
                 _state.value = UiState.Error(newsResult.exceptionOrNull()?.toFriendlyMessage() ?: "Errore sconosciuto")
                 return@launch
             }
-            val nextTournament = repository.getNextUpcomingTournament(idClub).getOrNull()
+            val nextTournament = repository.getNextUpcomingTournament(club).getOrNull()
             _state.value = UiState.Success(HomeData(nextTournament, newsResult.getOrDefault(emptyList())))
         }
     }

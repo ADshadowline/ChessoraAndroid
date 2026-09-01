@@ -26,14 +26,14 @@ import org.chessora.app.ui.common.chessoraViewModel
 import org.chessora.app.ui.common.toItalianDateTime
 
 @Composable
-fun TorneoDetailScreen(idClub: Int, idTorneo: Int) {
+fun TorneoDetailScreen(club: String, idTorneo: Int) {
     val viewModel = chessoraViewModel { app -> TorneoDetailViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
 
-    LaunchedEffect(idClub, idTorneo) { viewModel.load(idClub, idTorneo) }
+    LaunchedEffect(club, idTorneo) { viewModel.load(club, idTorneo) }
 
-    UiStateContent(state = state, onRetry = { viewModel.load(idClub, idTorneo) }) { torneo ->
+    UiStateContent(state = state, onRetry = { viewModel.load(club, idTorneo) }) { torneo ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

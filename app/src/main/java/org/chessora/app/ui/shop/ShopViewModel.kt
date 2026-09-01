@@ -16,10 +16,10 @@ class ShopViewModel(private val repository: ChessoraRepository) : ViewModel() {
     private val _state = MutableStateFlow<UiState<List<ShopProduct>>>(UiState.Loading)
     val state: StateFlow<UiState<List<ShopProduct>>> = _state.asStateFlow()
 
-    fun load(idClub: Int) {
+    fun load(club: String) {
         viewModelScope.launch {
             _state.value = UiState.Loading
-            _state.value = repository.getShopProducts(idClub).toUiState()
+            _state.value = repository.getShopProducts(club).toUiState()
         }
     }
 }

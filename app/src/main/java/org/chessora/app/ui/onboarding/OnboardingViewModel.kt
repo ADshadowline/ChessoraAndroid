@@ -58,13 +58,20 @@ class OnboardingViewModel(private val repository: ChessoraRepository) : ViewMode
         }
     }
 
-    /** @param onResolved invocato con l'idClub trovato, cosi' la UI può chiamare SessionViewModel.selectClub. */
-    fun resolveCode(code: String, onResolved: (Int) -> Unit) {
+    /**
+     * Valida un codice circolo inserito a mano tramite GET /api/clubs/resolve
+     * (404 -> non valido) e, se valido, invoca [onResolved] col codice stesso
+     * (trim), non con l'idClub restituito dalla risposta: da qui in poi la
+     * navigazione/le chiamate usano sempre il publicCode, mai il numero interno
+     * - vedi ChessoraNavHost.kt e SessionViewModel.selectClub.
+     */
+    fun resolveCode(code: String, onResolved: (String) -> Unit) {
         if (code.isBlank()) return
+        val trimmed = code.trim()
         viewModelScope.launch {
             _codeError.value = null
-            repository.resolveClubByCode(code.trim())
-                .onSuccess(onResolved)
+            repository.resolveClubByCode(trimmed)
+                .onSuccess { onResolved(trimmed) }
                 .onFailure { _codeError.value = "Codice circolo non valido." }
         }
     }

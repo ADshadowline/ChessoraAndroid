@@ -24,17 +24,17 @@ class RankingViewModel(private val repository: ChessoraRepository) : ViewModel()
     private val _state = MutableStateFlow<UiState<RankingResponse>>(UiState.Loading)
     val state: StateFlow<UiState<RankingResponse>> = _state.asStateFlow()
 
-    private var loadedFor: Pair<RankingScope, Int?>? = null
+    private var loadedFor: Pair<RankingScope, String?>? = null
 
-    fun load(scope: RankingScope, idClub: Int?) {
-        val key = scope to idClub
+    fun load(scope: RankingScope, club: String?) {
+        val key = scope to club
         if (loadedFor == key && _state.value is UiState.Success) return
         loadedFor = key
 
         viewModelScope.launch {
             _state.value = UiState.Loading
             val result = when (scope) {
-                RankingScope.CIRCOLO -> idClub?.let { repository.getRankingCircolo(it) }
+                RankingScope.CIRCOLO -> club?.let { repository.getRankingCircolo(it) }
                     ?: Result.failure(IllegalStateException("Nessun circolo selezionato"))
                 RankingScope.NAZIONALE -> repository.getRankingNazionale()
                 RankingScope.ASSOLUTA -> repository.getRankingAssoluta()

@@ -35,10 +35,11 @@ import org.chessora.app.ui.common.chessoraViewModel
 /**
  * Prima schermata mai vista dall'utente (docs/android-app-spec.md §3, §7.1).
  * [onClubSelected] è fornito dal chiamante (ChessoraNavHost) e normalmente
- * invoca SessionViewModel.selectClub + naviga verso Home.
+ * invoca SessionViewModel.selectClub + naviga verso Home. Riceve il publicCode
+ * del circolo, mai l'idClub numerico (vedi ClubDirectoryItem/ClubDtos.kt).
  */
 @Composable
-fun OnboardingScreen(onClubSelected: (Int) -> Unit) {
+fun OnboardingScreen(onClubSelected: (String) -> Unit) {
     val viewModel = chessoraViewModel { app -> OnboardingViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
     val query by viewModel.searchQuery.collectAsState()
@@ -62,7 +63,10 @@ fun OnboardingScreen(onClubSelected: (Int) -> Unit) {
             } else {
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     items(clubs, key = { it.publicCode }) { club ->
-                        ClubRow(club = club, onClick = { viewModel.resolveCode(club.publicCode, onResolved = onClubSelected) })
+                        // Il codice viene già dall'elenco ufficiale del server (GET
+                        // /api/clubs/directory): nessun bisogno di validarlo di nuovo
+                        // come per un codice inserito a mano piu' sotto.
+                        ClubRow(club = club, onClick = { onClubSelected(club.publicCode) })
                     }
                 }
             }

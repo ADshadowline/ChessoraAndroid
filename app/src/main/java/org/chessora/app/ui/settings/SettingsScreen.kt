@@ -21,7 +21,7 @@ import org.chessora.app.R
 import org.chessora.app.ui.common.chessoraViewModel
 
 @Composable
-fun SettingsScreen(idClub: Int?, onChangeClub: () -> Unit) {
+fun SettingsScreen(club: String?, onChangeClub: () -> Unit) {
     val viewModel = chessoraViewModel { app -> SettingsViewModel(app.repository, app.clubPreferences) }
     val notificationsEnabled by viewModel.notificationsEnabled.collectAsState()
 
@@ -40,7 +40,7 @@ fun SettingsScreen(idClub: Int?, onChangeClub: () -> Unit) {
             Text(stringResource(R.string.settings_notifications), style = MaterialTheme.typography.bodyLarge)
             Switch(
                 checked = notificationsEnabled,
-                onCheckedChange = { viewModel.setNotificationsEnabled(it, idClub) },
+                onCheckedChange = { viewModel.setNotificationsEnabled(it, club) },
             )
         }
 

@@ -23,13 +23,13 @@ import org.chessora.app.ui.common.chessoraViewModel
 import org.chessora.app.ui.common.toItalianDate
 
 @Composable
-fun NewsDetailScreen(idClub: Int, idNews: Int) {
+fun NewsDetailScreen(club: String, idNews: Int) {
     val viewModel = chessoraViewModel { app -> NewsDetailViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(idClub, idNews) { viewModel.load(idClub, idNews) }
+    LaunchedEffect(club, idNews) { viewModel.load(club, idNews) }
 
-    UiStateContent(state = state, onRetry = { viewModel.load(idClub, idNews) }) { data ->
+    UiStateContent(state = state, onRetry = { viewModel.load(club, idNews) }) { data ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

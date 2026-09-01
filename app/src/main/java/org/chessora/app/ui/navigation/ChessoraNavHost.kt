@@ -67,14 +67,15 @@ private val BOTTOM_TABS = listOf(
  *
  * onboarding è la prima destinazione se non è mai stato scelto un circolo,
  * altrimenti si parte direttamente da Home - la decisione avviene osservando
- * selectedClubId, che diventa non-null non appena DataStore emette il valore
- * persistito (o rimane null per sempre se non è mai stato scelto nulla).
+ * selectedClub (il publicCode), che diventa non-null non appena DataStore
+ * emette il valore persistito (o rimane null per sempre se non è mai stato
+ * scelto nulla).
  */
 @Composable
 fun ChessoraNavHost() {
     val navController = rememberNavController()
     val sessionViewModel = chessoraViewModel { app -> SessionViewModel(app.repository, app.clubPreferences) }
-    val selectedClubId by sessionViewModel.selectedClubId.collectAsState()
+    val selectedClub by sessionViewModel.selectedClub.collectAsState()
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
@@ -85,8 +86,8 @@ fun ChessoraNavHost() {
     // precedente, si salta subito a Home senza far vedere l'onboarding all'utente
     // di ritorno - da qui in poi ONBOARDING resta raggiungibile solo esplicitamente
     // da "Cambia circolo" nelle Impostazioni.
-    LaunchedEffect(selectedClubId, currentRoute) {
-        if (selectedClubId != null && currentRoute == ChessoraDestinations.ONBOARDING) {
+    LaunchedEffect(selectedClub, currentRoute) {
+        if (selectedClub != null && currentRoute == ChessoraDestinations.ONBOARDING) {
             navController.navigate(ChessoraDestinations.HOME) {
                 popUpTo(ChessoraDestinations.ONBOARDING) { inclusive = true }
             }
@@ -132,21 +133,21 @@ fun ChessoraNavHost() {
             modifier = Modifier.padding(innerPadding),
         ) {
             composable(ChessoraDestinations.ONBOARDING) {
-                OnboardingScreen(onClubSelected = { idClub ->
-                    sessionViewModel.selectClub(idClub)
+                OnboardingScreen(onClubSelected = { club ->
+                    sessionViewModel.selectClub(club)
                     navController.navigate(ChessoraDestinations.HOME) {
                         popUpTo(ChessoraDestinations.ONBOARDING) { inclusive = true }
                     }
                 })
             }
             composable(ChessoraDestinations.HOME) {
-                RequireClub(selectedClubId) { idClub ->
-                    HomeScreen(idClub = idClub, onNewsClick = { navController.navigate(ChessoraDestinations.newsDetail(it)) })
+                RequireClub(selectedClub) { club ->
+                    HomeScreen(club = club, onNewsClick = { navController.navigate(ChessoraDestinations.newsDetail(it)) })
                 }
             }
             composable(ChessoraDestinations.NEWS_LIST) {
-                RequireClub(selectedClubId) { idClub ->
-                    NewsListScreen(idClub = idClub, onNewsClick = { navController.navigate(ChessoraDestinations.newsDetail(it)) })
+                RequireClub(selectedClub) { club ->
+                    NewsListScreen(club = club, onNewsClick = { navController.navigate(ChessoraDestinations.newsDetail(it)) })
                 }
             }
             composable(
@@ -154,14 +155,14 @@ fun ChessoraNavHost() {
                 arguments = listOf(navArgument("idNews") { type = NavType.IntType }),
             ) { backStack ->
                 val idNews = backStack.arguments?.getInt("idNews") ?: return@composable
-                RequireClub(selectedClubId) { idClub -> NewsDetailScreen(idClub = idClub, idNews = idNews) }
+                RequireClub(selectedClub) { club -> NewsDetailScreen(club = club, idNews = idNews) }
             }
             composable(ChessoraDestinations.CALENDAR) {
-                RequireClub(selectedClubId) { idClub -> CalendarScreen(idClub = idClub) }
+                RequireClub(selectedClub) { club -> CalendarScreen(club = club) }
             }
             composable(ChessoraDestinations.TORNEI_LIST) {
-                RequireClub(selectedClubId) { idClub ->
-                    TorneiListScreen(idClub = idClub, onTorneoClick = { navController.navigate(ChessoraDestinations.torneoDetail(it)) })
+                RequireClub(selectedClub) { club ->
+                    TorneiListScreen(club = club, onTorneoClick = { navController.navigate(ChessoraDestinations.torneoDetail(it)) })
                 }
             }
             composable(
@@ -169,10 +170,10 @@ fun ChessoraNavHost() {
                 arguments = listOf(navArgument("idTorneo") { type = NavType.IntType }),
             ) { backStack ->
                 val idTorneo = backStack.arguments?.getInt("idTorneo") ?: return@composable
-                RequireClub(selectedClubId) { idClub -> TorneoDetailScreen(idClub = idClub, idTorneo = idTorneo) }
+                RequireClub(selectedClub) { club -> TorneoDetailScreen(club = club, idTorneo = idTorneo) }
             }
             composable(ChessoraDestinations.RANKING) {
-                RankingScreen(idClub = selectedClubId)
+                RankingScreen(club = selectedClub)
             }
             composable(ChessoraDestinations.MORE) {
                 MoreScreen(
@@ -182,14 +183,14 @@ fun ChessoraNavHost() {
                 )
             }
             composable(ChessoraDestinations.BOARD) {
-                RequireClub(selectedClubId) { idClub -> BoardScreen(idClub = idClub) }
+                RequireClub(selectedClub) { club -> BoardScreen(club = club) }
             }
             composable(ChessoraDestinations.SHOP) {
-                RequireClub(selectedClubId) { idClub -> ShopScreen(idClub = idClub) }
+                RequireClub(selectedClub) { club -> ShopScreen(club = club) }
             }
             composable(ChessoraDestinations.SETTINGS) {
                 SettingsScreen(
-                    idClub = selectedClubId,
+                    club = selectedClub,
                     onChangeClub = {
                         navController.navigate(ChessoraDestinations.ONBOARDING) {
                             popUpTo(0) // svuota tutto il back stack: si riparte da zero col nuovo circolo
@@ -230,13 +231,13 @@ private fun ClubBrandingTopBar(branding: SiteBranding?) {
 
 /**
  * Piccola guardia usata da ogni schermata che richiede un circolo scelto:
- * se per qualche motivo si arriva qui con idClub ancora null (es. onboarding
+ * se per qualche motivo si arriva qui con club ancora null (es. onboarding
  * saltato con back button di sistema), mostra semplicemente nulla invece di
  * far crashare la schermata - in pratica non dovrebbe mai succedere perché la
  * navigazione verso queste route parte sempre da un punto che ha già un
- * idClub, ma è una rete di sicurezza a basso costo.
+ * circolo scelto, ma è una rete di sicurezza a basso costo.
  */
 @Composable
-private fun RequireClub(idClub: Int?, content: @Composable (Int) -> Unit) {
-    if (idClub != null) content(idClub)
+private fun RequireClub(club: String?, content: @Composable (String) -> Unit) {
+    if (club != null) content(club)
 }

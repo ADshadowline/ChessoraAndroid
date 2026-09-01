@@ -26,7 +26,7 @@ class SessionViewModel(
     private val clubPreferences: ClubPreferences,
 ) : ViewModel() {
 
-    val selectedClubId: StateFlow<Int?> = clubPreferences.selectedClubId
+    val selectedClub: StateFlow<String?> = clubPreferences.selectedClub
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     private val _branding = MutableStateFlow<SiteBranding?>(null)
@@ -37,32 +37,32 @@ class SessionViewModel(
         // precedente, carica subito il suo branding e registra il device (il
         // token FCM potrebbe essere lo stesso di sempre, ma repository.registerDevice
         // è un upsert innocuo da ripetere - vedi push/DeviceRegistration.kt).
-        // Nota: leggiamo clubPreferences.selectedClubId.first() direttamente
+        // Nota: leggiamo clubPreferences.selectedClub.first() direttamente
         // (sospendendo finché DataStore non emette il primo valore reale),
-        // NON selectedClubId.value: quest'ultimo, derivato con stateIn(), parte
+        // NON selectedClub.value: quest'ultimo, derivato con stateIn(), parte
         // dal seed `null` finché non arriva la prima emissione, quindi qui
         // potrebbe leggersi come "nessun circolo" anche quando uno era già stato
         // salvato in una sessione precedente.
         viewModelScope.launch {
-            val idClub = clubPreferences.selectedClubId.first()
-            if (idClub != null) {
-                loadBranding(idClub)
+            val club = clubPreferences.selectedClub.first()
+            if (club != null) {
+                loadBranding(club)
             }
-            DeviceRegistration.registerCurrentToken(repository, clubPreferences, idClub)
+            DeviceRegistration.registerCurrentToken(repository, clubPreferences, club)
         }
     }
 
     /** Chiamata dall'onboarding (o dalle Impostazioni, per cambiare circolo). */
-    fun selectClub(idClub: Int) {
+    fun selectClub(club: String) {
         viewModelScope.launch {
-            clubPreferences.setSelectedClubId(idClub)
-            loadBranding(idClub)
-            DeviceRegistration.registerCurrentToken(repository, clubPreferences, idClub)
+            clubPreferences.setSelectedClub(club)
+            loadBranding(club)
+            DeviceRegistration.registerCurrentToken(repository, clubPreferences, club)
         }
     }
 
-    private suspend fun loadBranding(idClub: Int) {
-        repository.getSiteSettings(idClub).onSuccess { settings ->
+    private suspend fun loadBranding(club: String) {
+        repository.getSiteSettings(club).onSuccess { settings ->
             _branding.value = settings.site
         }
     }

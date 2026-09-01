@@ -29,10 +29,10 @@ class NewsDetailViewModel(private val repository: ChessoraRepository) : ViewMode
     private val _state = MutableStateFlow<UiState<NewsDetailData>>(UiState.Loading)
     val state: StateFlow<UiState<NewsDetailData>> = _state.asStateFlow()
 
-    fun load(idClub: Int, idNews: Int) {
+    fun load(club: String, idNews: Int) {
         viewModelScope.launch {
             _state.value = UiState.Loading
-            val newsResult = repository.getNews(idClub, limit = 100)
+            val newsResult = repository.getNews(club, limit = 100)
             val article = newsResult.getOrNull()?.firstOrNull { it.id == idNews }
             if (article == null) {
                 _state.value = UiState.Error("Articolo non trovato.")

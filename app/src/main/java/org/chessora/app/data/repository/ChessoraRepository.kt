@@ -39,12 +39,16 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun getClubDirectory(): Result<List<ClubDirectoryItem>> = safeCall { api.getClubDirectory() }
 
+    /** Usato SOLO per POST /api/devices/register, il solo endpoint pubblico che
+     * richiede ancora il numero interno (nel body JSON, non in query string -
+     * vedi ChessoraRepository.registerDevice e push/DeviceRegistration.kt). Ogni
+     * altra chiamata di questo repository usa direttamente il publicCode. */
     suspend fun resolveClubByCode(code: String): Result<Int> = safeCall { api.resolveClubByCode(code).idClub }
 
     // ---------- News ----------
 
-    suspend fun getNews(idClub: Int, limit: Int = 30): Result<List<NewsArticle>> =
-        safeCall { api.getNews(idClub, limit) }
+    suspend fun getNews(club: String, limit: Int = 30): Result<List<NewsArticle>> =
+        safeCall { api.getNews(club, limit) }
 
     suspend fun getNewsComments(idNews: Int): Result<List<NewsComment>> =
         safeCall { api.getNewsComments(idNews) }
@@ -53,15 +57,15 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun getEventTypes(): Result<List<EventType>> = safeCall { api.getEventTypes() }
 
-    suspend fun getCalendar(idClub: Int, from: String, to: String): Result<List<CalendarEvent>> =
-        safeCall { api.getCalendar(idClub, from, to) }
+    suspend fun getCalendar(club: String, from: String, to: String): Result<List<CalendarEvent>> =
+        safeCall { api.getCalendar(club, from, to) }
 
     // ---------- Tornei ----------
 
-    suspend fun getTornei(idClub: Int): Result<List<Torneo>> = safeCall { api.getTornei(idClub) }
+    suspend fun getTornei(club: String): Result<List<Torneo>> = safeCall { api.getTornei(club) }
 
-    suspend fun getNextUpcomingTournament(idClub: Int): Result<NextTournament?> =
-        safeCall { api.getNextUpcomingTournament(idClub) }
+    suspend fun getNextUpcomingTournament(club: String): Result<NextTournament?> =
+        safeCall { api.getNextUpcomingTournament(club) }
 
     // ---------- Classifica ----------
 
@@ -71,33 +75,33 @@ class ChessoraRepository(private val api: ChessoraApi) {
     suspend fun getRankingNazionale(limit: Int = 20): Result<RankingResponse> =
         safeCall { api.getRankingNazionale(limit) }
 
-    suspend fun getRankingCircolo(idClub: Int, limit: Int = 20): Result<RankingResponse> =
-        safeCall { api.getRankingCircolo(idClub, limit) }
+    suspend fun getRankingCircolo(club: String, limit: Int = 20): Result<RankingResponse> =
+        safeCall { api.getRankingCircolo(club, limit) }
 
     // ---------- Direttivo ----------
 
-    suspend fun getBoardYears(idClub: Int): Result<List<Int>> = safeCall { api.getBoardYears(idClub) }
+    suspend fun getBoardYears(club: String): Result<List<Int>> = safeCall { api.getBoardYears(club) }
 
-    suspend fun getBoard(idClub: Int, year: Int? = null): Result<List<BoardMember>> =
-        safeCall { api.getBoard(idClub, year) }
+    suspend fun getBoard(club: String, year: Int? = null): Result<List<BoardMember>> =
+        safeCall { api.getBoard(club, year) }
 
     // ---------- Negozio ----------
 
-    suspend fun getShopProducts(idClub: Int): Result<List<ShopProduct>> = safeCall { api.getShopProducts(idClub) }
+    suspend fun getShopProducts(club: String): Result<List<ShopProduct>> = safeCall { api.getShopProducts(club) }
 
     // ---------- Altro ----------
 
-    suspend fun getStats(idClub: Int): Result<ClubStats> = safeCall { api.getStats(idClub) }
+    suspend fun getStats(club: String): Result<ClubStats> = safeCall { api.getStats(club) }
 
-    suspend fun getGoogleReviews(idClub: Int): Result<GoogleReviewsResponse> =
-        safeCall { api.getGoogleReviews(idClub) }
+    suspend fun getGoogleReviews(club: String): Result<GoogleReviewsResponse> =
+        safeCall { api.getGoogleReviews(club) }
 
-    suspend fun getVideoRows(idClub: Int): Result<List<VideoRow>> = safeCall { api.getVideoRows(idClub) }
+    suspend fun getVideoRows(club: String): Result<List<VideoRow>> = safeCall { api.getVideoRows(club) }
 
-    suspend fun getVideoNews(idClub: Int, limit: Int = 20): Result<List<VideoNewsItem>> =
-        safeCall { api.getVideoNews(idClub, limit) }
+    suspend fun getVideoNews(club: String, limit: Int = 20): Result<List<VideoNewsItem>> =
+        safeCall { api.getVideoNews(club, limit) }
 
-    suspend fun getSiteSettings(idClub: Int): Result<SiteSettings> = safeCall { api.getSiteSettings(idClub) }
+    suspend fun getSiteSettings(club: String): Result<SiteSettings> = safeCall { api.getSiteSettings(club) }
 
     // ---------- Notifiche push ----------
 

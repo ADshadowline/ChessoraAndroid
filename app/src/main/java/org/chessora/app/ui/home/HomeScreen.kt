@@ -24,13 +24,13 @@ import org.chessora.app.ui.common.chessoraViewModel
 import org.chessora.app.ui.common.toItalianDateTime
 
 @Composable
-fun HomeScreen(idClub: Int, onNewsClick: (Int) -> Unit) {
+fun HomeScreen(club: String, onNewsClick: (Int) -> Unit) {
     val viewModel = chessoraViewModel { app -> HomeViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(idClub) { viewModel.load(idClub) }
+    LaunchedEffect(club) { viewModel.load(club) }
 
-    UiStateContent(state = state, onRetry = { viewModel.load(idClub) }) { data ->
+    UiStateContent(state = state, onRetry = { viewModel.load(club) }) { data ->
         LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             item {
                 Text(

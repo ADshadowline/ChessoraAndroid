@@ -23,10 +23,10 @@ class TorneoDetailViewModel(private val repository: ChessoraRepository) : ViewMo
     private val _state = MutableStateFlow<UiState<Torneo>>(UiState.Loading)
     val state: StateFlow<UiState<Torneo>> = _state.asStateFlow()
 
-    fun load(idClub: Int, idTorneo: Int) {
+    fun load(club: String, idTorneo: Int) {
         viewModelScope.launch {
             _state.value = UiState.Loading
-            val torneo = repository.getTornei(idClub).getOrNull()?.firstOrNull { it.id == idTorneo }
+            val torneo = repository.getTornei(club).getOrNull()?.firstOrNull { it.id == idTorneo }
             _state.value = if (torneo != null) UiState.Success(torneo) else UiState.Error("Torneo non trovato.")
         }
     }

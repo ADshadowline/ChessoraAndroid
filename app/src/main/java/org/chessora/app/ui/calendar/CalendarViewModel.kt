@@ -24,16 +24,16 @@ class CalendarViewModel(private val repository: ChessoraRepository) : ViewModel(
     private val _state = MutableStateFlow<UiState<List<CalendarEvent>>>(UiState.Loading)
     val state: StateFlow<UiState<List<CalendarEvent>>> = _state.asStateFlow()
 
-    private var loadedForClubId: Int? = null
+    private var loadedForClub: String? = null
 
-    fun load(idClub: Int) {
-        if (loadedForClubId == idClub && _state.value is UiState.Success) return
-        loadedForClubId = idClub
+    fun load(club: String) {
+        if (loadedForClub == club && _state.value is UiState.Success) return
+        loadedForClub = club
         viewModelScope.launch {
             _state.value = UiState.Loading
             val from = DateRange.todayIso()
             val to = DateRange.todayPlusDaysIso(90)
-            _state.value = repository.getCalendar(idClub, from, to)
+            _state.value = repository.getCalendar(club, from, to)
                 .map { events -> events.sortedBy { it.eventDateTime } }
                 .toUiState()
         }

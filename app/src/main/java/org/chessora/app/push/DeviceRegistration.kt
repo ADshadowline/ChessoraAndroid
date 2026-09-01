@@ -11,7 +11,7 @@ import org.chessora.app.data.repository.ChessoraRepository
  * docs/android-app-spec.md §5, punto 3). Chiamata da tre punti (tutti
  * innocui da ripetere: il server fa un upsert per valore di token, non serve
  * nessuna logica di "salta se invariato" - vedi ChessoraRepository.registerDevice):
- * 1. All'avvio dell'app (MainActivity), con l'idClub eventualmente già scelto.
+ * 1. All'avvio dell'app (MainActivity), con il circolo eventualmente già scelto.
  * 2. Quando l'utente sceglie/cambia circolo (ui/onboarding e ui/settings).
  * 3. Quando Firebase invoca onNewToken (ChessoraFirebaseMessagingService) - i
  *    token FCM possono cambiare nel tempo indipendentemente dall'app.
@@ -21,7 +21,7 @@ object DeviceRegistration {
     suspend fun registerCurrentToken(
         repository: ChessoraRepository,
         clubPreferences: ClubPreferences,
-        idClub: Int?,
+        club: String?,
     ) {
         // "disattivarle lato app equivale a non registrare/cancellare il token"
         // (docs/android-app-spec.md §7.9): se l'utente ha spento il toggle nelle
@@ -39,6 +39,14 @@ object DeviceRegistration {
             // riceverà notifiche push.
             return
         }
+
+        // POST /api/devices/register è l'unico endpoint pubblico che vuole ancora
+        // l'IdClub numerico (nel body, non in query string): lo risolviamo qui al
+        // volo dal publicCode invece di persisterlo mai lato client. Se il circolo
+        // non risolve (rete assente, codice non più valido) semplicemente non
+        // registriamo l'idClub - come oggi per "nessun circolo scelto", il token
+        // resta comunque valido per notifiche non legate a un circolo specifico.
+        val idClub = club?.let { repository.resolveClubByCode(it).getOrNull() }
 
         repository.registerDevice(token = token, idClub = idClub).onSuccess {
             clubPreferences.setLastRegisteredFcmToken(token)

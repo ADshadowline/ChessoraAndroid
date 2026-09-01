@@ -28,13 +28,13 @@ import org.chessora.app.ui.common.chessoraViewModel
  * ("opzionale in v1, sola consultazione").
  */
 @Composable
-fun ShopScreen(idClub: Int) {
+fun ShopScreen(club: String) {
     val viewModel = chessoraViewModel { app -> ShopViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(idClub) { viewModel.load(idClub) }
+    LaunchedEffect(club) { viewModel.load(club) }
 
-    UiStateContent(state = state, onRetry = { viewModel.load(idClub) }) { products ->
+    UiStateContent(state = state, onRetry = { viewModel.load(club) }) { products ->
         LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             items(products, key = { it.id }) { product -> ProductRow(product) }
         }

@@ -32,13 +32,13 @@ import org.chessora.app.ui.common.chessoraViewModel
  * livello elencati sotto in ordine di sortOrder.
  */
 @Composable
-fun BoardScreen(idClub: Int) {
+fun BoardScreen(club: String) {
     val viewModel = chessoraViewModel { app -> BoardViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(idClub) { viewModel.load(idClub) }
+    LaunchedEffect(club) { viewModel.load(club) }
 
-    UiStateContent(state = state, onRetry = { viewModel.load(idClub) }) { members ->
+    UiStateContent(state = state, onRetry = { viewModel.load(club) }) { members ->
         val byLevel = members.groupBy { it.level }.toSortedMap()
         LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             byLevel.forEach { (level, levelMembers) ->

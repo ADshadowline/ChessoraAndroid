@@ -41,8 +41,8 @@ class ChessoraFirebaseMessagingService : FirebaseMessagingService() {
         // rischierebbe di essere cancellato a metà. La chiamata di rete è
         // comunque breve (un singolo POST).
         runBlocking(Dispatchers.IO) {
-            val idClub = app.clubPreferences.selectedClubId.firstOrNull()
-            DeviceRegistration.registerCurrentToken(app.repository, app.clubPreferences, idClub)
+            val club = app.clubPreferences.selectedClub.firstOrNull()
+            DeviceRegistration.registerCurrentToken(app.repository, app.clubPreferences, club)
         }
     }
 

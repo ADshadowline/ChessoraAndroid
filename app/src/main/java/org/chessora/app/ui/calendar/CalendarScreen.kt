@@ -23,13 +23,13 @@ import org.chessora.app.ui.common.chessoraViewModel
 import org.chessora.app.ui.common.toItalianDate
 
 @Composable
-fun CalendarScreen(idClub: Int) {
+fun CalendarScreen(club: String) {
     val viewModel = chessoraViewModel { app -> CalendarViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(idClub) { viewModel.load(idClub) }
+    LaunchedEffect(club) { viewModel.load(club) }
 
-    UiStateContent(state = state, onRetry = { viewModel.load(idClub) }) { events ->
+    UiStateContent(state = state, onRetry = { viewModel.load(club) }) { events ->
         if (events.isEmpty()) {
             Text(
                 "Nessun evento in programma nei prossimi 90 giorni.",

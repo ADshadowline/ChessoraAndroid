@@ -3,7 +3,7 @@ package org.chessora.app.data.remote.dto
 import kotlinx.serialization.Serializable
 
 /**
- * GET /api/site-settings?idClub= restituisce un blob JSON libero, non tipizzato
+ * GET /api/site-settings?club= restituisce un blob JSON libero, non tipizzato
  * lato server (lo stesso usato dal wizard web - vedi
  * docs/android-app-spec.md §4 nel repository server: "non è tipizzato lato
  * server, è un blob JSON libero"). Qui modelliamo SOLO i campi che servono

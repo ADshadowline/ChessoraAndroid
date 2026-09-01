@@ -22,13 +22,13 @@ import org.chessora.app.ui.common.chessoraViewModel
 import org.chessora.app.ui.common.toItalianDate
 
 @Composable
-fun TorneiListScreen(idClub: Int, onTorneoClick: (Int) -> Unit) {
+fun TorneiListScreen(club: String, onTorneoClick: (Int) -> Unit) {
     val viewModel = chessoraViewModel { app -> TorneiListViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(idClub) { viewModel.load(idClub) }
+    LaunchedEffect(club) { viewModel.load(club) }
 
-    UiStateContent(state = state, onRetry = { viewModel.load(idClub) }) { tornei ->
+    UiStateContent(state = state, onRetry = { viewModel.load(club) }) { tornei ->
         LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             items(tornei, key = { it.id }) { torneo ->
                 TorneoRow(torneo = torneo, onClick = { onTorneoClick(torneo.id) })

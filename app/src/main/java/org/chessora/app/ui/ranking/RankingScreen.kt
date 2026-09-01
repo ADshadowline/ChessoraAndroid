@@ -31,7 +31,7 @@ private val SCOPES = listOf(RankingScope.CIRCOLO to "Circolo", RankingScope.NAZI
 private val CADENCES = listOf("Standard", "Rapid", "Blitz")
 
 @Composable
-fun RankingScreen(idClub: Int?) {
+fun RankingScreen(club: String?) {
     val viewModel = chessoraViewModel { app -> RankingViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
 
@@ -39,7 +39,7 @@ fun RankingScreen(idClub: Int?) {
     var cadenceIndex by remember { mutableIntStateOf(0) }
     val scope = SCOPES[scopeIndex].first
 
-    LaunchedEffect(scope, idClub) { viewModel.load(scope, idClub) }
+    LaunchedEffect(scope, club) { viewModel.load(scope, club) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TabRow(selectedTabIndex = scopeIndex) {
@@ -53,7 +53,7 @@ fun RankingScreen(idClub: Int?) {
             }
         }
 
-        UiStateContent(state = state, onRetry = { viewModel.load(scope, idClub) }) { ranking ->
+        UiStateContent(state = state, onRetry = { viewModel.load(scope, club) }) { ranking ->
             val players = when (cadenceIndex) {
                 0 -> ranking.standard
                 1 -> ranking.rapid

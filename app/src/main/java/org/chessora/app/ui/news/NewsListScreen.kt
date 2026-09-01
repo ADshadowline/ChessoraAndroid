@@ -15,13 +15,13 @@ import org.chessora.app.ui.common.chessoraViewModel
 import org.chessora.app.ui.home.NewsSummaryCard
 
 @Composable
-fun NewsListScreen(idClub: Int, onNewsClick: (Int) -> Unit) {
+fun NewsListScreen(club: String, onNewsClick: (Int) -> Unit) {
     val viewModel = chessoraViewModel { app -> NewsListViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(idClub) { viewModel.load(idClub) }
+    LaunchedEffect(club) { viewModel.load(club) }
 
-    UiStateContent(state = state, onRetry = { viewModel.load(idClub) }) { articles ->
+    UiStateContent(state = state, onRetry = { viewModel.load(club) }) { articles ->
         LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             items(articles, key = { it.id }) { article ->
                 NewsSummaryCard(article = article, onClick = { onNewsClick(article.id) })

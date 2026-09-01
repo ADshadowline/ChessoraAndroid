@@ -18,12 +18,12 @@ class SettingsViewModel(
     val notificationsEnabled: StateFlow<Boolean> = clubPreferences.notificationsEnabled
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
 
-    /** [idClub] serve solo per ri-registrare subito il token se l'utente riaccende il toggle. */
-    fun setNotificationsEnabled(enabled: Boolean, idClub: Int?) {
+    /** [club] serve solo per ri-registrare subito il token se l'utente riaccende il toggle. */
+    fun setNotificationsEnabled(enabled: Boolean, club: String?) {
         viewModelScope.launch {
             clubPreferences.setNotificationsEnabled(enabled)
             if (enabled) {
-                DeviceRegistration.registerCurrentToken(repository, clubPreferences, idClub)
+                DeviceRegistration.registerCurrentToken(repository, clubPreferences, club)
             }
         }
     }

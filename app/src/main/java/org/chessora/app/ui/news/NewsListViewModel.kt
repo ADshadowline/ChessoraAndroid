@@ -16,14 +16,14 @@ class NewsListViewModel(private val repository: ChessoraRepository) : ViewModel(
     private val _state = MutableStateFlow<UiState<List<NewsArticle>>>(UiState.Loading)
     val state: StateFlow<UiState<List<NewsArticle>>> = _state.asStateFlow()
 
-    private var loadedForClubId: Int? = null
+    private var loadedForClub: String? = null
 
-    fun load(idClub: Int) {
-        if (loadedForClubId == idClub && _state.value is UiState.Success) return
-        loadedForClubId = idClub
+    fun load(club: String) {
+        if (loadedForClub == club && _state.value is UiState.Success) return
+        loadedForClub = club
         viewModelScope.launch {
             _state.value = UiState.Loading
-            _state.value = repository.getNews(idClub, limit = 30).toUiState()
+            _state.value = repository.getNews(club, limit = 30).toUiState()
         }
     }
 }

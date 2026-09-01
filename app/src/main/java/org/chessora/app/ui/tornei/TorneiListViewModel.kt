@@ -16,14 +16,14 @@ class TorneiListViewModel(private val repository: ChessoraRepository) : ViewMode
     private val _state = MutableStateFlow<UiState<List<Torneo>>>(UiState.Loading)
     val state: StateFlow<UiState<List<Torneo>>> = _state.asStateFlow()
 
-    private var loadedForClubId: Int? = null
+    private var loadedForClub: String? = null
 
-    fun load(idClub: Int) {
-        if (loadedForClubId == idClub && _state.value is UiState.Success) return
-        loadedForClubId = idClub
+    fun load(club: String) {
+        if (loadedForClub == club && _state.value is UiState.Success) return
+        loadedForClub = club
         viewModelScope.launch {
             _state.value = UiState.Loading
-            _state.value = repository.getTornei(idClub)
+            _state.value = repository.getTornei(club)
                 .map { list -> list.sortedByDescending { it.date.maxOfOrNull { d -> d.dataOra } ?: "" } }
                 .toUiState()
         }

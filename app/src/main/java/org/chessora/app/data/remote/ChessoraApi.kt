@@ -48,7 +48,7 @@ interface ChessoraApi {
     // ---------- News ----------
 
     @GET("api/news")
-    suspend fun getNews(@Query("idClub") idClub: Int, @Query("limit") limit: Int = 30): List<NewsArticle>
+    suspend fun getNews(@Query("club") club: String, @Query("limit") limit: Int = 30): List<NewsArticle>
 
     @GET("api/news/{idNews}/comments")
     suspend fun getNewsComments(@Path("idNews") idNews: Int): List<NewsComment>
@@ -61,7 +61,7 @@ interface ChessoraApi {
     /** [from]/[to] nel formato "yyyy-MM-dd", come richiesto dal server. */
     @GET("api/calendar")
     suspend fun getCalendar(
-        @Query("idClub") idClub: Int,
+        @Query("club") club: String,
         @Query("from") from: String,
         @Query("to") to: String,
     ): List<CalendarEvent>
@@ -69,10 +69,10 @@ interface ChessoraApi {
     // ---------- Tornei e locandine ----------
 
     @GET("api/tornei")
-    suspend fun getTornei(@Query("idClub") idClub: Int): List<Torneo>
+    suspend fun getTornei(@Query("club") club: String): List<Torneo>
 
     @GET("api/tornei/next-upcoming")
-    suspend fun getNextUpcomingTournament(@Query("idClub") idClub: Int): NextTournament?
+    suspend fun getNextUpcomingTournament(@Query("club") club: String): NextTournament?
 
     // Nota: GET /api/bandi/render/{idTorneo} NON è qui - restituisce HTML pronto
     // da caricare direttamente in una WebView (o da aprire con un Intent verso il
@@ -89,37 +89,37 @@ interface ChessoraApi {
     suspend fun getRankingNazionale(@Query("limit") limit: Int = 20): RankingResponse
 
     @GET("api/ranking/circolo")
-    suspend fun getRankingCircolo(@Query("idClub") idClub: Int, @Query("limit") limit: Int = 20): RankingResponse
+    suspend fun getRankingCircolo(@Query("club") club: String, @Query("limit") limit: Int = 20): RankingResponse
 
     // ---------- Direttivo ----------
 
     @GET("api/board/years")
-    suspend fun getBoardYears(@Query("idClub") idClub: Int): List<Int>
+    suspend fun getBoardYears(@Query("club") club: String): List<Int>
 
     @GET("api/board")
-    suspend fun getBoard(@Query("idClub") idClub: Int, @Query("year") year: Int? = null): List<BoardMember>
+    suspend fun getBoard(@Query("club") club: String, @Query("year") year: Int? = null): List<BoardMember>
 
     // ---------- Negozio ----------
 
     @GET("api/shop/products")
-    suspend fun getShopProducts(@Query("idClub") idClub: Int): List<ShopProduct>
+    suspend fun getShopProducts(@Query("club") club: String): List<ShopProduct>
 
     // ---------- Altro ----------
 
     @GET("api/stats")
-    suspend fun getStats(@Query("idClub") idClub: Int): ClubStats
+    suspend fun getStats(@Query("club") club: String): ClubStats
 
     @GET("api/google-reviews")
-    suspend fun getGoogleReviews(@Query("idClub") idClub: Int): GoogleReviewsResponse
+    suspend fun getGoogleReviews(@Query("club") club: String): GoogleReviewsResponse
 
     @GET("api/video-rows")
-    suspend fun getVideoRows(@Query("idClub") idClub: Int): List<VideoRow>
+    suspend fun getVideoRows(@Query("club") club: String): List<VideoRow>
 
     @GET("api/video-news")
-    suspend fun getVideoNews(@Query("idClub") idClub: Int, @Query("limit") limit: Int = 20): List<VideoNewsItem>
+    suspend fun getVideoNews(@Query("club") club: String, @Query("limit") limit: Int = 20): List<VideoNewsItem>
 
     @GET("api/site-settings")
-    suspend fun getSiteSettings(@Query("idClub") idClub: Int): SiteSettings
+    suspend fun getSiteSettings(@Query("club") club: String): SiteSettings
 
     // ---------- Notifiche push ----------
 
