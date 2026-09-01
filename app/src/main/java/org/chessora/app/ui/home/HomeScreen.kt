@@ -21,7 +21,6 @@ import org.chessora.app.R
 import org.chessora.app.data.remote.dto.NewsArticle
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
-import org.chessora.app.ui.common.toItalianDateTime
 
 @Composable
 fun HomeScreen(club: String, onNewsClick: (Int) -> Unit) {
@@ -32,25 +31,6 @@ fun HomeScreen(club: String, onNewsClick: (Int) -> Unit) {
 
     UiStateContent(state = state, onRetry = { viewModel.load(club) }) { data ->
         LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            item {
-                Text(
-                    stringResource(R.string.home_next_tournament),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                )
-            }
-            item {
-                Card(modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        if (data.nextTournament != null) {
-                            Text(data.nextTournament.titolo, fontWeight = FontWeight.Bold)
-                            Text(data.nextTournament.dataOra.toItalianDateTime(), style = MaterialTheme.typography.bodyMedium)
-                        } else {
-                            Text(stringResource(R.string.home_no_tournament))
-                        }
-                    }
-                }
-            }
             item {
                 Text(
                     stringResource(R.string.home_latest_news),

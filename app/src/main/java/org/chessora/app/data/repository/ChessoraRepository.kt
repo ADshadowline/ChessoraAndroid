@@ -9,12 +9,10 @@ import org.chessora.app.data.remote.dto.EventType
 import org.chessora.app.data.remote.dto.GoogleReviewsResponse
 import org.chessora.app.data.remote.dto.NewsArticle
 import org.chessora.app.data.remote.dto.NewsComment
-import org.chessora.app.data.remote.dto.NextTournament
 import org.chessora.app.data.remote.dto.RankingResponse
 import org.chessora.app.data.remote.dto.RegisterDeviceRequest
 import org.chessora.app.data.remote.dto.ShopProduct
 import org.chessora.app.data.remote.dto.SiteSettings
-import org.chessora.app.data.remote.dto.Torneo
 import org.chessora.app.data.remote.dto.VideoNewsItem
 import org.chessora.app.data.remote.dto.VideoRow
 
@@ -59,13 +57,6 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun getCalendar(club: String, from: String, to: String): Result<List<CalendarEvent>> =
         safeCall { api.getCalendar(club, from, to) }
-
-    // ---------- Tornei ----------
-
-    suspend fun getTornei(club: String): Result<List<Torneo>> = safeCall { api.getTornei(club) }
-
-    suspend fun getNextUpcomingTournament(club: String): Result<NextTournament?> =
-        safeCall { api.getNextUpcomingTournament(club) }
 
     // ---------- Classifica ----------
 

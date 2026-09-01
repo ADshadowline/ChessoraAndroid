@@ -19,13 +19,10 @@
     <string name="nav_home">Home</string>
     <string name="nav_news">News</string>
     <string name="nav_calendar">Calendario</string>
-    <string name="nav_tornei">Tornei</string>
     <string name="nav_ranking">Classifica</string>
     <string name="nav_more">Altro</string>
 
     <!-- Home -->
-    <string name="home_next_tournament">Prossimo torneo</string>
-    <string name="home_no_tournament">Nessun torneo in programma</string>
     <string name="home_latest_news">Ultime news</string>
 
     <!-- Errori generici -->

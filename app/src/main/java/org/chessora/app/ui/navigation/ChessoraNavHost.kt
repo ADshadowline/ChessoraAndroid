@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Newspaper
@@ -45,8 +44,6 @@ import org.chessora.app.ui.ranking.RankingScreen
 import org.chessora.app.ui.session.SessionViewModel
 import org.chessora.app.ui.settings.SettingsScreen
 import org.chessora.app.ui.shop.ShopScreen
-import org.chessora.app.ui.tornei.TorneiListScreen
-import org.chessora.app.ui.tornei.TorneoDetailScreen
 
 private data class BottomTab(val route: String, val labelRes: Int, val icon: androidx.compose.ui.graphics.vector.ImageVector)
 
@@ -54,7 +51,6 @@ private val BOTTOM_TABS = listOf(
     BottomTab(ChessoraDestinations.HOME, R.string.nav_home, Icons.Default.Home),
     BottomTab(ChessoraDestinations.NEWS_LIST, R.string.nav_news, Icons.Default.Newspaper),
     BottomTab(ChessoraDestinations.CALENDAR, R.string.nav_calendar, Icons.Default.CalendarMonth),
-    BottomTab(ChessoraDestinations.TORNEI_LIST, R.string.nav_tornei, Icons.Default.EmojiEvents),
     BottomTab(ChessoraDestinations.RANKING, R.string.nav_ranking, Icons.Default.Leaderboard),
     BottomTab(ChessoraDestinations.MORE, R.string.nav_more, Icons.Default.MoreHoriz),
 )
@@ -159,18 +155,6 @@ fun ChessoraNavHost() {
             }
             composable(ChessoraDestinations.CALENDAR) {
                 RequireClub(selectedClub) { club -> CalendarScreen(club = club) }
-            }
-            composable(ChessoraDestinations.TORNEI_LIST) {
-                RequireClub(selectedClub) { club ->
-                    TorneiListScreen(club = club, onTorneoClick = { navController.navigate(ChessoraDestinations.torneoDetail(it)) })
-                }
-            }
-            composable(
-                ChessoraDestinations.TORNEO_DETAIL,
-                arguments = listOf(navArgument("idTorneo") { type = NavType.IntType }),
-            ) { backStack ->
-                val idTorneo = backStack.arguments?.getInt("idTorneo") ?: return@composable
-                RequireClub(selectedClub) { club -> TorneoDetailScreen(club = club, idTorneo = idTorneo) }
             }
             composable(ChessoraDestinations.RANKING) {
                 RankingScreen(club = selectedClub)

@@ -8,13 +8,11 @@ import org.chessora.app.data.remote.dto.EventType
 import org.chessora.app.data.remote.dto.GoogleReviewsResponse
 import org.chessora.app.data.remote.dto.NewsArticle
 import org.chessora.app.data.remote.dto.NewsComment
-import org.chessora.app.data.remote.dto.NextTournament
 import org.chessora.app.data.remote.dto.RankingResponse
 import org.chessora.app.data.remote.dto.RegisterDeviceRequest
 import org.chessora.app.data.remote.dto.ResolveClubResponse
 import org.chessora.app.data.remote.dto.ShopProduct
 import org.chessora.app.data.remote.dto.SiteSettings
-import org.chessora.app.data.remote.dto.Torneo
 import org.chessora.app.data.remote.dto.VideoNewsItem
 import org.chessora.app.data.remote.dto.VideoRow
 import retrofit2.http.Body
@@ -65,20 +63,6 @@ interface ChessoraApi {
         @Query("from") from: String,
         @Query("to") to: String,
     ): List<CalendarEvent>
-
-    // ---------- Tornei e locandine ----------
-
-    @GET("api/tornei")
-    suspend fun getTornei(@Query("club") club: String): List<Torneo>
-
-    @GET("api/tornei/next-upcoming")
-    suspend fun getNextUpcomingTournament(@Query("club") club: String): NextTournament?
-
-    // Nota: GET /api/bandi/render/{idTorneo} NON è qui - restituisce HTML pronto
-    // da caricare direttamente in una WebView (o da aprire con un Intent verso il
-    // browser di sistema), non JSON: vedi ui/tornei/TorneoDetailScreen.kt, che
-    // compone l'URL a mano (NetworkModule.API_BASE_URL + "api/bandi/render/" + id)
-    // invece di passare da Retrofit.
 
     // ---------- Classifica ----------
 
