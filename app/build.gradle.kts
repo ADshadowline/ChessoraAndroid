@@ -33,8 +33,8 @@ android {
         // valerne la pena su un'app di sola consultazione.
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.0.1"
 
         // URL base dell'Api Chessora in produzione: iniettato come BuildConfig
         // string invece che hard-codato nel client Retrofit, cosi' un domani un
@@ -97,6 +97,11 @@ dependencies {
     // --- Ciclo di vita / ViewModel / Navigation ---
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.activity:activity-compose:1.9.3")
+    // Dichiarata esplicitamente (e' gia' presente transitivamente via
+    // activity-compose) solo perche' altrimenti lint non riesce a risolvere la
+    // versione effettiva e segnala erroneamente "InvalidFragmentVersionForActivityResult"
+    // su MainActivity.registerForActivityResult, bloccando la release build.
+    implementation("androidx.fragment:fragment-ktx:1.8.5")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation("androidx.navigation:navigation-compose:2.8.4")

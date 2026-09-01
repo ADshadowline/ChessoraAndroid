@@ -59,8 +59,8 @@ fun OnboardingScreen(onClubSelected: (Int) -> Unit) {
                 Text(stringResource(R.string.onboarding_empty), modifier = Modifier.padding(top = 24.dp))
             } else {
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                    items(clubs, key = { it.idClub }) { club ->
-                        ClubRow(club = club, onClick = { onClubSelected(club.idClub) })
+                    items(clubs, key = { it.publicCode }) { club ->
+                        ClubRow(club = club, onClick = { viewModel.resolveCode(club.publicCode, onResolved = onClubSelected) })
                     }
                 }
             }

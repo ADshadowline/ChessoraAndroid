@@ -7,6 +7,12 @@ import kotlinx.serialization.Serializable
  * usato dalla schermata di onboarding per la ricerca). Specchio 1:1 di
  * Chessora.Contracts.Clubs.ClubDirectoryDto nel repository server.
  *
+ * Niente [idClub] qui (per design il numerico non lascia mai il server, vedi
+ * il commento su ClubDirectoryDto lato server): la selezione di una riga va
+ * risolta tramite [publicCode] su GET /api/clubs/resolve, la stessa strada
+ * già usata per un codice inserito a mano - vedi
+ * OnboardingViewModel.resolveCode e il suo uso in OnboardingScreen.
+ *
  * [onChessora] indica se il circolo ha davvero un sito Chessora configurato
  * (JsonSiteConfiguration non vuoto) - i circoli con onChessora=false esistono
  * comunque nell'anagrafica nazionale ma non hanno contenuti da consultare
@@ -15,7 +21,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class ClubDirectoryItem(
-    val idClub: Int,
+    val publicCode: String,
     val name: String,
     val president: String? = null,
     val address: String? = null,
