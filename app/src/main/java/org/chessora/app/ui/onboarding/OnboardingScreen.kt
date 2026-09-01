@@ -24,7 +24,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import org.chessora.app.BuildConfig
 import org.chessora.app.R
 import org.chessora.app.data.remote.dto.ClubDirectoryItem
 import org.chessora.app.ui.common.UiStateContent
@@ -83,6 +85,18 @@ fun OnboardingScreen(onClubSelected: (Int) -> Unit) {
         ) {
             Text(stringResource(R.string.onboarding_code_button))
         }
+
+        // Prima schermata mai vista dall'utente e unica sempre raggiungibile senza un
+        // circolo gia' selezionato: mostrare la versione qui (oltre che in Impostazioni)
+        // permette di verificarla anche quando la selezione del circolo stessa non
+        // funziona, invece di dover prima risolvere quel problema per scoprirla.
+        Text(
+            "Chessora ${BuildConfig.VERSION_NAME}",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+        )
     }
 }
 
