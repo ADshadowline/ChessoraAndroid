@@ -3,10 +3,8 @@ package org.chessora.app.ui.session
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.chessora.app.data.local.ClubPreferences
 import org.chessora.app.data.remote.dto.SiteBranding
@@ -26,8 +24,15 @@ class SessionViewModel(
     private val clubPreferences: ClubPreferences,
 ) : ViewModel() {
 
-    val selectedClub: StateFlow<String?> = clubPreferences.selectedClub
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+    // MutableStateFlow di proprietà del ViewModel (non più un semplice stateIn() sopra
+    // clubPreferences.selectedClub): clearSelectedClub() deve poter azzerare il valore
+    // SINCRONAMENTE, prima ancora che la scrittura su DataStore (asincrona) sia
+    // completata - altrimenti "Cambia circolo" naviga a ONBOARDING mentre selectedClub
+    // è ancora quello vecchio per un istante, e la guardia più sotto in
+    // ChessoraNavHost.kt (pensata solo per saltare l'onboarding ai riavvii a freddo)
+    // rimbalza subito l'utente via prima che veda il selettore.
+    private val _selectedClub = MutableStateFlow<String?>(null)
+    val selectedClub: StateFlow<String?> = _selectedClub
 
     private val _branding = MutableStateFlow<SiteBranding?>(null)
     val branding: StateFlow<SiteBranding?> = _branding
@@ -37,14 +42,9 @@ class SessionViewModel(
         // precedente, carica subito il suo branding e registra il device (il
         // token FCM potrebbe essere lo stesso di sempre, ma repository.registerDevice
         // è un upsert innocuo da ripetere - vedi push/DeviceRegistration.kt).
-        // Nota: leggiamo clubPreferences.selectedClub.first() direttamente
-        // (sospendendo finché DataStore non emette il primo valore reale),
-        // NON selectedClub.value: quest'ultimo, derivato con stateIn(), parte
-        // dal seed `null` finché non arriva la prima emissione, quindi qui
-        // potrebbe leggersi come "nessun circolo" anche quando uno era già stato
-        // salvato in una sessione precedente.
         viewModelScope.launch {
             val club = clubPreferences.selectedClub.first()
+            _selectedClub.value = club
             if (club != null) {
                 loadBranding(club)
             }
@@ -54,11 +54,22 @@ class SessionViewModel(
 
     /** Chiamata dall'onboarding (o dalle Impostazioni, per cambiare circolo). */
     fun selectClub(club: String) {
+        _selectedClub.value = club
         viewModelScope.launch {
             clubPreferences.setSelectedClub(club)
             loadBranding(club)
             DeviceRegistration.registerCurrentToken(repository, clubPreferences, club)
         }
+    }
+
+    /** Chiamata da "Cambia circolo" nelle Impostazioni, PRIMA di navigare a
+     * ONBOARDING (vedi ChessoraNavHost.kt): azzera subito il circolo in memoria
+     * cosi' l'utente vede davvero il selettore invece di un rimbalzo istantaneo
+     * a Home - vedi il commento su [_selectedClub] qui sopra. */
+    fun clearSelectedClub() {
+        _selectedClub.value = null
+        _branding.value = null
+        viewModelScope.launch { clubPreferences.clearSelectedClub() }
     }
 
     private suspend fun loadBranding(club: String) {

@@ -176,6 +176,12 @@ fun ChessoraNavHost() {
                 SettingsScreen(
                     club = selectedClub,
                     onChangeClub = {
+                        // Azzera PRIMA il circolo in memoria (SessionViewModel.clearSelectedClub):
+                        // se selectedClub fosse ancora quello vecchio quando arriviamo su
+                        // ONBOARDING, la guardia più sopra (pensata solo per i riavvii a
+                        // freddo con circolo già scelto) rimbalzerebbe subito indietro senza
+                        // far vedere il selettore.
+                        sessionViewModel.clearSelectedClub()
                         navController.navigate(ChessoraDestinations.ONBOARDING) {
                             popUpTo(0) // svuota tutto il back stack: si riparte da zero col nuovo circolo
                         }

@@ -57,6 +57,10 @@ class ClubPreferences(context: Context) {
         dataStore.edit { it[Keys.SELECTED_CLUB_CODE] = club }
     }
 
+    suspend fun clearSelectedClub() {
+        dataStore.edit { it.remove(Keys.SELECTED_CLUB_CODE) }
+    }
+
     suspend fun setNotificationsEnabled(enabled: Boolean) {
         dataStore.edit { it[Keys.NOTIFICATIONS_ENABLED] = enabled }
     }
