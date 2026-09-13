@@ -1,35 +1,48 @@
 package org.chessora.app.ui.board
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import org.chessora.app.data.remote.NetworkModule
 import org.chessora.app.data.remote.dto.BoardMember
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
+import org.chessora.app.ui.theme.ChessoraGold
 
 /**
- * Piramide gerarchica per livello (docs/android-app-spec.md §7.7, "come il
- * sito web"): un livello = una sezione con intestazione, i membri di quel
- * livello elencati sotto in ordine di sortOrder.
+ * Piramide gerarchica per livello, graficamente come Direttivo.cshtml sul sito
+ * (card con foto tonda bordata d'oro, nome in grassetto, ruolo in oro sotto):
+ * un livello = una riga che si allarga/restringe in base a quanti membri
+ * contiene, i livelli impilati dall'alto verso il basso in ordine crescente.
  */
 @Composable
 fun BoardScreen(club: String) {
@@ -41,35 +54,69 @@ fun BoardScreen(club: String) {
     UiStateContent(state = state, onRetry = { viewModel.load(club) }) { members ->
         val byLevel = members.groupBy { it.level }.toSortedMap()
         LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            byLevel.forEach { (level, levelMembers) ->
+            byLevel.forEach { (_, levelMembers) ->
                 item {
-                    Text(
-                        "Livello $level",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
-                    )
+                    BoardLevelRow(levelMembers.sortedBy { it.sortOrder })
                 }
-                items(levelMembers, key = { it.id }) { member -> BoardMemberRow(member) }
             }
         }
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun BoardMemberRow(member: BoardMember) {
-    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
-        val photoUrl = NetworkModule.resolveAssetUrl(member.photoPath)
-        if (photoUrl != null) {
-            AsyncImage(
-                model = photoUrl,
-                contentDescription = member.fullName,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.size(48.dp).clip(CircleShape),
-            )
+private fun BoardLevelRow(levelMembers: List<BoardMember>) {
+    FlowRow(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        levelMembers.forEach { member -> BoardMemberCard(member) }
+    }
+}
+
+@Composable
+private fun BoardMemberCard(member: BoardMember) {
+    val photoUrl = NetworkModule.resolveAssetUrl(member.photoPath)
+    Column(
+        modifier = Modifier
+            .width(112.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
+            .padding(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Box(
+            modifier = Modifier.size(72.dp).clip(CircleShape).border(2.dp, ChessoraGold, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (photoUrl != null) {
+                AsyncImage(
+                    model = photoUrl,
+                    contentDescription = member.fullName,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize().clip(CircleShape),
+                )
+            } else {
+                Icon(Icons.Filled.Person, contentDescription = null, tint = ChessoraGold, modifier = Modifier.size(36.dp))
+            }
         }
-        Column(modifier = Modifier.padding(start = 12.dp)) {
-            Text(member.fullName, fontWeight = FontWeight.Bold)
-            Text(member.role, style = MaterialTheme.typography.bodyMedium)
-        }
+        Text(
+            member.fullName,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 2,
+            modifier = Modifier.padding(top = 8.dp),
+        )
+        Text(
+            member.role.uppercase(),
+            color = ChessoraGold,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.labelSmall,
+            maxLines = 2,
+            modifier = Modifier.padding(top = 2.dp),
+        )
     }
 }

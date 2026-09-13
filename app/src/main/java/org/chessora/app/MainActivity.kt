@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import org.chessora.app.ui.navigation.ChessoraNavHost
 import org.chessora.app.ui.theme.ChessoraTheme
+import org.chessora.app.ui.update.UpdateAvailableDialog
 
 /**
  * Unica Activity dell'app (Compose gestisce tutta la navigazione interna via
@@ -30,6 +31,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ChessoraTheme {
                 ChessoraNavHost()
+                UpdateAvailableDialog()
             }
         }
     }

@@ -1,8 +1,12 @@
 package org.chessora.app.data.remote
 
+import java.io.IOException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import org.chessora.app.BuildConfig
 import retrofit2.Retrofit
@@ -76,5 +80,19 @@ object NetworkModule {
         if (path.isNullOrBlank()) return null
         if (path.startsWith("http://") || path.startsWith("https://")) return path
         return API_BASE_URL.trimEnd('/') + path
+    }
+
+    /**
+     * GET generico fuori da Retrofit/ChessoraApi: serve solo per
+     * AppUpdateChecker, che legge un file statico su chessora.org (non
+     * api.chessora.org, quindi fuori dalla baseUrl di Retrofit sopra) e non
+     * un vero endpoint /api.
+     */
+    suspend fun fetchText(url: String): String = withContext(Dispatchers.IO) {
+        val request = Request.Builder().url(url).build()
+        okHttpClient.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) throw IOException("HTTP ${response.code}")
+            response.body?.string() ?: ""
+        }
     }
 }
