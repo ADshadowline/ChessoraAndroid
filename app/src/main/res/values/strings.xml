@@ -23,7 +23,10 @@
     <string name="nav_more">Altro</string>
 
     <!-- Home -->
-    <string name="home_latest_news">Ultime news</string>
+    <string name="home_upcoming_appointments">Prossimi appuntamenti</string>
+    <string name="home_no_upcoming">Nessun appuntamento in programma.</string>
+    <string name="home_generic_event">Evento</string>
+    <string name="home_no_bando">Nessun bando disponibile per questo appuntamento.</string>
 
     <!-- Errori generici -->
     <string name="error_generic">Qualcosa è andato storto. Riprova.</string>

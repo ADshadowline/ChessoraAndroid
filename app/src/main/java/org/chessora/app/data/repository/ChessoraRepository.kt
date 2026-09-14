@@ -6,6 +6,7 @@ import org.chessora.app.data.remote.dto.CalendarEvent
 import org.chessora.app.data.remote.dto.ClubDirectoryItem
 import org.chessora.app.data.remote.dto.ClubStats
 import org.chessora.app.data.remote.dto.EventType
+import org.chessora.app.data.remote.dto.EventoBandoInfo
 import org.chessora.app.data.remote.dto.GoogleReviewsResponse
 import org.chessora.app.data.remote.dto.NewsArticle
 import org.chessora.app.data.remote.dto.NewsComment
@@ -57,6 +58,9 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun getCalendar(club: String, from: String, to: String): Result<List<CalendarEvent>> =
         safeCall { api.getCalendar(club, from, to) }
+
+    suspend fun getEventoBando(id: Int, club: String): Result<EventoBandoInfo> =
+        safeCall { api.getEventoBando(id, club) }
 
     // ---------- Classifica ----------
 

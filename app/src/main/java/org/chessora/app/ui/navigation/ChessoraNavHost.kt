@@ -138,7 +138,7 @@ fun ChessoraNavHost() {
             }
             composable(ChessoraDestinations.HOME) {
                 RequireClub(selectedClub) { club ->
-                    HomeScreen(club = club, onNewsClick = { navController.navigate(ChessoraDestinations.newsDetail(it)) })
+                    HomeScreen(club = club)
                 }
             }
             composable(ChessoraDestinations.NEWS_LIST) {

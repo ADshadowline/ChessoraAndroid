@@ -35,4 +35,25 @@ data class CalendarEvent(
     val startTime: String,
     val eloVariation: Boolean? = null,
     val note: String? = null,
+    // Non null solo per le righe generate da un torneo, rispettivamente da un evento
+    // non-torneo (mai insieme) - vedi Chessora.Contracts.Calendar.CalendarEventDto.
+    val idTournament: Int? = null,
+    val idEvento: Int? = null,
+    // Valorizzati solo quando idTournament non è null: il bando di un torneo è già
+    // qui nella riga di calendario, non serve una fetch dedicata come per gli eventi.
+    val tournamentBandoPath: String? = null,
+    val tournamentBandoNomeFile: String? = null,
+)
+
+/**
+ * Sottoinsieme minimo di Chessora.Contracts.Eventi.EventoDetailDto (GET
+ * /api/eventi/{id}?club=...): qui serve solo per aprire il bando di un evento
+ * non-torneo dal calendario/Home - ignoreUnknownKeys nel Json condiviso (vedi
+ * NetworkModule) fa sì che gli altri campi della risposta vengano ignorati senza
+ * doverli dichiarare tutti.
+ */
+@Serializable
+data class EventoBandoInfo(
+    val bandoPath: String? = null,
+    val bandoNomeFile: String? = null,
 )

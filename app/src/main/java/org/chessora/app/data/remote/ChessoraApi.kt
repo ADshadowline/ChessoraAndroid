@@ -5,6 +5,7 @@ import org.chessora.app.data.remote.dto.CalendarEvent
 import org.chessora.app.data.remote.dto.ClubDirectoryItem
 import org.chessora.app.data.remote.dto.ClubStats
 import org.chessora.app.data.remote.dto.EventType
+import org.chessora.app.data.remote.dto.EventoBandoInfo
 import org.chessora.app.data.remote.dto.GoogleReviewsResponse
 import org.chessora.app.data.remote.dto.NewsArticle
 import org.chessora.app.data.remote.dto.NewsComment
@@ -63,6 +64,14 @@ interface ChessoraApi {
         @Query("from") from: String,
         @Query("to") to: String,
     ): List<CalendarEvent>
+
+    /** Bando di un evento non-torneo del calendario (il bando di un torneo è già
+     * dentro CalendarEvent.tournamentBandoPath, non serve questa fetch). */
+    @GET("api/eventi/{id}")
+    suspend fun getEventoBando(
+        @Path("id") id: Int,
+        @Query("club") club: String,
+    ): EventoBandoInfo
 
     // ---------- Classifica ----------
 
