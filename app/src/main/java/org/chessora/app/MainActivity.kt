@@ -8,6 +8,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import org.chessora.app.push.ChessoraFirebaseMessagingService
 import org.chessora.app.ui.navigation.ChessoraNavHost
 import org.chessora.app.ui.theme.ChessoraTheme
 import org.chessora.app.ui.update.UpdateAvailableDialog
@@ -27,11 +32,40 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         askNotificationPermissionIfNeeded()
+        reportNotificationReadIfNeeded()
+
+        val pendingConversationId = intent?.getIntExtra(ChessoraFirebaseMessagingService.EXTRA_ID_CONVERSATION, -1)
+            ?.takeIf { it >= 0 }
 
         setContent {
             ChessoraTheme {
-                ChessoraNavHost()
+                ChessoraNavHost(pendingConversationId = pendingConversationId)
                 UpdateAvailableDialog()
+            }
+        }
+    }
+
+    /**
+     * Se l'Activity è stata aperta toccando una notifica push (vedi
+     * ChessoraFirebaseMessagingService.showNotification, che mette l'id del
+     * messaggio in questo extra), segnala al server che l'utente l'ha letta -
+     * per la vista admin "chi l'ha ricevuto/letto". FLAG_ACTIVITY_CLEAR_TASK
+     * nell'Intent della notifica garantisce che onCreate giri sempre da capo a
+     * ogni tocco, quindi qui non serve nessuna guardia contro segnalazioni
+     * duplicate su ricreazioni della stessa Activity.
+     */
+    private fun reportNotificationReadIfNeeded() {
+        val idMessage = intent?.getIntExtra(ChessoraFirebaseMessagingService.EXTRA_ID_MESSAGE, -1) ?: -1
+        if (idMessage < 0) return
+
+        val app = application as ChessoraApplication
+        lifecycleScope.launch {
+            try {
+                val token = FirebaseMessaging.getInstance().token.await()
+                app.repository.reportNotificationRead(idMessage, token)
+            } catch (e: Exception) {
+                // Nessuna connessione/Play Services assente: non è un problema per
+                // il resto dell'app, semplicemente non risulterà "letta".
             }
         }
     }

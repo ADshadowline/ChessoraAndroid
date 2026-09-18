@@ -31,23 +31,45 @@ class ChessoraApplication : Application() {
     }
 
     /**
-     * Il canale di notifica va creato prima che arrivi il primo messaggio FCM
+     * I canali di notifica vanno creati prima che arrivi il primo messaggio FCM
      * (richiesto da Android 8+, che è comunque il nostro minSdk): lo facciamo
-     * qui invece che dentro ChessoraFirebaseMessagingService cosi' esiste già
-     * anche se l'app non ha mai ricevuto un push, utile per un domani se si
-     * aggiungono impostazioni di canale nelle Impostazioni di sistema.
+     * qui invece che dentro ChessoraFirebaseMessagingService cosi' esistono già
+     * anche se l'app non ha mai ricevuto un push.
+     *
+     * Due canali, non uno solo: dalla pagina super-admin "Notifiche App" si può
+     * scegliere la priorità del messaggio (vedi ChessoraFirebaseMessagingService,
+     * che sceglie il canale in base al campo "priority" del messaggio):
+     * - [default_notification_channel_id] (IMPORTANCE_DEFAULT): finisce solo
+     *   nella tendina delle notifiche, come oggi.
+     * - [urgent_notification_channel_id] (IMPORTANCE_HIGH): banner "heads-up" in
+     *   alto allo schermo con suono, anche sopra un'altra app aperta - stesso
+     *   comportamento delle notifiche urgenti delle app bancarie.
+     * L'importanza di un canale, una volta creato sul dispositivo di un utente,
+     * non può più essere cambiata da un aggiornamento dell'app: usare due ID di
+     * canale distinti fin da subito evita di dover reinstallare l'app in futuro
+     * per introdurre la priorità alta.
      */
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
 
-        val channel = NotificationChannel(
+        val manager = getSystemService(NotificationManager::class.java)
+
+        val defaultChannel = NotificationChannel(
             getString(R.string.default_notification_channel_id),
             getString(R.string.default_notification_channel_name),
             NotificationManager.IMPORTANCE_DEFAULT,
         ).apply {
             description = getString(R.string.default_notification_channel_description)
         }
+        manager.createNotificationChannel(defaultChannel)
 
-        getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
+        val urgentChannel = NotificationChannel(
+            getString(R.string.urgent_notification_channel_id),
+            getString(R.string.urgent_notification_channel_name),
+            NotificationManager.IMPORTANCE_HIGH,
+        ).apply {
+            description = getString(R.string.urgent_notification_channel_description)
+        }
+        manager.createNotificationChannel(urgentChannel)
     }
 }

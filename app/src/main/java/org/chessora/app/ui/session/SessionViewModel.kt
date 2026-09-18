@@ -37,6 +37,21 @@ class SessionViewModel(
     private val _branding = MutableStateFlow<SiteBranding?>(null)
     val branding: StateFlow<SiteBranding?> = _branding
 
+    // Stessa ragione di _selectedClub sopra: SplashScreen/ChessoraNavHost devono poter
+    // decidere la destinazione iniziale leggendo un valore già in memoria, non un Flow
+    // DataStore che emetterebbe con un frame di ritardo.
+    private val _identityResolved = MutableStateFlow(false)
+    val identityResolved: StateFlow<Boolean> = _identityResolved
+
+    private val _identifiedPlayerName = MutableStateFlow<String?>(null)
+    val identifiedPlayerName: StateFlow<String?> = _identifiedPlayerName
+
+    /** Numero di soci del circolo scelto, mostrato in barra accanto al nome del
+     * circolo (vedi ChessoraNavHost.ClubBrandingTopBar) - null finché non ancora
+     * caricato. */
+    private val _membersCount = MutableStateFlow<Int?>(null)
+    val membersCount: StateFlow<Int?> = _membersCount
+
     init {
         // Al primo avvio, se un circolo era già stato scelto in una sessione
         // precedente, carica subito il suo branding e registra il device (il
@@ -49,6 +64,10 @@ class SessionViewModel(
                 loadBranding(club)
             }
             DeviceRegistration.registerCurrentToken(repository, clubPreferences, club)
+        }
+        viewModelScope.launch {
+            _identityResolved.value = clubPreferences.identityResolved.first()
+            _identifiedPlayerName.value = clubPreferences.identifiedPlayerName.first()
         }
     }
 
@@ -65,16 +84,46 @@ class SessionViewModel(
     /** Chiamata da "Cambia circolo" nelle Impostazioni, PRIMA di navigare a
      * ONBOARDING (vedi ChessoraNavHost.kt): azzera subito il circolo in memoria
      * cosi' l'utente vede davvero il selettore invece di un rimbalzo istantaneo
-     * a Home - vedi il commento su [_selectedClub] qui sopra. */
+     * a Home - vedi il commento su [_selectedClub] qui sopra. L'identificazione è
+     * per-circolo, quindi viene azzerata insieme: il nuovo circolo la richiederà
+     * di nuovo. */
     fun clearSelectedClub() {
         _selectedClub.value = null
         _branding.value = null
-        viewModelScope.launch { clubPreferences.clearSelectedClub() }
+        _membersCount.value = null
+        _identityResolved.value = false
+        _identifiedPlayerName.value = null
+        viewModelScope.launch {
+            clubPreferences.clearSelectedClub()
+            clubPreferences.clearIdentity()
+        }
+    }
+
+    /** Richiamata dal NavHost dopo che IdentityScreen ha salvato il proprio esito
+     * (identificato o rifiutato) su DataStore, per riflettere subito il nuovo stato
+     * senza aspettare la prossima ricomposizione da un Flow. */
+    fun refreshIdentity() {
+        viewModelScope.launch {
+            _identityResolved.value = clubPreferences.identityResolved.first()
+            _identifiedPlayerName.value = clubPreferences.identifiedPlayerName.first()
+        }
     }
 
     private suspend fun loadBranding(club: String) {
+        if (club == ClubPreferences.PLATFORM_CLUB_CODE) {
+            // "Modalità piattaforma" (nessun circolo, vedi MembershipQuestionScreen):
+            // nessuna chiamata di rete club-scoped, branding sintetico con il nome/logo
+            // di Chessora stessa (strings.xml platform_branding_name) invece del nome
+            // di un circolo, nessun conteggio soci da mostrare.
+            _branding.value = SiteBranding(namePrefix = "", nameHighlight = "Chessora Platform", logoImage = null)
+            _membersCount.value = null
+            return
+        }
         repository.getSiteSettings(club).onSuccess { settings ->
             _branding.value = settings.site
+        }
+        repository.getStats(club).onSuccess { stats ->
+            _membersCount.value = stats.membersCount
         }
     }
 }

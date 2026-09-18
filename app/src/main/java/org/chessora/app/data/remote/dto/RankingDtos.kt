@@ -2,13 +2,16 @@ package org.chessora.app.data.remote.dto
 
 import kotlinx.serialization.Serializable
 
-/** Specchio di Chessora.Contracts.Ranking.RankingPlayerDto. */
+/** Specchio di Chessora.Contracts.Ranking.RankingPlayerDto. idPlayer è null solo per
+ * la classifica Assoluta (giocatori FIDE nel mondo) - solo quando è valorizzato si
+ * può provare a mostrare la foto profilo (GET /api/players/{idPlayer}/photo). */
 @Serializable
 data class RankingPlayer(
     val name: String,
     val elo: Int? = null,
     val flag: String? = null,
     val image: String? = null,
+    val idPlayer: Int? = null,
 )
 
 /**

@@ -21,7 +21,12 @@ import org.chessora.app.R
 import org.chessora.app.ui.common.chessoraViewModel
 
 @Composable
-fun SettingsScreen(club: String?, onChangeClub: () -> Unit) {
+fun SettingsScreen(
+    club: String?,
+    identifiedPlayerName: String?,
+    onChangeClub: () -> Unit,
+    onIdentify: () -> Unit,
+) {
     val viewModel = chessoraViewModel { app -> SettingsViewModel(app.repository, app.clubPreferences) }
     val notificationsEnabled by viewModel.notificationsEnabled.collectAsState()
 
@@ -30,6 +35,16 @@ fun SettingsScreen(club: String?, onChangeClub: () -> Unit) {
 
         OutlinedButton(onClick = onChangeClub, modifier = Modifier.fillMaxWidth().padding(top = 24.dp)) {
             Text(stringResource(R.string.settings_change_club))
+        }
+
+        Text(
+            text = identifiedPlayerName?.let { stringResource(R.string.settings_identity_as, it) }
+                ?: stringResource(R.string.settings_identity_none),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(top = 20.dp),
+        )
+        OutlinedButton(onClick = onIdentify, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+            Text(stringResource(R.string.settings_identity_button))
         }
 
         Row(

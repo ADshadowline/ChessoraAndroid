@@ -17,13 +17,17 @@ class NewsListViewModel(private val repository: ChessoraRepository) : ViewModel(
     val state: StateFlow<UiState<List<NewsArticle>>> = _state.asStateFlow()
 
     private var loadedForClub: String? = null
+    private var hasLoadedOnce = false
 
-    fun load(club: String) {
-        if (loadedForClub == club && _state.value is UiState.Success) return
+    /** [club] null = "modalità piattaforma" (nessun circolo scelto): ultime 30 news
+     * su TUTTI i circoli invece che di uno solo. */
+    fun load(club: String?) {
+        if (hasLoadedOnce && loadedForClub == club && _state.value is UiState.Success) return
         loadedForClub = club
+        hasLoadedOnce = true
         viewModelScope.launch {
             _state.value = UiState.Loading
-            _state.value = repository.getNews(club, limit = 30).toUiState()
+            _state.value = (if (club != null) repository.getNews(club, limit = 30) else repository.getNewsAllClubs(limit = 30)).toUiState()
         }
     }
 }

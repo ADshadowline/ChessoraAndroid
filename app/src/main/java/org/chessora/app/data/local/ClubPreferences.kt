@@ -3,6 +3,7 @@ package org.chessora.app.data.local
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -18,8 +19,10 @@ private val Context.dataStore by preferencesDataStore(name = "chessora_prefs")
 /**
  * Unico stato persistito localmente da questa app (docs/android-app-spec.md §2
  * "Jetpack DataStore... per salvare in locale il circolo scelto e le
- * preferenze utente"): niente account personale, niente login, quindi niente
- * altro da ricordare tra un avvio e l'altro.
+ * preferenze utente"): non c'è un vero account/login, ma dalla schermata di
+ * identificazione facoltativa (vedi ui/identity/) l'app ricorda comunque se
+ * l'utente si è fatto riconoscere come un socio del circolo o ha rifiutato,
+ * cosi' da non richiederglielo più a ogni avvio.
  *
  * - [selectedClub]: il publicCode del circolo scelto in onboarding (null finché
  *   non è mai stato scelto nulla - vedi MainActivity.kt che decide se mostrare
@@ -32,6 +35,11 @@ private val Context.dataStore by preferencesDataStore(name = "chessora_prefs")
  *   registrazione (vedi push/DeviceRegistration.kt) - il server non ha un
  *   concetto separato di "utente disiscritto", semplicemente non riceve più
  *   quel token.
+ * - [identityResolved]/[identifiedPlayerId]/[identifiedPlayerName]: esito della
+ *   schermata di identificazione (vedi ui/identity/IdentityScreen.kt) - true da
+ *   solo il momento in cui l'utente si identifica con successo O rifiuta
+ *   esplicitamente ("Salta"), cosi' non viene più richiesta finché non cambia
+ *   circolo o non la riavvia da Impostazioni.
  */
 class ClubPreferences(context: Context) {
     private val dataStore = context.dataStore
@@ -40,9 +48,21 @@ class ClubPreferences(context: Context) {
         val SELECTED_CLUB_CODE = stringPreferencesKey("selected_club_code")
         val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
         val LAST_REGISTERED_FCM_TOKEN = stringPreferencesKey("last_registered_fcm_token")
+        val IDENTITY_RESOLVED = booleanPreferencesKey("identity_resolved")
+        val IDENTIFIED_PLAYER_ID = intPreferencesKey("identified_player_id")
+        val IDENTIFIED_PLAYER_NAME = stringPreferencesKey("identified_player_name")
+        val AUTHENTICATED_EMAIL = stringPreferencesKey("authenticated_email")
+        val AUTHENTICATED_PHONE = stringPreferencesKey("authenticated_phone")
+        val PRE_REGISTRATION_CONTACT_ID = intPreferencesKey("pre_registration_contact_id")
     }
 
     val selectedClub: Flow<String?> = dataStore.data.map { it[Keys.SELECTED_CLUB_CODE] }
+
+    /** Vero se [selectedClub] è il valore sentinella [PLATFORM_CLUB_CODE], cioè il
+     * socio ha scelto "non sono iscritto a nessun circolo" (vedi
+     * ui/onboarding/MembershipQuestionScreen.kt) - la app allora mostra Home/News
+     * aggregate di tutti i circoli invece che di uno solo. */
+    val isPlatformMode: Flow<Boolean> = selectedClub.map { it == PLATFORM_CLUB_CODE }
 
     val notificationsEnabled: Flow<Boolean> = dataStore.data.map { it[Keys.NOTIFICATIONS_ENABLED] ?: true }
 
@@ -52,6 +72,32 @@ class ClubPreferences(context: Context) {
      * cambiato (vedi push/DeviceRegistration.kt.maybeRegister).
      */
     val lastRegisteredFcmToken: Flow<String?> = dataStore.data.map { it[Keys.LAST_REGISTERED_FCM_TOKEN] }
+
+    val identityResolved: Flow<Boolean> = dataStore.data.map { it[Keys.IDENTITY_RESOLVED] ?: false }
+
+    val identifiedPlayerId: Flow<Int?> = dataStore.data.map { it[Keys.IDENTIFIED_PLAYER_ID] }
+
+    val identifiedPlayerName: Flow<String?> = dataStore.data.map { it[Keys.IDENTIFIED_PLAYER_NAME] }
+
+    /** Email verificata via Google Sign-In o numero verificato via SIM/phone hint - salvati
+     * qui ANCHE quando l'identificazione non trova un socio corrispondente (a differenza di
+     * [identifiedPlayerId], che resta null in quel caso): è la prova di identità richiesta
+     * per poter preiscriversi a un torneo (vedi ui/tournaments/), distinta dall'essere un
+     * socio riconosciuto. */
+    val authenticatedEmail: Flow<String?> = dataStore.data.map { it[Keys.AUTHENTICATED_EMAIL] }
+    val authenticatedPhone: Flow<String?> = dataStore.data.map { it[Keys.AUTHENTICATED_PHONE] }
+
+    /** True se l'utente ha completato con successo Google Sign-In o la verifica del numero
+     * (indipendentemente dall'esito del match a un socio) - condizione minima per poter
+     * preiscriversi a un torneo. */
+    val isAuthenticated: Flow<Boolean> = dataStore.data.map {
+        !it[Keys.AUTHENTICATED_EMAIL].isNullOrBlank() || !it[Keys.AUTHENTICATED_PHONE].isNullOrBlank()
+    }
+
+    /** orga.PlayerContacts.Id restituito dall'ultima preiscrizione riuscita - percorso
+     * veloce per GET /api/tornei/mie-preiscrizioni senza dover ripetere la risoluzione per
+     * email/telefono lato server. */
+    val preRegistrationContactId: Flow<Int?> = dataStore.data.map { it[Keys.PRE_REGISTRATION_CONTACT_ID] }
 
     suspend fun setSelectedClub(club: String) {
         dataStore.edit { it[Keys.SELECTED_CLUB_CODE] = club }
@@ -69,5 +115,56 @@ class ClubPreferences(context: Context) {
         dataStore.edit {
             if (token == null) it.remove(Keys.LAST_REGISTERED_FCM_TOKEN) else it[Keys.LAST_REGISTERED_FCM_TOKEN] = token
         }
+    }
+
+    suspend fun setIdentified(idPlayer: Int, name: String) {
+        dataStore.edit {
+            it[Keys.IDENTITY_RESOLVED] = true
+            it[Keys.IDENTIFIED_PLAYER_ID] = idPlayer
+            it[Keys.IDENTIFIED_PLAYER_NAME] = name
+        }
+    }
+
+    suspend fun setIdentityDeclined() {
+        dataStore.edit {
+            it[Keys.IDENTITY_RESOLVED] = true
+            it.remove(Keys.IDENTIFIED_PLAYER_ID)
+            it.remove(Keys.IDENTIFIED_PLAYER_NAME)
+        }
+    }
+
+    /** Chiamato ogni volta che Google Sign-In/SIM restituiscono un'email o un numero
+     * utilizzabile, indipendentemente dal fatto che l'identificazione trovi poi un socio
+     * corrispondente - vedi IdentityViewModel.saveAndFinish. */
+    suspend fun setAuthenticated(email: String?, phone: String?) {
+        dataStore.edit {
+            if (!email.isNullOrBlank()) it[Keys.AUTHENTICATED_EMAIL] = email
+            if (!phone.isNullOrBlank()) it[Keys.AUTHENTICATED_PHONE] = phone
+        }
+    }
+
+    suspend fun setPreRegistrationContactId(contactId: Int) {
+        dataStore.edit { it[Keys.PRE_REGISTRATION_CONTACT_ID] = contactId }
+    }
+
+    /** Usato quando si cambia circolo: i soci sono per-circolo, quindi una
+     * identificazione già fatta non ha senso per il nuovo circolo scelto. */
+    suspend fun clearIdentity() {
+        dataStore.edit {
+            it.remove(Keys.IDENTITY_RESOLVED)
+            it.remove(Keys.IDENTIFIED_PLAYER_ID)
+            it.remove(Keys.IDENTIFIED_PLAYER_NAME)
+            it.remove(Keys.AUTHENTICATED_EMAIL)
+            it.remove(Keys.AUTHENTICATED_PHONE)
+            it.remove(Keys.PRE_REGISTRATION_CONTACT_ID)
+        }
+    }
+
+    companion object {
+        /** Valore sentinella per [selectedClub]: soddisfa "un circolo è già stato
+         * scelto" (non fa ripartire l'onboarding) ma NON è un vero publicCode -
+         * ogni punto che userebbe [selectedClub] per una chiamata di rete club-scoped
+         * deve prima controllare [isPlatformMode] e usare l'equivalente aggregato. */
+        const val PLATFORM_CLUB_CODE = "__platform__"
     }
 }

@@ -111,7 +111,7 @@ private fun BoardMemberCard(member: BoardMember) {
             modifier = Modifier.padding(top = 8.dp),
         )
         Text(
-            member.role.uppercase(),
+            member.roles.joinToString(" · ").uppercase(),
             color = ChessoraGold,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.labelSmall,

@@ -5,6 +5,11 @@
     - POST_NOTIFICATIONS: richiesto da Android 13 (API 33+) per mostrare le
       notifiche push in foreground/background - va richiesto a runtime (vedi
       MainActivity.kt), qui è solo la dichiarazione.
+    - READ_PHONE_NUMBERS: richiesto a runtime solo dopo un login Google nella
+      schermata di identificazione (ui/identity/IdentityScreen.kt), per
+      leggere in automatico e senza alcun popup il numero della SIM quando
+      il telefono ne ha uno solo (vedi SimPhoneNumberReader.kt) - non usato
+      altrove.
     Nessun altro permesso: niente fotocamera, posizione, contatti, storage -
     l'app è di sola consultazione (docs/android-app-spec.md §1 "Fuori scope").
 -->
@@ -12,6 +17,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
 
     <application
         android:name=".ChessoraApplication"

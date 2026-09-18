@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.chessora.app.data.remote.NetworkModule
 import org.chessora.app.data.remote.dto.CalendarEvent
 import org.chessora.app.data.repository.ChessoraRepository
 import org.chessora.app.ui.common.UiState
@@ -42,6 +43,16 @@ class CalendarViewModel(private val repository: ChessoraRepository) : ViewModel(
     }
 
     fun retry() = fetchMonth(_month.value)
+
+    /** Url assoluto del bando dell'evento, se ne ha uno - stessa logica di
+     * HomeViewModel.resolveBandoUrl: quello di un torneo è già nella riga di
+     * calendario, quello di un evento richiede una fetch dedicata. */
+    suspend fun resolveBandoUrl(event: CalendarEvent, club: String): String? {
+        event.tournamentBandoPath?.let { return NetworkModule.resolveAssetUrl(it) }
+        val idEvento = event.idEvento ?: return null
+        val bandoPath = repository.getEventoBando(idEvento, club).getOrNull()?.bandoPath ?: return null
+        return NetworkModule.resolveAssetUrl(bandoPath)
+    }
 
     private fun fetchMonth(yearMonth: YearMonth) {
         val c = club ?: return

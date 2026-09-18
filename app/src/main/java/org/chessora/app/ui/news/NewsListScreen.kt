@@ -15,7 +15,7 @@ import org.chessora.app.ui.common.chessoraViewModel
 import org.chessora.app.ui.home.NewsSummaryCard
 
 @Composable
-fun NewsListScreen(club: String, onNewsClick: (Int) -> Unit) {
+fun NewsListScreen(club: String?, onNewsClick: (Int) -> Unit) {
     val viewModel = chessoraViewModel { app -> NewsListViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
 

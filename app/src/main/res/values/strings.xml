@@ -8,6 +8,14 @@
     <string name="default_notification_channel_name">Notifiche Chessora</string>
     <string name="default_notification_channel_description">Comunicazioni dal circolo e dalla piattaforma Chessora</string>
 
+    <!-- Canale ad alta priorità (banner "heads-up" in alto + suono), usato per i
+         messaggi push marcati come "Alta priorità" dalla pagina super-admin
+         "Notifiche App" - vedi ChessoraApplication.kt e
+         push/ChessoraFirebaseMessagingService.kt. -->
+    <string name="urgent_notification_channel_id">chessora_urgent</string>
+    <string name="urgent_notification_channel_name">Notifiche urgenti Chessora</string>
+    <string name="urgent_notification_channel_description">Comunicazioni urgenti dal circolo o dalla piattaforma Chessora, mostrate in evidenza</string>
+
     <!-- Onboarding -->
     <string name="onboarding_title">Scegli il tuo circolo</string>
     <string name="onboarding_search_hint">Cerca per nome o città…</string>
@@ -18,15 +26,77 @@
     <!-- Navigazione a schede (bottom bar) -->
     <string name="nav_home">Home</string>
     <string name="nav_news">News</string>
-    <string name="nav_calendar">Calendario</string>
     <string name="nav_ranking">Classifica</string>
     <string name="nav_more">Altro</string>
+    <string name="nav_registrations">Iscrizioni</string>
+    <string name="nav_messaging">Messaggi</string>
+
+    <!-- Iscrizioni ai tornei -->
+    <string name="registrations_empty">Non sei iscritto a nessun torneo.</string>
+    <string name="registrations_not_identified">Identificati per vedere i tornei a cui sei iscritto.</string>
+
+    <!-- Messaggi (ui/messaging/) -->
+    <string name="messaging_new">Nuovo messaggio</string>
+    <string name="messaging_not_identified">Identificati per usare i messaggi.</string>
+    <string name="messaging_empty">Nessuna conversazione. Tocca + per iniziarne una.</string>
+    <string name="messaging_chessora_empty">Nessuna notifica ricevuta finora.</string>
+    <string name="messaging_conversation_empty">Nessun messaggio. Scrivi il primo!</string>
+    <string name="messaging_type_hint">Scrivi un messaggio…</string>
+    <string name="messaging_send">Invia</string>
+    <string name="messaging_tab_players">Soci</string>
+    <string name="messaging_tab_clubs">Circoli</string>
+    <string name="messaging_search_hint">Cerca per nome…</string>
+    <string name="messaging_club_no_referente">Nessun referente della messaggistica assegnato</string>
+
+    <!-- Menu Altro -->
+    <string name="more_calendar">Calendario</string>
+    <string name="more_performance">Le mie performance</string>
+
+    <!-- Le mie performance (storico Elo) -->
+    <string name="performance_title">Andamento Elo</string>
+    <string name="performance_standard">Standard</string>
+    <string name="performance_rapid">Rapid</string>
+    <string name="performance_blitz">Blitz</string>
+    <string name="performance_not_identified">Identificati per vedere le tue performance.</string>
+    <string name="performance_no_fide">Non hai un codice Fide associato: questa funzione richiede una tessera con rating Fide.</string>
+    <string name="performance_empty">Nessuno storico rating disponibile per il tuo profilo Fide.</string>
+    <string name="performance_zoom_hint">Pizzica per zoomare, trascina per scorrere, tocca un punto per vedere il valore esatto.</string>
+    <string name="performance_reset_zoom">Reimposta zoom</string>
 
     <!-- Home -->
     <string name="home_upcoming_appointments">Prossimi appuntamenti</string>
     <string name="home_no_upcoming">Nessun appuntamento in programma.</string>
+    <string name="home_no_results">Nessun evento trovato.</string>
+    <string name="home_search_hint">Cerca un evento per nome…</string>
     <string name="home_generic_event">Evento</string>
     <string name="home_no_bando">Nessun bando disponibile per questo appuntamento.</string>
+    <string name="home_countdown_days">GIORNI</string>
+    <string name="home_countdown_hours">ORE</string>
+    <string name="home_countdown_minutes">MIN</string>
+    <string name="home_countdown_seconds">SEC</string>
+    <string name="home_registered_check">Sei preiscritto a questo torneo</string>
+
+    <!-- Dettaglio torneo (ui/tournaments/) -->
+    <string name="tournament_website">Sito web</string>
+    <string name="tournament_download_bando">Scarica il bando</string>
+    <string name="tournament_register">Preiscriviti</string>
+    <string name="tournament_registering">Preiscrizione in corso…</string>
+    <string name="tournament_registered">Preiscrizione registrata: la conferma di partecipazione avverrà al torneo.</string>
+    <string name="tournament_register_error">Impossibile completare la preiscrizione. Riprova.</string>
+    <string name="tournament_seats_unlimited">Posti illimitati</string>
+    <string name="tournament_seats_available">Posti disponibili</string>
+    <string name="tournament_seats_full">Posti esauriti</string>
+    <string name="tournament_registered_count">%1$d preiscritti</string>
+    <string name="tournament_registered_count_limit">%1$d / %2$d preiscritti</string>
+    <string name="tournament_other_tornei">Altri tornei dello stesso evento</string>
+    <string name="tournament_not_found">Torneo non trovato.</string>
+    <string name="tournament_already_registered">Sei preiscritto</string>
+    <string name="tournament_identify_to_register">Identificati per preiscriverti a questo torneo.</string>
+    <string name="tournament_manual_identity_title">Completa la preiscrizione</string>
+    <string name="tournament_manual_identity_body">Non risulti socio di un circolo riconosciuto: inserisci il tuo ID FIDE oppure nome e cognome per continuare (almeno uno dei due).</string>
+    <string name="tournament_manual_identity_idfide_label">ID FIDE (facoltativo)</string>
+    <string name="tournament_manual_identity_name_label">Nome e cognome</string>
+    <string name="tournament_manual_identity_cancel">Annulla</string>
 
     <!-- Errori generici -->
     <string name="error_generic">Qualcosa è andato storto. Riprova.</string>
@@ -38,4 +108,47 @@
     <string name="settings_change_club">Cambia circolo</string>
     <string name="settings_notifications">Notifiche push</string>
     <string name="settings_about">Informazioni sull\'app</string>
+    <string name="settings_identity_none">Non identificato</string>
+    <string name="settings_identity_as">Identificato come %1$s</string>
+    <string name="settings_identity_button">Identificati</string>
+    <string name="topbar_members_count">%1$d soci</string>
+
+    <!-- Domanda iniziale sull'appartenenza a un circolo (ui/onboarding/MembershipQuestionScreen) -->
+    <string name="membership_question_title">Sei socio di un circolo?</string>
+    <string name="membership_question_subtitle">Se sei tesserato in un circolo scacchistico, scegli il tuo circolo. Altrimenti puoi comunque usare l\'app: vedrai tornei e notizie di tutti i circoli.</string>
+    <string name="membership_question_yes">Sì, sono socio di un circolo</string>
+    <string name="membership_question_no">No, non sono iscritto a nessun circolo</string>
+    <string name="platform_branding_name">Chessora Platform</string>
+
+    <!-- Identificazione socio (ui/identity/) -->
+    <string name="identity_title">Ti riconosciamo?</string>
+    <string name="identity_subtitle">Identificandoti teniamo aggiornati i tuoi contatti in anagrafica.</string>
+    <string name="identity_google">Accedi con Google</string>
+    <string name="identity_phone">Usa il numero di telefono</string>
+    <string name="identity_idfide_label">Codice FIDE (facoltativo)</string>
+    <string name="identity_idfide_hint">Es. 800000</string>
+    <string name="identity_welcome">Bentornato, %1$s!</string>
+    <string name="identity_not_identified">Ok, entrerai come utente non identificato.</string>
+    <string name="identity_error_retry">Riprova</string>
+    <string name="identity_phone_rationale_title">Salvare il tuo numero in rubrica?</string>
+    <string name="identity_phone_rationale_body_club">Vuoi salvare il numero di telefono di questo dispositivo nella rubrica del circolo %1$s? Il numero non verrà mai venduto né diffuso in alcun modo: sarà gestito solo dal circolo, ai fini di comunicazioni di servizio.</string>
+    <string name="identity_phone_rationale_body_generic">Vuoi salvare il numero di telefono di questo dispositivo nella rubrica del circolo? Il numero non verrà mai venduto né diffuso in alcun modo: sarà gestito solo dal circolo, ai fini di comunicazioni di servizio.</string>
+    <string name="identity_phone_rationale_allow">Consenti</string>
+    <string name="identity_phone_rationale_deny">No, grazie</string>
+
+    <!-- "La mia foto" (ui/profile/) -->
+    <string name="more_profile_photo">La mia foto</string>
+    <string name="profile_photo_title">La mia foto</string>
+    <string name="profile_photo_subtitle">Mostrata accanto al tuo nome in Classifica.</string>
+    <string name="profile_photo_camera">Scatta una foto</string>
+    <string name="profile_photo_gallery">Scegli dalla galleria</string>
+    <string name="profile_photo_remove">Rimuovi foto</string>
+    <string name="profile_photo_not_identified">Devi prima identificarti per impostare una foto.</string>
+
+    <!-- Web client ID OAuth generato da Firebase Authentication (provider Google) -
+         da compilare in console Firebase > Authentication > Sign-in method > Google,
+         poi copiare qui il "Web client ID" mostrato lì. Finché è vuoto, il login
+         Google nella schermata di identificazione non farà nulla (vedi
+         ui/identity/GoogleSignInHelper.kt). -->
+    <string name="google_signin_web_client_id" translatable="false">669405496305-89m2l2obvij2ovapuc6v534sq7thgam6.apps.googleusercontent.com</string>
 </resources>

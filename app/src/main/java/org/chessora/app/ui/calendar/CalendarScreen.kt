@@ -1,5 +1,8 @@
 package org.chessora.app.ui.calendar
 
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,11 +32,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -43,9 +49,12 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
+import kotlinx.coroutines.launch
+import org.chessora.app.R
 import org.chessora.app.data.remote.dto.CalendarEvent
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
+import org.chessora.app.ui.theme.ChessoraError
 import org.chessora.app.ui.theme.ChessoraGold
 
 private val ISO_DATE = DateTimeFormatter.ISO_LOCAL_DATE
@@ -56,6 +65,8 @@ fun CalendarScreen(club: String) {
     val state by viewModel.state.collectAsState()
     val month by viewModel.month.collectAsState()
     var selectedDate by remember { mutableStateOf<LocalDate?>(LocalDate.now()) }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(club) { viewModel.load(club) }
     // Se l'utente naviga a un mese diverso, la selezione del giorno precedente
@@ -98,7 +109,20 @@ fun CalendarScreen(club: String) {
                         }
                     } else {
                         items(dayEvents, key = { it.id }) { event ->
-                            EventRow(event, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
+                            EventRow(
+                                event,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                                onClick = {
+                                    scope.launch {
+                                        val bandoUrl = viewModel.resolveBandoUrl(event, club)
+                                        if (bandoUrl != null) {
+                                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(bandoUrl)))
+                                        } else {
+                                            Toast.makeText(context, context.getString(R.string.home_no_bando), Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                },
+                            )
                         }
                     }
                 }
@@ -124,9 +148,11 @@ private fun MonthHeader(month: YearMonth, onPrevious: () -> Unit, onNext: () -> 
     }
 }
 
-// Griglia mensile stile calendario nativo Android (Samsung/AOSP): un pallino
-// sotto il numero del giorno segnala che ci sono eventi quel giorno, il
-// riquadro pieno oro è il giorno selezionato, il bordo oro è "oggi".
+// Griglia mensile stile calendario nativo Android (Samsung/AOSP): l'intero
+// cerchio del giorno si colora (in tono tenue) se ci sono eventi quel giorno,
+// il riquadro pieno oro è il giorno selezionato, il bordo oro è "oggi", il
+// numero è colorato diversamente se il giorno è festivo (domenica o festività
+// nazionale, vedi isItalianHoliday sotto).
 @Composable
 private fun MonthGrid(
     month: YearMonth,
@@ -164,6 +190,7 @@ private fun MonthGrid(
                                 hasEvents = eventsByDate.containsKey(date.format(ISO_DATE)),
                                 isToday = date == today,
                                 isSelected = date == selectedDate,
+                                isHoliday = isItalianHoliday(date),
                                 onClick = { onDaySelected(date) },
                             )
                         }
@@ -175,36 +202,78 @@ private fun MonthGrid(
 }
 
 @Composable
-private fun DayCell(day: Int, hasEvents: Boolean, isToday: Boolean, isSelected: Boolean, onClick: () -> Unit) {
-    Column(
+private fun DayCell(
+    day: Int,
+    hasEvents: Boolean,
+    isToday: Boolean,
+    isSelected: Boolean,
+    isHoliday: Boolean,
+    onClick: () -> Unit,
+) {
+    val backgroundColor = when {
+        isSelected -> ChessoraGold
+        hasEvents -> ChessoraGold.copy(alpha = 0.28f)
+        else -> Color.Transparent
+    }
+    val numberColor = when {
+        isSelected -> Color.White
+        isHoliday -> ChessoraError
+        else -> MaterialTheme.colorScheme.onSurface
+    }
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .clip(CircleShape)
-            .background(if (isSelected) ChessoraGold else Color.Transparent)
+            .background(backgroundColor)
             .border(if (isToday && !isSelected) 1.5.dp else 0.dp, ChessoraGold, CircleShape)
             .clickable(onClick = onClick),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             day.toString(),
-            color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface,
-            fontWeight = if (isToday || isSelected) FontWeight.Bold else FontWeight.Normal,
+            color = numberColor,
+            fontWeight = if (isToday || isSelected || isHoliday) FontWeight.Bold else FontWeight.Normal,
             style = MaterialTheme.typography.bodyMedium,
-        )
-        Box(
-            modifier = Modifier
-                .padding(top = 2.dp)
-                .size(4.dp)
-                .clip(CircleShape)
-                .background(if (hasEvents) (if (isSelected) Color.White else ChessoraGold) else Color.Transparent),
         )
     }
 }
 
+private val FIXED_ITALIAN_HOLIDAYS = setOf(
+    1 to 1, 1 to 6, 4 to 25, 5 to 1, 6 to 2, 8 to 15, 11 to 1, 12 to 8, 12 to 25, 12 to 26,
+)
+
+/** Domenica + festività nazionali italiane a data fissa + Pasqua/Pasquetta
+ * (calcolate con l'algoritmo del computus gregoriano) - solo per colorare
+ * diversamente il numero del giorno nel calendario, nessun'altra logica
+ * dipende da questo. */
+private fun isItalianHoliday(date: LocalDate): Boolean {
+    if (date.dayOfWeek == DayOfWeek.SUNDAY) return true
+    if ((date.monthValue to date.dayOfMonth) in FIXED_ITALIAN_HOLIDAYS) return true
+    val easter = easterSunday(date.year)
+    return date == easter || date == easter.plusDays(1)
+}
+
+private fun easterSunday(year: Int): LocalDate {
+    val a = year % 19
+    val b = year / 100
+    val c = year % 100
+    val d = b / 4
+    val e = b % 4
+    val f = (b + 8) / 25
+    val g = (b - f + 1) / 3
+    val h = (19 * a + b - d - g + 15) % 30
+    val i = c / 4
+    val k = c % 4
+    val l = (32 + 2 * e + 2 * i - h - k) % 7
+    val m = (a + 11 * h + 22 * l) / 451
+    val month = (h + l - 7 * m + 114) / 31
+    val day = ((h + l - 7 * m + 114) % 31) + 1
+    return LocalDate.of(year, month, day)
+}
+
 @Composable
-private fun EventRow(event: CalendarEvent, modifier: Modifier = Modifier) {
-    Card(modifier = modifier.fillMaxWidth()) {
+private fun EventRow(event: CalendarEvent, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    Card(onClick = onClick, modifier = modifier.fillMaxWidth()) {
         Row(modifier = Modifier.padding(12.dp)) {
             Column {
                 Text(event.title ?: event.eventTypeDescription ?: "Evento", fontWeight = FontWeight.Bold)

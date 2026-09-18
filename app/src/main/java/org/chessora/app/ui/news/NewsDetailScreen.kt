@@ -30,7 +30,7 @@ import org.chessora.app.ui.common.chessoraViewModel
 import org.chessora.app.ui.common.toItalianDate
 
 @Composable
-fun NewsDetailScreen(club: String, idNews: Int) {
+fun NewsDetailScreen(club: String?, idNews: Int) {
     val viewModel = chessoraViewModel { app -> NewsDetailViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
 
