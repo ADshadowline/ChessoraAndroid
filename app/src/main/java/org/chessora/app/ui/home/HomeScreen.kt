@@ -91,7 +91,7 @@ fun HomeScreen(club: String?, onOpenTournament: (Int) -> Unit) {
                         AppointmentCard(
                             event = event,
                             isNext = index == 0 && query.isBlank(),
-                            isRegistered = event.idTournament != null && event.idTournament in data.registeredTournamentIds,
+                            isRegistered = event.tournamentIds.any { it in data.registeredTournamentIds },
                             onClick = {
                                 val idTournament = event.idTournament
                                 if (idTournament != null) {

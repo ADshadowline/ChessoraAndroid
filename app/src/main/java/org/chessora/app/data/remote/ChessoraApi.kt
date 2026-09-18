@@ -236,6 +236,17 @@ interface ChessoraApi {
         @Query("phoneNumber") phoneNumber: String? = null,
     ): List<TournamentSummary>
 
+    /** Ritira una preiscrizione - stesse credenziali di identità di getMyPreRegistrations
+     * (nessuna sessione server-side). Serve anche per poter scegliere un altro torneo
+     * "fratello" dello stesso evento, dato che se ne può scegliere uno solo per volta. */
+    @DELETE("api/tornei/{id}/preiscrivi")
+    suspend fun cancelPreRegistration(
+        @Path("id") id: Int,
+        @Query("idPlayer") idPlayer: Int? = null,
+        @Query("email") email: String? = null,
+        @Query("phoneNumber") phoneNumber: String? = null,
+    ): TournamentPreRegistrationResult
+
     // ---------- Notifiche push ----------
 
     @POST("api/devices/register")

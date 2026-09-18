@@ -91,12 +91,16 @@
     <string name="tournament_other_tornei">Altri tornei dello stesso evento</string>
     <string name="tournament_not_found">Torneo non trovato.</string>
     <string name="tournament_already_registered">Sei preiscritto</string>
-    <string name="tournament_identify_to_register">Identificati per preiscriverti a questo torneo.</string>
+    <string name="tournament_identify_to_register">Identificati per preiscriverti a questo evento.</string>
     <string name="tournament_manual_identity_title">Completa la preiscrizione</string>
     <string name="tournament_manual_identity_body">Non risulti socio di un circolo riconosciuto: inserisci il tuo ID FIDE oppure nome e cognome per continuare (almeno uno dei due).</string>
     <string name="tournament_manual_identity_idfide_label">ID FIDE (facoltativo)</string>
     <string name="tournament_manual_identity_name_label">Nome e cognome</string>
     <string name="tournament_manual_identity_cancel">Annulla</string>
+    <string name="tournament_choose_one">Scegli il torneo a cui preiscriverti</string>
+    <string name="tournament_section_title">Preiscrizione</string>
+    <string name="tournament_registered_other_option">Preiscritto a un altro torneo di questo evento</string>
+    <string name="tournament_cancel_registration">Ritira</string>
 
     <!-- Errori generici -->
     <string name="error_generic">Qualcosa è andato storto. Riprova.</string>

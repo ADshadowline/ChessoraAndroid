@@ -29,6 +29,11 @@ data class TournamentSummary(
     val nPreRegisteredPlayers: Int? = null,
     val nPlayers: Int? = null,
     val limiteIscrizioni: Int = -1,
+    // Tempo di gioco (es. "15+10") - mostrato per ogni torneo "fratello" dello stesso
+    // evento nella schermata di dettaglio, per poter scegliere a colpo d'occhio.
+    val tempoMinuti: Int? = null,
+    val tempoIncremento: Int? = null,
+    val tempoMosse: Int? = null,
 )
 
 /** Specchio di Chessora.Contracts.Tournaments.TournamentRegistrationCountDto (risposta

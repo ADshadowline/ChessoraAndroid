@@ -27,7 +27,14 @@ data class UpcomingEvent(
     val startDateTime: String,
     val endDateTime: String,
     val startTime: String,
+    /** Id di un torneo rappresentativo del gruppo (un evento con più tornei
+     * "fratelli" ne ha comunque uno solo qui) - usato solo per aprire il dettaglio,
+     * che risale da sé agli altri fratelli tramite eventGroupId. */
     val idTournament: Int?,
+    /** Tutti gli id torneo di questo evento (un solo elemento se non ha fratelli) -
+     * usato per il segno di spunta: "preiscritto" vale se lo si è a QUALSIASI
+     * torneo del gruppo, non solo a quello rappresentativo. */
+    val tournamentIds: Set<Int>,
     val idEvento: Int?,
     val tournamentBandoPath: String?,
 )
@@ -103,12 +110,21 @@ class HomeViewModel(
         }
     }
 
-    /** Una riga di calendario per ogni giorno di gioco di un torneo/evento: qui si
-     * raggruppano tutte le righe con lo stesso idTournament (o idEvento, per gli
-     * eventi non-torneo) in una sola voce con l'intervallo di date complessivo. */
+    /** Una riga di calendario per ogni giorno di gioco di ciascun torneo: qui si
+     * raggruppano in una sola voce sia i giorni dello stesso torneo sia, quando un
+     * evento ha più tornei "fratelli" (stesso tournamentEventGroupId, es. "Open A"/
+     * "Open B" o le categorie di un CIS), le righe di TUTTI i fratelli - altrimenti
+     * ciascuno produrrebbe la propria card duplicata con lo stesso titolo (Titolo =
+     * EventoNome quando ci sono fratelli, vedi TournamentCalendarPlanner lato
+     * server). Gli eventi non-torneo restano raggruppati per idEvento. */
     private fun groupByEvent(events: List<CalendarEvent>): List<UpcomingEvent> =
         events
-            .groupBy { it.idTournament?.let { t -> "t$t" } ?: it.idEvento?.let { e -> "e$e" } ?: "c${it.id}" }
+            .groupBy {
+                it.tournamentEventGroupId?.let { g -> "g$g" }
+                    ?: it.idTournament?.let { t -> "t$t" }
+                    ?: it.idEvento?.let { e -> "e$e" }
+                    ?: "c${it.id}"
+            }
             .map { (key, rows) ->
                 val sorted = rows.sortedBy { it.eventDateTime }
                 val first = sorted.first()
@@ -119,6 +135,7 @@ class HomeViewModel(
                     endDateTime = sorted.last().eventDateTime,
                     startTime = first.startTime,
                     idTournament = first.idTournament,
+                    tournamentIds = rows.mapNotNull { it.idTournament }.toSet(),
                     idEvento = first.idEvento,
                     tournamentBandoPath = first.tournamentBandoPath,
                 )

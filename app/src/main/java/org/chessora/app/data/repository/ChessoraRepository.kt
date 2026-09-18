@@ -105,6 +105,14 @@ class ChessoraRepository(private val api: ChessoraApi) {
     ): Result<List<TournamentSummary>> =
         safeCall { api.getMyPreRegistrations(contactId, idPlayer, email, phoneNumber) }
 
+    suspend fun cancelPreRegistration(
+        id: Int,
+        idPlayer: Int? = null,
+        email: String? = null,
+        phoneNumber: String? = null,
+    ): Result<TournamentPreRegistrationResult> =
+        safeCall { api.cancelPreRegistration(id, idPlayer, email, phoneNumber) }
+
     // ---------- Classifica ----------
 
     suspend fun getRankingAssoluta(limit: Int = 20): Result<RankingResponse> =

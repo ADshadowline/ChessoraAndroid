@@ -43,6 +43,11 @@ data class CalendarEvent(
     // qui nella riga di calendario, non serve una fetch dedicata come per gli eventi.
     val tournamentBandoPath: String? = null,
     val tournamentBandoNomeFile: String? = null,
+    // Non null solo se il torneo appartiene a un evento con più tornei "fratelli"
+    // (stesso EventGroupId lato server) - serve a raggruppare correttamente in Home,
+    // altrimenti ogni fratello produrrebbe la propria card duplicata con lo stesso
+    // titolo (Titolo = EventoNome quando ci sono fratelli, vedi TournamentCalendarPlanner).
+    val tournamentEventGroupId: String? = null,
 )
 
 /**
