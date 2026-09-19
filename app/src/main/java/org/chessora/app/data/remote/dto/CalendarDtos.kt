@@ -43,6 +43,9 @@ data class CalendarEvent(
     // qui nella riga di calendario, non serve una fetch dedicata come per gli eventi.
     val tournamentBandoPath: String? = null,
     val tournamentBandoNomeFile: String? = null,
+    // Sfondo della card evento in Home (vedi HomeScreen.AppointmentCard) - diverso dal
+    // bando, che è il documento PDF/DOC del torneo.
+    val tournamentImmagineCopertinaPath: String? = null,
     // Non null solo se il torneo appartiene a un evento con più tornei "fratelli"
     // (stesso EventGroupId lato server) - serve a raggruppare correttamente in Home,
     // altrimenti ogni fratello produrrebbe la propria card duplicata con lo stesso

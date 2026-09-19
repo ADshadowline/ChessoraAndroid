@@ -1,6 +1,16 @@
 <resources>
     <string name="app_name">Chessora</string>
 
+    <!-- News (ui/news/) -->
+    <string name="news_search_hint">Cerca una notizia…</string>
+    <string name="news_scope_circolo">Circolo</string>
+    <string name="news_scope_mondo">Mondo</string>
+
+    <!-- Bando in-app (ui/calendar/BandoViewerScreen.kt) -->
+    <string name="bando_viewer_error">Impossibile visualizzare il bando. Riprova più tardi.</string>
+    <string name="bando_viewer_unsupported">Questo bando non è in formato PDF: non può essere mostrato direttamente nell\'app.</string>
+    <string name="bando_viewer_open_external">Apri con un\'altra app</string>
+
     <!-- Id del canale di notifica Android usato per i messaggi push generici
          inviati dal super-amministratore (vedi push/ChessoraFirebaseMessagingService.kt
          e AndroidManifest.xml meta-data "default_notification_channel_id"). -->
@@ -24,7 +34,7 @@
     <string name="onboarding_empty">Nessun circolo trovato.</string>
 
     <!-- Navigazione a schede (bottom bar) -->
-    <string name="nav_home">Home</string>
+    <string name="nav_home">Eventi</string>
     <string name="nav_news">News</string>
     <string name="nav_ranking">Classifica</string>
     <string name="nav_more">Altro</string>
@@ -115,7 +125,16 @@
     <string name="settings_identity_none">Non identificato</string>
     <string name="settings_identity_as">Identificato come %1$s</string>
     <string name="settings_identity_button">Identificati</string>
+    <string name="settings_my_photo">La mia foto</string>
+    <string name="settings_display_mode">Tipo di visualizzazione</string>
+    <string name="settings_display_mode_classic">Visualizzazione attuale</string>
+    <string name="settings_display_mode_desktop">Visualizzazione desktop</string>
+    <string name="settings_splash_background">Immagine di apertura dell\'app</string>
+    <string name="settings_desktop_background">Immagine di sfondo del desktop</string>
+    <string name="settings_choose_image">Scegli immagine</string>
+    <string name="settings_remove_image">Rimuovi</string>
     <string name="topbar_members_count">%1$d soci</string>
+    <string name="manage_tournaments">Gestione tornei</string>
 
     <!-- Domanda iniziale sull'appartenenza a un circolo (ui/onboarding/MembershipQuestionScreen) -->
     <string name="membership_question_title">Sei socio di un circolo?</string>

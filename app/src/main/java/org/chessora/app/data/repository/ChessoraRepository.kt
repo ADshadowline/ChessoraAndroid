@@ -18,6 +18,7 @@ import org.chessora.app.data.remote.dto.IdentifyNationalRequestDto
 import org.chessora.app.data.remote.dto.IdentifyRequestDto
 import org.chessora.app.data.remote.dto.IdentifyResultDto
 import org.chessora.app.data.remote.dto.MarkReadRequest
+import org.chessora.app.data.remote.dto.NetworkNewsItem
 import org.chessora.app.data.remote.dto.NewsArticle
 import org.chessora.app.data.remote.dto.NewsComment
 import org.chessora.app.data.remote.dto.PerformanceHistoryDto
@@ -65,16 +66,20 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     // ---------- News ----------
 
-    suspend fun getNews(club: String, limit: Int = 30): Result<List<NewsArticle>> =
-        safeCall { api.getNews(club, limit) }
+    suspend fun getNews(club: String, limit: Int = 30, search: String? = null): Result<List<NewsArticle>> =
+        safeCall { api.getNews(club, limit, search) }
 
     /** "Modalità piattaforma" (nessun circolo scelto, vedi
      * ui/onboarding/MembershipQuestionScreen.kt). */
-    suspend fun getNewsAllClubs(limit: Int = 30): Result<List<NewsArticle>> =
-        safeCall { api.getNewsAllClubs(limit) }
+    suspend fun getNewsAllClubs(limit: Int = 30, search: String? = null): Result<List<NewsArticle>> =
+        safeCall { api.getNewsAllClubs(limit, search) }
 
     suspend fun getNewsComments(idNews: Int): Result<List<NewsComment>> =
         safeCall { api.getNewsComments(idNews) }
+
+    /** Filtro "Mondo" della schermata News - notizie FIDE/globali, non di circolo. */
+    suspend fun getNetworkNews(limit: Int = 30, search: String? = null): Result<List<NetworkNewsItem>> =
+        safeCall { api.getNetworkNews(limit, search) }
 
     // ---------- Calendario ----------
 
@@ -171,6 +176,9 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun getPlayerPerformance(idPlayer: Int): Result<PerformanceHistoryDto> =
         safeCall { api.getPlayerPerformance(idPlayer) }
+
+    suspend fun getPlayerRoles(idPlayer: Int, club: String): Result<List<String>> =
+        safeCall { api.getPlayerRoles(idPlayer, club) }
 
     /** [jpegBytes] è già compresso/ridimensionato lato client (ui/profile/) prima di
      * arrivare qui - sempre JPEG, cosi' il repository non deve occuparsi di formati. */

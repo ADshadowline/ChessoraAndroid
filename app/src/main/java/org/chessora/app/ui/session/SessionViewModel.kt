@@ -3,13 +3,26 @@ package org.chessora.app.ui.session
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.chessora.app.data.local.ClubPreferences
+import org.chessora.app.data.remote.dto.PerformancePointDto
 import org.chessora.app.data.remote.dto.SiteBranding
 import org.chessora.app.data.repository.ChessoraRepository
 import org.chessora.app.push.DeviceRegistration
+
+enum class EloTrend { UP, DOWN, FLAT }
+
+data class EloRatingSummary(val value: Int, val trend: EloTrend)
+
+/** Punteggi Elo attuali del socio identificato, mostrati in barra accanto al suo nome
+ * (vedi ChessoraNavHost.ClubBrandingTopBar) - null per una cadenza se lo storico non ha
+ * ancora nessun punto valutato per quella cadenza (non necessariamente "non ha IdFide",
+ * vedi [SessionViewModel.eloSummary] che è null del tutto in quel caso). */
+data class EloSummary(val standard: EloRatingSummary?, val rapid: EloRatingSummary?, val blitz: EloRatingSummary?)
 
 /**
  * Unico ViewModel creato a livello di MainActivity (non per-schermata) e
@@ -52,6 +65,29 @@ class SessionViewModel(
     private val _membersCount = MutableStateFlow<Int?>(null)
     val membersCount: StateFlow<Int?> = _membersCount
 
+    /** Null se non identificato, o se identificato ma senza alcuno storico Elo (mai
+     * giocato una partita valutata). */
+    private val _eloSummary = MutableStateFlow<EloSummary?>(null)
+    val eloSummary: StateFlow<EloSummary?> = _eloSummary
+
+    /** True se il socio identificato ha il ruolo pubblico "Responsabile dei tornei" nel
+     * circolo scelto (vedi GET /api/players/{idPlayer}/roles, nessun login richiesto) -
+     * mostra l'icona "Gestione tornei" in ChessoraNavHost.ClubBrandingTopBar. */
+    private val _isTournamentManager = MutableStateFlow(false)
+    val isTournamentManager: StateFlow<Boolean> = _isTournamentManager
+
+    /** Immagine di sfondo scelta in Impostazioni per lo SplashScreen (mai inviata al
+     * server, vedi ClubPreferences.splashBackgroundUri) - letta qui perché SplashScreen è
+     * mostrato prima ancora che esista un circolo scelto/identità risolta. */
+    val splashBackgroundUri: StateFlow<String?> = clubPreferences.splashBackgroundUri
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    /** "classic" o "desktop" - letto qui (non solo in HomeViewModel) perché
+     * ChessoraNavHost deve nascondere la bottom bar su OGNI schermata quando la
+     * navigazione avviene tramite la griglia di icone (vedi ui/home/HomeScreen.kt). */
+    val displayMode: StateFlow<String> = clubPreferences.displayMode
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ClubPreferences.DISPLAY_MODE_CLASSIC)
+
     init {
         // Al primo avvio, se un circolo era già stato scelto in una sessione
         // precedente, carica subito il suo branding e registra il device (il
@@ -68,6 +104,11 @@ class SessionViewModel(
         viewModelScope.launch {
             _identityResolved.value = clubPreferences.identityResolved.first()
             _identifiedPlayerName.value = clubPreferences.identifiedPlayerName.first()
+            val idPlayer = clubPreferences.identifiedPlayerId.first()
+            if (idPlayer != null) {
+                loadEloSummary(idPlayer)
+                clubPreferences.selectedClub.first()?.let { loadTournamentManagerStatus(idPlayer, it) }
+            }
         }
     }
 
@@ -93,6 +134,8 @@ class SessionViewModel(
         _membersCount.value = null
         _identityResolved.value = false
         _identifiedPlayerName.value = null
+        _eloSummary.value = null
+        _isTournamentManager.value = false
         viewModelScope.launch {
             clubPreferences.clearSelectedClub()
             clubPreferences.clearIdentity()
@@ -106,6 +149,13 @@ class SessionViewModel(
         viewModelScope.launch {
             _identityResolved.value = clubPreferences.identityResolved.first()
             _identifiedPlayerName.value = clubPreferences.identifiedPlayerName.first()
+            val idPlayer = clubPreferences.identifiedPlayerId.first()
+            _eloSummary.value = null
+            _isTournamentManager.value = false
+            if (idPlayer != null) {
+                loadEloSummary(idPlayer)
+                clubPreferences.selectedClub.first()?.let { loadTournamentManagerStatus(idPlayer, it) }
+            }
         }
     }
 
@@ -125,5 +175,37 @@ class SessionViewModel(
         repository.getStats(club).onSuccess { stats ->
             _membersCount.value = stats.membersCount
         }
+    }
+
+    private suspend fun loadTournamentManagerStatus(idPlayer: Int, club: String) {
+        if (club == ClubPreferences.PLATFORM_CLUB_CODE) return
+        repository.getPlayerRoles(idPlayer, club).onSuccess { roles ->
+            _isTournamentManager.value = roles.contains("Responsabile dei tornei")
+        }
+    }
+
+    private suspend fun loadEloSummary(idPlayer: Int) {
+        repository.getPlayerPerformance(idPlayer).onSuccess { history ->
+            _eloSummary.value = if (!history.hasFide) null else EloSummary(
+                standard = ratingSummary(history.points) { it.standard },
+                rapid = ratingSummary(history.points) { it.rapid },
+                blitz = ratingSummary(history.points) { it.blitz },
+            )
+        }
+    }
+
+    /** Ultimo valore non nullo della cadenza scelta, e il suo trend rispetto al
+     * penultimo valore non nullo (non necessariamente il mese precedente: un mese
+     * senza partite valutate in quella cadenza è semplicemente saltato). */
+    private fun ratingSummary(points: List<PerformancePointDto>, selector: (PerformancePointDto) -> Int?): EloRatingSummary? {
+        val values = points.sortedWith(compareBy({ it.year }, { it.month })).mapNotNull(selector)
+        val last = values.lastOrNull() ?: return null
+        val previous = values.dropLast(1).lastOrNull()
+        val trend = when {
+            previous == null || last == previous -> EloTrend.FLAT
+            last > previous -> EloTrend.UP
+            else -> EloTrend.DOWN
+        }
+        return EloRatingSummary(last, trend)
     }
 }

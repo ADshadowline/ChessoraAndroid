@@ -54,6 +54,9 @@ class ClubPreferences(context: Context) {
         val AUTHENTICATED_EMAIL = stringPreferencesKey("authenticated_email")
         val AUTHENTICATED_PHONE = stringPreferencesKey("authenticated_phone")
         val PRE_REGISTRATION_CONTACT_ID = intPreferencesKey("pre_registration_contact_id")
+        val DISPLAY_MODE = stringPreferencesKey("display_mode")
+        val SPLASH_BACKGROUND_URI = stringPreferencesKey("splash_background_uri")
+        val DESKTOP_BACKGROUND_URI = stringPreferencesKey("desktop_background_uri")
     }
 
     val selectedClub: Flow<String?> = dataStore.data.map { it[Keys.SELECTED_CLUB_CODE] }
@@ -98,6 +101,32 @@ class ClubPreferences(context: Context) {
      * veloce per GET /api/tornei/mie-preiscrizioni senza dover ripetere la risoluzione per
      * email/telefono lato server. */
     val preRegistrationContactId: Flow<Int?> = dataStore.data.map { it[Keys.PRE_REGISTRATION_CONTACT_ID] }
+
+    /** "classic" (elenco, comportamento attuale) o "desktop" (griglia di icone in Home) -
+     * vedi ui/home/HomeScreen.kt. */
+    val displayMode: Flow<String> = dataStore.data.map { it[Keys.DISPLAY_MODE] ?: DISPLAY_MODE_CLASSIC }
+
+    /** Uri content:// locali scelti dall'utente per personalizzare l'app - MAI inviati al
+     * server, persistiti con takePersistableUriPermission (vedi SettingsScreen.kt) cosi'
+     * restano leggibili anche dopo il riavvio del processo. */
+    val splashBackgroundUri: Flow<String?> = dataStore.data.map { it[Keys.SPLASH_BACKGROUND_URI] }
+    val desktopBackgroundUri: Flow<String?> = dataStore.data.map { it[Keys.DESKTOP_BACKGROUND_URI] }
+
+    suspend fun setDisplayMode(mode: String) {
+        dataStore.edit { it[Keys.DISPLAY_MODE] = mode }
+    }
+
+    suspend fun setSplashBackgroundUri(uri: String?) {
+        dataStore.edit {
+            if (uri == null) it.remove(Keys.SPLASH_BACKGROUND_URI) else it[Keys.SPLASH_BACKGROUND_URI] = uri
+        }
+    }
+
+    suspend fun setDesktopBackgroundUri(uri: String?) {
+        dataStore.edit {
+            if (uri == null) it.remove(Keys.DESKTOP_BACKGROUND_URI) else it[Keys.DESKTOP_BACKGROUND_URI] = uri
+        }
+    }
 
     suspend fun setSelectedClub(club: String) {
         dataStore.edit { it[Keys.SELECTED_CLUB_CODE] = club }
@@ -166,5 +195,8 @@ class ClubPreferences(context: Context) {
          * ogni punto che userebbe [selectedClub] per una chiamata di rete club-scoped
          * deve prima controllare [isPlatformMode] e usare l'equivalente aggregato. */
         const val PLATFORM_CLUB_CODE = "__platform__"
+
+        const val DISPLAY_MODE_CLASSIC = "classic"
+        const val DISPLAY_MODE_DESKTOP = "desktop"
     }
 }

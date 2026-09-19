@@ -19,6 +19,10 @@ object ChessoraDestinations {
     const val IDENTITY = "identity"
 
     const val HOME = "home"
+    /** Elenco eventi "classico" - stesso contenuto della Home in visualizzazione classica,
+     * raggiungibile anche dalla griglia di icone quando la Home è in visualizzazione
+     * desktop (vedi ui/home/HomeScreen.kt, DesktopHomeGrid). */
+    const val EVENTS = "events"
     const val NEWS_LIST = "news"
     const val REGISTRATIONS = "registrations"
     const val MESSAGING = "messaging"
@@ -32,9 +36,15 @@ object ChessoraDestinations {
     // come Direttivo/Negozio.
     const val CALENDAR = "calendar"
     const val RANKING = "ranking"
-    const val PERFORMANCE = "performance"
+    // [focus] facoltativo ("standard"/"rapid"/"blitz") pre-seleziona quella cadenza -
+    // vedi il click sui punteggi Elo in ChessoraNavHost.ClubBrandingTopBar. Stringa
+    // vuota di default (non null: NavType.StringType non ammette argomenti opzionali
+    // nulli) equivale a "mostra tutte e tre le cadenze", il comportamento preesistente.
+    const val PERFORMANCE = "performance?focus={focus}"
     const val PROFILE_PHOTO = "profile-photo"
     const val TOURNAMENT_DETAIL = "tornei/{idTournament}"
+    /** [url] è l'URL assoluto del bando, URL-encoded - vedi BandoViewerScreen. */
+    const val BANDO_VIEWER = "bando-viewer/{url}"
 
     const val NEW_MESSAGE = "messaging/new"
 
@@ -46,7 +56,11 @@ object ChessoraDestinations {
 
     fun newsDetail(idNews: Int) = "news/$idNews"
 
+    fun performance(focus: String? = null) = if (focus != null) "performance?focus=$focus" else "performance"
+
     fun tournamentDetail(idTournament: Int) = "tornei/$idTournament"
+
+    fun bandoViewer(url: String) = "bando-viewer/${java.net.URLEncoder.encode(url, "UTF-8")}"
 
     fun conversation(idConversation: Int, isClubConversation: Boolean, recipientId: Int, displayName: String): String {
         val encodedName = java.net.URLEncoder.encode(displayName, "UTF-8")

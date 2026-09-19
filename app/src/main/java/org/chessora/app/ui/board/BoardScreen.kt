@@ -2,6 +2,7 @@ package org.chessora.app.ui.board
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,7 +46,7 @@ import org.chessora.app.ui.theme.ChessoraGold
  * contiene, i livelli impilati dall'alto verso il basso in ordine crescente.
  */
 @Composable
-fun BoardScreen(club: String) {
+fun BoardScreen(club: String, onOpenConversation: (idPlayer: Int, displayName: String) -> Unit) {
     val viewModel = chessoraViewModel { app -> BoardViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
 
@@ -56,7 +57,7 @@ fun BoardScreen(club: String) {
         LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             byLevel.forEach { (_, levelMembers) ->
                 item {
-                    BoardLevelRow(levelMembers.sortedBy { it.sortOrder })
+                    BoardLevelRow(levelMembers.sortedBy { it.sortOrder }, onOpenConversation)
                 }
             }
         }
@@ -65,18 +66,22 @@ fun BoardScreen(club: String) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun BoardLevelRow(levelMembers: List<BoardMember>) {
+private fun BoardLevelRow(levelMembers: List<BoardMember>, onOpenConversation: (idPlayer: Int, displayName: String) -> Unit) {
     FlowRow(
         modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        levelMembers.forEach { member -> BoardMemberCard(member) }
+        levelMembers.forEach { member -> BoardMemberCard(member, onOpenConversation) }
     }
 }
 
+/** Il click sulla card (foto compresa) apre direttamente la Messaggistica con questa
+ * persona già selezionata come destinataria - stesso meccanismo già usato da "Nuovo
+ * messaggio" (ChessoraNavHost.kt, ChessoraDestinations.conversation con idConversation=-1),
+ * pronta a scrivere e inviare il primo messaggio. */
 @Composable
-private fun BoardMemberCard(member: BoardMember) {
+private fun BoardMemberCard(member: BoardMember, onOpenConversation: (idPlayer: Int, displayName: String) -> Unit) {
     val photoUrl = NetworkModule.resolveAssetUrl(member.photoPath)
     Column(
         modifier = Modifier
@@ -84,6 +89,7 @@ private fun BoardMemberCard(member: BoardMember) {
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.surface)
             .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
+            .clickable { onOpenConversation(member.idPlayer, member.fullName) }
             .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {

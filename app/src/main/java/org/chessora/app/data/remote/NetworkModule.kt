@@ -95,4 +95,16 @@ object NetworkModule {
             response.body?.string() ?: ""
         }
     }
+
+    /** Scarica [url] in [destination] (sovrascritto se già presente) - usato da
+     * ui/calendar/BandoViewerScreen.kt per aprire un bando PDF con PdfRenderer, che
+     * richiede un file locale (ParcelFileDescriptor), non uno stream di rete diretto. */
+    suspend fun downloadToFile(url: String, destination: java.io.File): Unit = withContext(Dispatchers.IO) {
+        val request = Request.Builder().url(url).build()
+        okHttpClient.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) throw IOException("HTTP ${response.code}")
+            val body = response.body ?: throw IOException("Risposta vuota")
+            destination.outputStream().use { out -> body.byteStream().copyTo(out) }
+        }
+    }
 }

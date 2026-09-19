@@ -25,6 +25,8 @@ data class TournamentSummary(
     val modalitaPartecipazione: Int,
     val bandoPath: String? = null,
     val bandoNomeFile: String? = null,
+    val immagineCopertinaPath: String? = null,
+    val immagineCopertinaNomeFile: String? = null,
     val paginaWeb: String? = null,
     val nPreRegisteredPlayers: Int? = null,
     val nPlayers: Int? = null,

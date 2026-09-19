@@ -18,6 +18,16 @@ class SettingsViewModel(
     val notificationsEnabled: StateFlow<Boolean> = clubPreferences.notificationsEnabled
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
 
+    /** "classic" o "desktop" - vedi ClubPreferences.DISPLAY_MODE_* e HomeScreen.kt. */
+    val displayMode: StateFlow<String> = clubPreferences.displayMode
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ClubPreferences.DISPLAY_MODE_CLASSIC)
+
+    val splashBackgroundUri: StateFlow<String?> = clubPreferences.splashBackgroundUri
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    val desktopBackgroundUri: StateFlow<String?> = clubPreferences.desktopBackgroundUri
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
     /** [club] serve solo per ri-registrare subito il token se l'utente riaccende il toggle. */
     fun setNotificationsEnabled(enabled: Boolean, club: String?) {
         viewModelScope.launch {
@@ -26,5 +36,17 @@ class SettingsViewModel(
                 DeviceRegistration.registerCurrentToken(repository, clubPreferences, club)
             }
         }
+    }
+
+    fun setDisplayMode(mode: String) {
+        viewModelScope.launch { clubPreferences.setDisplayMode(mode) }
+    }
+
+    fun setSplashBackgroundUri(uri: String?) {
+        viewModelScope.launch { clubPreferences.setSplashBackgroundUri(uri) }
+    }
+
+    fun setDesktopBackgroundUri(uri: String?) {
+        viewModelScope.launch { clubPreferences.setDesktopBackgroundUri(uri) }
     }
 }

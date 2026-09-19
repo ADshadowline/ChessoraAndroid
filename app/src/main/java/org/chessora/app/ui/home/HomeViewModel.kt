@@ -6,9 +6,11 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.chessora.app.data.local.ClubPreferences
 import org.chessora.app.data.remote.NetworkModule
@@ -37,6 +39,9 @@ data class UpcomingEvent(
     val tournamentIds: Set<Int>,
     val idEvento: Int?,
     val tournamentBandoPath: String?,
+    /** Sfondo della card (vedi HomeScreen.AppointmentCard) - null mostra la card a
+     * tinta unita come prima, comportamento invariato per i tornei senza immagine. */
+    val tournamentImmagineCopertinaPath: String?,
 )
 
 data class HomeData(
@@ -57,6 +62,14 @@ class HomeViewModel(
 
     private val _state = MutableStateFlow<UiState<HomeData>>(UiState.Loading)
     val state: StateFlow<UiState<HomeData>> = _state.asStateFlow()
+
+    /** "classic" (elenco appuntamenti, comportamento storico) o "desktop" (griglia di
+     * icone, vedi ui/settings/SettingsScreen.kt) - preferenza puramente locale. */
+    val displayMode: StateFlow<String> = clubPreferences.displayMode
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ClubPreferences.DISPLAY_MODE_CLASSIC)
+
+    val desktopBackgroundUri: StateFlow<String?> = clubPreferences.desktopBackgroundUri
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     private var loadedForClub: String? = null
     private var hasLoadedOnce = false
@@ -138,6 +151,7 @@ class HomeViewModel(
                     tournamentIds = rows.mapNotNull { it.idTournament }.toSet(),
                     idEvento = first.idEvento,
                     tournamentBandoPath = first.tournamentBandoPath,
+                    tournamentImmagineCopertinaPath = first.tournamentImmagineCopertinaPath,
                 )
             }
 

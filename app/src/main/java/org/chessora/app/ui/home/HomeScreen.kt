@@ -8,16 +8,31 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.automirrored.filled.ShowChart
+import androidx.compose.material.icons.automirrored.filled.EventNote
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.HowToReg
+import androidx.compose.material.icons.filled.Leaderboard
+import androidx.compose.material.icons.filled.Newspaper
+import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -35,6 +50,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -48,13 +65,53 @@ import java.util.Locale
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.chessora.app.R
+import org.chessora.app.data.local.ClubPreferences
 import org.chessora.app.data.remote.NetworkModule
 import org.chessora.app.data.remote.dto.NewsArticle
+import org.chessora.app.ui.common.BackgroundImageWithScrim
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
 
+/**
+ * Voci di navigazione mostrate come icone quando l'utente ha scelto la
+ * "Visualizzazione desktop" in Impostazioni (vedi ClubPreferences.displayMode) - stesse
+ * destinazioni già raggiungibili da bottom bar/ui/more/MoreScreen.kt, solo un layout Home
+ * alternativo: le singole schermate di destinazione restano invariate.
+ */
+data class DesktopHomeCallbacks(
+    val onOpenEvents: () -> Unit,
+    val onOpenCalendar: () -> Unit,
+    val onOpenNews: () -> Unit,
+    val onOpenRegistrations: () -> Unit,
+    val onOpenMessaging: () -> Unit,
+    val onOpenRanking: () -> Unit,
+    val onOpenPerformance: () -> Unit,
+    val onOpenBoard: () -> Unit,
+    val onOpenShop: () -> Unit,
+    val onOpenSettings: () -> Unit,
+)
+
 @Composable
-fun HomeScreen(club: String?, onOpenTournament: (Int) -> Unit) {
+fun HomeScreen(club: String?, onOpenTournament: (Int) -> Unit, desktop: DesktopHomeCallbacks, isPlatformMode: Boolean = false) {
+    val viewModel = chessoraViewModel { app -> HomeViewModel(app.repository, app.clubPreferences) }
+    val displayMode by viewModel.displayMode.collectAsState()
+    val desktopBackgroundUri by viewModel.desktopBackgroundUri.collectAsState()
+
+    if (displayMode == ClubPreferences.DISPLAY_MODE_DESKTOP) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            desktopBackgroundUri?.let { BackgroundImageWithScrim(uri = it) }
+            DesktopHomeGrid(desktop = desktop, isPlatformMode = isPlatformMode)
+        }
+    } else {
+        EventsListScreen(club = club, onOpenTournament = onOpenTournament)
+    }
+}
+
+/** Elenco eventi in ordine cronologico - contenuto della Home in visualizzazione classica
+ * (vedi [HomeScreen]), raggiungibile anche dalla griglia di icone (route EVENTS, tile
+ * "Eventi") quando la Home è in visualizzazione desktop. */
+@Composable
+fun EventsListScreen(club: String?, onOpenTournament: (Int) -> Unit) {
     val viewModel = chessoraViewModel { app -> HomeViewModel(app.repository, app.clubPreferences) }
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
@@ -115,12 +172,89 @@ fun HomeScreen(club: String?, onOpenTournament: (Int) -> Unit) {
     }
 }
 
+private data class DesktopIcon(val label: String, val icon: ImageVector, val onClick: () -> Unit)
+
+@Composable
+private fun DesktopHomeGrid(desktop: DesktopHomeCallbacks, isPlatformMode: Boolean) {
+    val eventsLabel = stringResource(R.string.nav_home)
+    val calendarLabel = stringResource(R.string.more_calendar)
+    val newsLabel = stringResource(R.string.nav_news)
+    val registrationsLabel = stringResource(R.string.nav_registrations)
+    val messagingLabel = stringResource(R.string.nav_messaging)
+    val rankingLabel = stringResource(R.string.nav_ranking)
+    val performanceLabel = stringResource(R.string.more_performance)
+    val settingsLabel = stringResource(R.string.settings_title)
+    // Messaggi e Impostazioni sono ancorate agli angoli in basso (sinistra/destra), non
+    // parte della griglia scorrevole - posizione fissa richiesta esplicitamente.
+    val icons = remember(desktop, isPlatformMode) {
+        buildList {
+            add(DesktopIcon(eventsLabel, Icons.AutoMirrored.Filled.EventNote, desktop.onOpenEvents))
+            if (!isPlatformMode) add(DesktopIcon(calendarLabel, Icons.Default.CalendarMonth, desktop.onOpenCalendar))
+            add(DesktopIcon(newsLabel, Icons.Default.Newspaper, desktop.onOpenNews))
+            add(DesktopIcon(registrationsLabel, Icons.Default.HowToReg, desktop.onOpenRegistrations))
+            add(DesktopIcon(rankingLabel, Icons.Default.Leaderboard, desktop.onOpenRanking))
+            add(DesktopIcon(performanceLabel, Icons.AutoMirrored.Filled.ShowChart, desktop.onOpenPerformance))
+            if (!isPlatformMode) {
+                add(DesktopIcon("Direttivo", Icons.Default.People, desktop.onOpenBoard))
+                add(DesktopIcon("Negozio", Icons.Default.ShoppingCart, desktop.onOpenShop))
+            }
+        }
+    }
+    Column(modifier = Modifier.fillMaxSize()) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            modifier = Modifier.weight(1f).padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            items(icons) { entry -> DesktopIconTile(entry) }
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            DesktopIconTile(
+                DesktopIcon(messagingLabel, Icons.AutoMirrored.Filled.Chat, desktop.onOpenMessaging),
+                modifier = Modifier.weight(1f, fill = false).widthIn(max = 120.dp),
+            )
+            DesktopIconTile(
+                DesktopIcon(settingsLabel, Icons.Default.Settings, desktop.onOpenSettings),
+                modifier = Modifier.weight(1f, fill = false).widthIn(max = 120.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun DesktopIconTile(entry: DesktopIcon, modifier: Modifier = Modifier) {
+    Card(onClick = entry.onClick, modifier = modifier.aspectRatio(1f)) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Icon(entry.icon, contentDescription = null, modifier = Modifier.size(36.dp))
+            Text(
+                entry.label,
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+        }
+    }
+}
+
 @Composable
 private fun AppointmentCard(event: UpcomingEvent, isNext: Boolean, isRegistered: Boolean, onClick: () -> Unit) {
+    val imageUrl = NetworkModule.resolveAssetUrl(event.tournamentImmagineCopertinaPath)
+    // Con un'immagine di sfondo il testo va forzato chiaro (leggibile sopra lo scrim
+    // scuro sempre applicato) invece di seguire il tema/i colori "isNext" di sotto.
+    val onImageColor = Color.White
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-        colors = if (isNext) {
+        colors = if (imageUrl != null) {
+            CardDefaults.cardColors(containerColor = Color.Transparent, contentColor = onImageColor)
+        } else if (isNext) {
             CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -129,25 +263,36 @@ private fun AppointmentCard(event: UpcomingEvent, isNext: Boolean, isRegistered:
             CardDefaults.cardColors()
         },
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    event.title,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f),
+        Box {
+            if (imageUrl != null) {
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.matchParentSize(),
                 )
-                if (isRegistered) {
-                    Icon(
-                        Icons.Default.CheckCircle,
-                        contentDescription = stringResource(R.string.home_registered_check),
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                }
+                Box(modifier = Modifier.matchParentSize().background(Color.Black.copy(alpha = 0.45f)))
             }
-            Text(formatEventRange(event), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 2.dp))
-            if (isNext) {
-                CountdownTimer(event.startDateTime)
+            Column(modifier = Modifier.padding(12.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        event.title,
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.weight(1f),
+                    )
+                    if (isRegistered) {
+                        Icon(
+                            Icons.Default.CheckCircle,
+                            contentDescription = stringResource(R.string.home_registered_check),
+                            tint = if (imageUrl != null) onImageColor else MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                }
+                Text(formatEventRange(event), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 2.dp))
+                if (isNext) {
+                    CountdownTimer(event.startDateTime)
+                }
             }
         }
     }

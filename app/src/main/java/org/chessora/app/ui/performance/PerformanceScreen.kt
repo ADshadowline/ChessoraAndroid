@@ -18,7 +18,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,13 +59,54 @@ import org.chessora.app.ui.theme.ChessoraGold
 // Colori scelti per essere ben leggibili sullo sfondo scuro dell'app (vedi
 // ui/theme/Theme.kt: un solo colorScheme, sempre scuro) - il bug segnalato
 // ("non si vede il punteggio standard") era proprio questo: il colore
-// precedente per Standard coincideva quasi esattamente con lo sfondo.
-private val PerfStandard = ChessoraCream
-private val PerfRapid = ChessoraGold
-private val PerfBlitz = Color(0xFFE0708A)
+// precedente per Standard coincideva quasi esattamente con lo sfondo. Non
+// private: riusati anche per i badge Elo nell'header (ChessoraNavHost.kt).
+val PerfStandard = ChessoraCream
+val PerfRapid = ChessoraGold
+val PerfBlitz = Color(0xFFE0708A)
+
+/** Cadenza su cui la schermata apre "a fuoco" quando si arriva da un punteggio Elo
+ * specifico cliccato in barra (vedi ChessoraNavHost.ClubBrandingTopBar) - null mostra
+ * tutte e tre le cadenze insieme, il comportamento preesistente. */
+enum class EloRatingType(val routeValue: String) {
+    STANDARD("standard"), RAPID("rapid"), BLITZ("blitz");
+
+    companion object {
+        fun fromRouteValue(value: String?): EloRatingType? = entries.firstOrNull { it.routeValue == value }
+    }
+}
+
+private fun EloRatingType.selector(): (PerformancePointDto) -> Int? = when (this) {
+    EloRatingType.STANDARD -> { p -> p.standard }
+    EloRatingType.RAPID -> { p -> p.rapid }
+    EloRatingType.BLITZ -> { p -> p.blitz }
+}
+
+fun EloRatingType.color(): Color = when (this) {
+    EloRatingType.STANDARD -> PerfStandard
+    EloRatingType.RAPID -> PerfRapid
+    EloRatingType.BLITZ -> PerfBlitz
+}
+
+/** Icona che rappresenta la cadenza - stessa associazione ovunque compaia un punteggio
+ * Elo (qui, e nei badge dell'header in ChessoraNavHost.kt): orologio per lo Standard
+ * (tempo lungo e disteso), un fulmine "attenuato" per il Rapid, un fulmine pieno per il
+ * Blitz (il più veloce). */
+fun EloRatingType.icon(): androidx.compose.ui.graphics.vector.ImageVector = when (this) {
+    EloRatingType.STANDARD -> Icons.Default.AccessTime
+    EloRatingType.RAPID -> Icons.Default.Speed
+    EloRatingType.BLITZ -> Icons.Default.Bolt
+}
 
 @Composable
-fun PerformanceScreen(onIdentify: () -> Unit) {
+private fun EloRatingType.label(): String = when (this) {
+    EloRatingType.STANDARD -> stringResource(R.string.performance_standard)
+    EloRatingType.RAPID -> stringResource(R.string.performance_rapid)
+    EloRatingType.BLITZ -> stringResource(R.string.performance_blitz)
+}
+
+@Composable
+fun PerformanceScreen(onIdentify: () -> Unit, focus: EloRatingType? = null) {
     val viewModel = chessoraViewModel { app -> PerformanceViewModel(app.repository, app.clubPreferences) }
     val state by viewModel.state.collectAsState()
 
@@ -77,7 +121,7 @@ fun PerformanceScreen(onIdentify: () -> Unit) {
             )
             !data.hasFide -> CenteredMessage(message = stringResource(R.string.performance_no_fide))
             data.points.isEmpty() -> CenteredMessage(message = stringResource(R.string.performance_empty))
-            else -> PerformanceContent(data)
+            else -> PerformanceContent(data, focus)
         }
     }
 }
@@ -97,34 +141,32 @@ private fun CenteredMessage(message: String, actionLabel: String? = null, onActi
 }
 
 @Composable
-private fun PerformanceContent(data: PerformanceHistoryDto) {
+private fun PerformanceContent(data: PerformanceHistoryDto, focus: EloRatingType?) {
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text(
             stringResource(R.string.performance_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
         )
-        LatestValuesRow(data.points)
-        Legend(modifier = Modifier.padding(top = 12.dp))
+        LatestValuesRow(data.points, focus)
+        Legend(focus, modifier = Modifier.padding(top = 12.dp))
         Text(
             stringResource(R.string.performance_zoom_hint),
             style = MaterialTheme.typography.labelSmall,
             modifier = Modifier.padding(top = 8.dp),
         )
-        EloChartCard(points = data.points, modifier = Modifier.padding(top = 8.dp))
+        EloChartCard(points = data.points, focus = focus, modifier = Modifier.padding(top = 8.dp))
     }
 }
 
 @Composable
-private fun LatestValuesRow(points: List<PerformancePointDto>) {
-    val latestStandard = points.lastOrNull { it.standard != null }?.standard
-    val latestRapid = points.lastOrNull { it.rapid != null }?.rapid
-    val latestBlitz = points.lastOrNull { it.blitz != null }?.blitz
-
+private fun LatestValuesRow(points: List<PerformancePointDto>, focus: EloRatingType?) {
+    val types = focus?.let { listOf(it) } ?: EloRatingType.entries
     Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
-        LatestValueCell(stringResource(R.string.performance_standard), latestStandard, PerfStandard, Modifier.weight(1f))
-        LatestValueCell(stringResource(R.string.performance_rapid), latestRapid, PerfRapid, Modifier.weight(1f))
-        LatestValueCell(stringResource(R.string.performance_blitz), latestBlitz, PerfBlitz, Modifier.weight(1f))
+        types.forEach { type ->
+            val latest = points.lastOrNull { type.selector()(it) != null }?.let { type.selector()(it) }
+            LatestValueCell(type.label(), latest, type.color(), Modifier.weight(1f))
+        }
     }
 }
 
@@ -142,11 +184,10 @@ private fun LatestValueCell(label: String, value: Int?, color: Color, modifier: 
 }
 
 @Composable
-private fun Legend(modifier: Modifier = Modifier) {
+private fun Legend(focus: EloRatingType?, modifier: Modifier = Modifier) {
+    val types = focus?.let { listOf(it) } ?: EloRatingType.entries
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-        LegendItem(PerfStandard, stringResource(R.string.performance_standard))
-        LegendItem(PerfRapid, stringResource(R.string.performance_rapid))
-        LegendItem(PerfBlitz, stringResource(R.string.performance_blitz))
+        types.forEach { type -> LegendItem(type.color(), type.label()) }
     }
 }
 
@@ -170,7 +211,7 @@ private fun monthLabel(point: PerformancePointDto): String {
  * vive qui (non nel ViewModel: è pura interazione UI, non dati).
  */
 @Composable
-private fun EloChartCard(points: List<PerformancePointDto>, modifier: Modifier = Modifier) {
+private fun EloChartCard(points: List<PerformancePointDto>, focus: EloRatingType?, modifier: Modifier = Modifier) {
     var visibleFraction by remember { mutableFloatStateOf(1f) }
     var startFraction by remember { mutableFloatStateOf(0f) }
     var selectedIndex by remember { mutableStateOf<Int?>(null) }
@@ -187,6 +228,7 @@ private fun EloChartCard(points: List<PerformancePointDto>, modifier: Modifier =
         Column(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
             EloLineChart(
                 points = points,
+                focus = focus,
                 visibleFraction = visibleFraction,
                 startFraction = startFraction,
                 selectedIndex = selectedIndex,
@@ -225,6 +267,7 @@ private fun EloChartCard(points: List<PerformancePointDto>, modifier: Modifier =
 @Composable
 private fun EloLineChart(
     points: List<PerformancePointDto>,
+    focus: EloRatingType?,
     visibleFraction: Float,
     startFraction: Float,
     selectedIndex: Int?,
@@ -238,8 +281,10 @@ private fun EloLineChart(
     val visibleCount = (visibleFraction * n).roundToInt().coerceIn(minOf(2, n), n - startIndex)
     val visiblePoints = points.subList(startIndex, (startIndex + visibleCount).coerceAtMost(n))
 
-    val allValues = visiblePoints.flatMap { listOfNotNull(it.standard, it.rapid, it.blitz) }
-        .ifEmpty { points.flatMap { listOfNotNull(it.standard, it.rapid, it.blitz) } }
+    val relevantValues: (PerformancePointDto) -> List<Int> = { p ->
+        focus?.let { listOfNotNull(it.selector()(p)) } ?: listOfNotNull(p.standard, p.rapid, p.blitz)
+    }
+    val allValues = visiblePoints.flatMap(relevantValues).ifEmpty { points.flatMap(relevantValues) }
     if (allValues.isEmpty()) return
 
     val minY = allValues.min() - 20
@@ -300,9 +345,13 @@ private fun EloLineChart(
                     }
                 }
 
-                drawSeries({ it.standard }, PerfStandard)
-                drawSeries({ it.rapid }, PerfRapid)
-                drawSeries({ it.blitz }, PerfBlitz)
+                if (focus != null) {
+                    drawSeries(focus.selector(), focus.color())
+                } else {
+                    drawSeries({ it.standard }, PerfStandard)
+                    drawSeries({ it.rapid }, PerfRapid)
+                    drawSeries({ it.blitz }, PerfBlitz)
+                }
 
                 if (selected != null) {
                     val localIndex = points.indexOf(selected) - startIndex
@@ -319,7 +368,7 @@ private fun EloLineChart(
             }
 
             if (selected != null) {
-                SelectedPointTooltip(selected, modifier = Modifier.align(Alignment.TopStart).padding(8.dp))
+                SelectedPointTooltip(selected, focus, modifier = Modifier.align(Alignment.TopStart).padding(8.dp))
             }
         }
         Row(modifier = Modifier.fillMaxWidth().padding(top = 4.dp)) {
@@ -336,7 +385,8 @@ private fun EloLineChart(
 }
 
 @Composable
-private fun SelectedPointTooltip(point: PerformancePointDto, modifier: Modifier = Modifier) {
+private fun SelectedPointTooltip(point: PerformancePointDto, focus: EloRatingType?, modifier: Modifier = Modifier) {
+    val types = focus?.let { listOf(it) } ?: EloRatingType.entries
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
@@ -344,9 +394,7 @@ private fun SelectedPointTooltip(point: PerformancePointDto, modifier: Modifier 
             .padding(horizontal = 10.dp, vertical = 6.dp),
     ) {
         Text("${point.month.toString().padStart(2, '0')}/${point.year}", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
-        point.standard?.let { TooltipValueLine(stringResource(R.string.performance_standard), it, PerfStandard) }
-        point.rapid?.let { TooltipValueLine(stringResource(R.string.performance_rapid), it, PerfRapid) }
-        point.blitz?.let { TooltipValueLine(stringResource(R.string.performance_blitz), it, PerfBlitz) }
+        types.forEach { type -> type.selector()(point)?.let { TooltipValueLine(type.label(), it, type.color()) } }
     }
 }
 

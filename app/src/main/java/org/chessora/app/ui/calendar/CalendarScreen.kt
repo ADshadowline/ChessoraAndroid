@@ -1,8 +1,10 @@
 package org.chessora.app.ui.calendar
 
-import android.content.Intent
-import android.net.Uri
-import android.widget.Toast
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,7 +16,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -43,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import android.widget.Toast
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -59,11 +61,14 @@ import org.chessora.app.ui.theme.ChessoraGold
 
 private val ISO_DATE = DateTimeFormatter.ISO_LOCAL_DATE
 
+/** [onOpenBando] apre il bando DENTRO l'app (BandoViewerScreen) - nessuna iscrizione
+ * possibile da qui, solo consultazione (vedi ChessoraNavHost). */
 @Composable
-fun CalendarScreen(club: String) {
-    val viewModel = chessoraViewModel { app -> CalendarViewModel(app.repository) }
+fun CalendarScreen(club: String, onOpenBando: (url: String) -> Unit) {
+    val viewModel = chessoraViewModel { app -> CalendarViewModel(app.repository, app.clubPreferences) }
     val state by viewModel.state.collectAsState()
     val month by viewModel.month.collectAsState()
+    val registeredTournamentIds by viewModel.registeredTournamentIds.collectAsState()
     var selectedDate by remember { mutableStateOf<LocalDate?>(LocalDate.now()) }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -80,11 +85,18 @@ fun CalendarScreen(club: String) {
         MonthHeader(month = month, onPrevious = { viewModel.goToMonth(-1) }, onNext = { viewModel.goToMonth(1) })
         UiStateContent(state = state, onRetry = { viewModel.retry() }) { events ->
             val eventsByDate = events.groupBy { it.eventDate }
+            // Un giorno "lampeggia" se una delle sue righe è un torneo (o un fratello
+            // dello stesso evento, vedi tournamentEventGroupId) a cui il chiamante
+            // risulta preiscritto - stesso Set già usato in Home per il segno di spunta.
+            val preRegisteredDates = events
+                .filter { it.idTournament != null && it.idTournament in registeredTournamentIds }
+                .mapTo(mutableSetOf()) { it.eventDate }
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 item {
                     MonthGrid(
                         month = month,
                         eventsByDate = eventsByDate,
+                        preRegisteredDates = preRegisteredDates,
                         selectedDate = selectedDate,
                         onDaySelected = { selectedDate = it },
                     )
@@ -116,7 +128,7 @@ fun CalendarScreen(club: String) {
                                     scope.launch {
                                         val bandoUrl = viewModel.resolveBandoUrl(event, club)
                                         if (bandoUrl != null) {
-                                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(bandoUrl)))
+                                            onOpenBando(bandoUrl)
                                         } else {
                                             Toast.makeText(context, context.getString(R.string.home_no_bando), Toast.LENGTH_SHORT).show()
                                         }
@@ -157,6 +169,7 @@ private fun MonthHeader(month: YearMonth, onPrevious: () -> Unit, onNext: () -> 
 private fun MonthGrid(
     month: YearMonth,
     eventsByDate: Map<String, List<CalendarEvent>>,
+    preRegisteredDates: Set<String>,
     selectedDate: LocalDate?,
     onDaySelected: (LocalDate) -> Unit,
 ) {
@@ -188,6 +201,7 @@ private fun MonthGrid(
                             DayCell(
                                 day = dayNum,
                                 hasEvents = eventsByDate.containsKey(date.format(ISO_DATE)),
+                                isPreRegistered = date.format(ISO_DATE) in preRegisteredDates,
                                 isToday = date == today,
                                 isSelected = date == selectedDate,
                                 isHoliday = isItalianHoliday(date),
@@ -205,6 +219,7 @@ private fun MonthGrid(
 private fun DayCell(
     day: Int,
     hasEvents: Boolean,
+    isPreRegistered: Boolean,
     isToday: Boolean,
     isSelected: Boolean,
     isHoliday: Boolean,
@@ -226,6 +241,24 @@ private fun DayCell(
             .clip(CircleShape)
             .background(backgroundColor)
             .border(if (isToday && !isSelected) 1.5.dp else 0.dp, ChessoraGold, CircleShape)
+            .let {
+                // Bagliore lento e discreto sul bordo per il giorno a cui si è preiscritti -
+                // un ciclo di ~2.4s tra appena visibile e ben visibile, mai un lampeggio a
+                // scatti. Animazione infinita creata solo per i giorni preiscritti (non per
+                // tutte le celle del mese), altrimenti gira inutilmente su ~42 celle.
+                if (isPreRegistered) {
+                    val infiniteTransition = rememberInfiniteTransition(label = "preRegisteredGlow")
+                    val glowAlpha by infiniteTransition.animateFloat(
+                        initialValue = 0.25f,
+                        targetValue = 0.9f,
+                        animationSpec = infiniteRepeatable(animation = tween(2400), repeatMode = RepeatMode.Reverse),
+                        label = "preRegisteredGlowAlpha",
+                    )
+                    it.border(2.dp, ChessoraGold.copy(alpha = glowAlpha), CircleShape)
+                } else {
+                    it
+                }
+            }
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
@@ -242,10 +275,6 @@ private val FIXED_ITALIAN_HOLIDAYS = setOf(
     1 to 1, 1 to 6, 4 to 25, 5 to 1, 6 to 2, 8 to 15, 11 to 1, 12 to 8, 12 to 25, 12 to 26,
 )
 
-/** Domenica + festività nazionali italiane a data fissa + Pasqua/Pasquetta
- * (calcolate con l'algoritmo del computus gregoriano) - solo per colorare
- * diversamente il numero del giorno nel calendario, nessun'altra logica
- * dipende da questo. */
 private fun isItalianHoliday(date: LocalDate): Boolean {
     if (date.dayOfWeek == DayOfWeek.SUNDAY) return true
     if ((date.monthValue to date.dayOfMonth) in FIXED_ITALIAN_HOLIDAYS) return true

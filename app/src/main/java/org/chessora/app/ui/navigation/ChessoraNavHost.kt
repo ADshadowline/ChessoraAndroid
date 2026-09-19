@@ -1,6 +1,9 @@
 package org.chessora.app.ui.navigation
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,8 +12,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.HowToReg
 import androidx.compose.material.icons.filled.MoreHoriz
@@ -47,8 +55,11 @@ import org.chessora.app.data.local.ClubPreferences
 import org.chessora.app.data.remote.NetworkModule
 import org.chessora.app.data.remote.dto.SiteBranding
 import org.chessora.app.ui.board.BoardScreen
+import org.chessora.app.ui.calendar.BandoViewerScreen
 import org.chessora.app.ui.calendar.CalendarScreen
 import org.chessora.app.ui.common.chessoraViewModel
+import org.chessora.app.ui.home.DesktopHomeCallbacks
+import org.chessora.app.ui.home.EventsListScreen
 import org.chessora.app.ui.home.HomeScreen
 import org.chessora.app.ui.identity.IdentityScreen
 import org.chessora.app.ui.messaging.ConversationScreen
@@ -59,14 +70,21 @@ import org.chessora.app.ui.news.NewsDetailScreen
 import org.chessora.app.ui.news.NewsListScreen
 import org.chessora.app.ui.onboarding.MembershipQuestionScreen
 import org.chessora.app.ui.onboarding.OnboardingScreen
+import org.chessora.app.ui.performance.EloRatingType
 import org.chessora.app.ui.performance.PerformanceScreen
+import org.chessora.app.ui.performance.color
+import org.chessora.app.ui.performance.icon
 import org.chessora.app.ui.profile.ProfilePhotoScreen
 import org.chessora.app.ui.ranking.RankingScreen
 import org.chessora.app.ui.registrations.RegistrationsScreen
+import org.chessora.app.ui.session.EloRatingSummary
+import org.chessora.app.ui.session.EloSummary
+import org.chessora.app.ui.session.EloTrend
 import org.chessora.app.ui.session.SessionViewModel
 import org.chessora.app.ui.settings.SettingsScreen
 import org.chessora.app.ui.shop.ShopScreen
 import org.chessora.app.ui.splash.SplashScreen
+import org.chessora.app.ui.theme.ChessoraGold
 import org.chessora.app.ui.tournaments.TournamentDetailScreen
 
 private data class BottomTab(val route: String, val labelRes: Int, val icon: androidx.compose.ui.graphics.vector.ImageVector)
@@ -101,7 +119,12 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
-    val showBottomBar = currentRoute in ChessoraDestinations.BOTTOM_BAR_ROUTES
+    val displayMode by sessionViewModel.displayMode.collectAsState()
+    val showTopBar = currentRoute in ChessoraDestinations.BOTTOM_BAR_ROUTES
+    // In visualizzazione desktop la navigazione avviene tramite la griglia di icone della
+    // Home (vedi ui/home/HomeScreen.kt), mai dalla bottom bar - nascosta su ogni schermata
+    // (la barra superiore con branding/soci/Elo resta invece visibile).
+    val showBottomBar = showTopBar && displayMode != ClubPreferences.DISPLAY_MODE_DESKTOP
 
     // Instradamento automatico oltre lo SPLASH (che decide da solo la prima volta,
     // vedi il composable SPLASH sotto): se da ONBOARDING un circolo risulta già
@@ -132,15 +155,27 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
     val branding by sessionViewModel.branding.collectAsState()
     val identifiedPlayerName by sessionViewModel.identifiedPlayerName.collectAsState()
     val membersCount by sessionViewModel.membersCount.collectAsState()
+    val eloSummary by sessionViewModel.eloSummary.collectAsState()
+    val isTournamentManager by sessionViewModel.isTournamentManager.collectAsState()
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
-            if (showBottomBar) {
+            if (showTopBar) {
                 ClubBrandingTopBar(
                     branding = branding,
                     identifiedPlayerName = identifiedPlayerName,
                     membersCount = membersCount,
+                    eloSummary = eloSummary,
                     isPlatformMode = selectedClub == ClubPreferences.PLATFORM_CLUB_CODE,
+                    onEloClick = { type -> navController.navigate(ChessoraDestinations.performance(type.routeValue)) },
+                    isTournamentManager = isTournamentManager,
+                    // Nessun login/gestione nativa in app (nessun account con password
+                    // esiste qui) - apre il wizard nel browser, dove il gestore usa le sue
+                    // credenziali separate (create dall'admin del circolo).
+                    onManageTournamentsClick = {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.chessora.org/wizard/")))
+                    },
                 )
             }
         },
@@ -175,7 +210,8 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
         ) {
             composable(ChessoraDestinations.SPLASH) {
                 val clubLogoUrl = NetworkModule.resolveAssetUrl(branding?.logoImage)
-                SplashScreen(clubLogoUrl = clubLogoUrl, onFinished = {
+                val splashBackgroundUri by sessionViewModel.splashBackgroundUri.collectAsState()
+                SplashScreen(clubLogoUrl = clubLogoUrl, backgroundUri = splashBackgroundUri, onFinished = {
                     val target = when {
                         selectedClub == null -> ChessoraDestinations.MEMBERSHIP_QUESTION
                         !identityResolved -> ChessoraDestinations.IDENTITY
@@ -223,6 +259,27 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                     HomeScreen(
                         club = selectedClub?.takeIf { it != ClubPreferences.PLATFORM_CLUB_CODE },
                         onOpenTournament = { idTournament -> navController.navigate(ChessoraDestinations.tournamentDetail(idTournament)) },
+                        isPlatformMode = selectedClub == ClubPreferences.PLATFORM_CLUB_CODE,
+                        desktop = DesktopHomeCallbacks(
+                            onOpenEvents = { navController.navigate(ChessoraDestinations.EVENTS) },
+                            onOpenCalendar = { navController.navigate(ChessoraDestinations.CALENDAR) },
+                            onOpenNews = { navController.navigate(ChessoraDestinations.NEWS_LIST) },
+                            onOpenRegistrations = { navController.navigate(ChessoraDestinations.REGISTRATIONS) },
+                            onOpenMessaging = { navController.navigate(ChessoraDestinations.MESSAGING) },
+                            onOpenRanking = { navController.navigate(ChessoraDestinations.RANKING) },
+                            onOpenPerformance = { navController.navigate(ChessoraDestinations.performance()) },
+                            onOpenBoard = { navController.navigate(ChessoraDestinations.BOARD) },
+                            onOpenShop = { navController.navigate(ChessoraDestinations.SHOP) },
+                            onOpenSettings = { navController.navigate(ChessoraDestinations.SETTINGS) },
+                        ),
+                    )
+                }
+            }
+            composable(ChessoraDestinations.EVENTS) {
+                RequireClub(selectedClub) {
+                    EventsListScreen(
+                        club = selectedClub?.takeIf { it != ClubPreferences.PLATFORM_CLUB_CODE },
+                        onOpenTournament = { idTournament -> navController.navigate(ChessoraDestinations.tournamentDetail(idTournament)) },
                     )
                 }
             }
@@ -254,10 +311,26 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                 }
             }
             composable(ChessoraDestinations.CALENDAR) {
-                RequireClub(selectedClub) { club -> CalendarScreen(club = club) }
+                RequireClub(selectedClub) { club ->
+                    CalendarScreen(
+                        club = club,
+                        onOpenBando = { url -> navController.navigate(ChessoraDestinations.bandoViewer(url)) },
+                    )
+                }
             }
-            composable(ChessoraDestinations.PERFORMANCE) {
-                PerformanceScreen(onIdentify = { navController.navigate(ChessoraDestinations.IDENTITY) })
+            composable(
+                ChessoraDestinations.BANDO_VIEWER,
+                arguments = listOf(navArgument("url") { type = NavType.StringType }),
+            ) { backStack ->
+                val encodedUrl = backStack.arguments?.getString("url") ?: return@composable
+                BandoViewerScreen(url = java.net.URLDecoder.decode(encodedUrl, "UTF-8"))
+            }
+            composable(
+                ChessoraDestinations.PERFORMANCE,
+                arguments = listOf(navArgument("focus") { type = NavType.StringType; nullable = true; defaultValue = null }),
+            ) { backStack ->
+                val focus = EloRatingType.fromRouteValue(backStack.arguments?.getString("focus"))
+                PerformanceScreen(onIdentify = { navController.navigate(ChessoraDestinations.IDENTITY) }, focus = focus)
             }
             composable(ChessoraDestinations.PROFILE_PHOTO) {
                 ProfilePhotoScreen(onIdentify = { navController.navigate(ChessoraDestinations.IDENTITY) })
@@ -319,8 +392,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                 MoreScreen(
                     onCalendarClick = { navController.navigate(ChessoraDestinations.CALENDAR) },
                     onRankingClick = { navController.navigate(ChessoraDestinations.RANKING) },
-                    onPerformanceClick = { navController.navigate(ChessoraDestinations.PERFORMANCE) },
-                    onProfilePhotoClick = { navController.navigate(ChessoraDestinations.PROFILE_PHOTO) },
+                    onPerformanceClick = { navController.navigate(ChessoraDestinations.performance()) },
                     onBoardClick = { navController.navigate(ChessoraDestinations.BOARD) },
                     onShopClick = { navController.navigate(ChessoraDestinations.SHOP) },
                     onSettingsClick = { navController.navigate(ChessoraDestinations.SETTINGS) },
@@ -328,7 +400,14 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                 )
             }
             composable(ChessoraDestinations.BOARD) {
-                RequireClub(selectedClub) { club -> BoardScreen(club = club) }
+                RequireClub(selectedClub) { club ->
+                    BoardScreen(
+                        club = club,
+                        onOpenConversation = { idPlayer, displayName ->
+                            navController.navigate(ChessoraDestinations.conversation(-1, isClubConversation = false, recipientId = idPlayer, displayName = displayName))
+                        },
+                    )
+                }
             }
             composable(ChessoraDestinations.SHOP) {
                 RequireClub(selectedClub) { club -> ShopScreen(club = club) }
@@ -353,6 +432,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                         // back button deve tornare a Impostazioni, non a Home.
                         navController.navigate(ChessoraDestinations.IDENTITY)
                     },
+                    onOpenProfilePhoto = { navController.navigate(ChessoraDestinations.PROFILE_PHOTO) },
                 )
             }
         }
@@ -363,22 +443,38 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
  * Barra in alto con nome e logo del circolo scelto (docs/android-app-spec.md
  * §4: "Aspetto dell'app adattato al tema/branding del circolo scelto"). Mostra
  * solo il nome del brand Chessora finché [branding] non è ancora stato
- * caricato da GET /api/site-settings (vedi SessionViewModel.loadBranding).
+ * caricato da GET /api/site-settings (vedi SessionViewModel.loadBranding). Il
+ * numero soci è mostrato tra parentesi subito dopo il nome del circolo (es.
+ * "Circolo Scacchi Torino (125 soci)"), non più in una riga separata.
  *
- * Sotto la barra, una riga con il numero di soci del circolo (a sinistra) e -
- * se [identifiedPlayerName] è valorizzato (schermata di identificazione, vedi
- * ui/identity/) - il nome riconosciuto (a destra): è il punto dell'app sempre
- * visibile (ogni schermata con bottom bar) dove l'identificazione "si vede",
- * oltre alle Impostazioni.
+ * Sotto la barra, allineati a sinistra: il nome del socio identificato (se
+ * valorizzato, vedi ui/identity/) seguito dai suoi tre punteggi Elo (Standard/
+ * Rapid/Blitz, [eloSummary]) con una freccia di trend - click su un punteggio
+ * apre "Andamento Elo" già filtrato su quella cadenza ([onEloClick]).
  */
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
-private fun ClubBrandingTopBar(branding: SiteBranding?, identifiedPlayerName: String? = null, membersCount: Int? = null, isPlatformMode: Boolean = false) {
+private fun ClubBrandingTopBar(
+    branding: SiteBranding?,
+    identifiedPlayerName: String? = null,
+    membersCount: Int? = null,
+    eloSummary: EloSummary? = null,
+    isPlatformMode: Boolean = false,
+    onEloClick: (EloRatingType) -> Unit = {},
+    isTournamentManager: Boolean = false,
+    onManageTournamentsClick: () -> Unit = {},
+) {
     Column {
         TopAppBar(
             title = {
-                val name = branding?.let { "${it.namePrefix}${it.nameHighlight}" }?.takeIf { it.isNotBlank() }
-                Text(name ?: stringResource(R.string.app_name))
+                val clubName = branding?.let { "${it.namePrefix}${it.nameHighlight}" }?.takeIf { it.isNotBlank() }
+                val title = clubName ?: stringResource(R.string.app_name)
+                val withCount = if (clubName != null && membersCount != null) {
+                    "$title (${stringResource(R.string.topbar_members_count, membersCount)})"
+                } else {
+                    title
+                }
+                Text(withCount)
             },
             navigationIcon = {
                 val logoUrl = NetworkModule.resolveAssetUrl(branding?.logoImage)
@@ -399,22 +495,27 @@ private fun ClubBrandingTopBar(branding: SiteBranding?, identifiedPlayerName: St
                 }
             },
         )
-        if (membersCount != null || identifiedPlayerName != null) {
+        if (identifiedPlayerName != null) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 6.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (membersCount != null) {
-                    Text(
-                        stringResource(R.string.topbar_members_count, membersCount),
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                } else {
-                    Spacer(modifier = Modifier.size(1.dp))
+                IdentifiedBadge(name = identifiedPlayerName)
+                if (eloSummary != null) {
+                    eloSummary.standard?.let { EloBadge(EloRatingType.STANDARD, it, onEloClick) }
+                    eloSummary.rapid?.let { EloBadge(EloRatingType.RAPID, it, onEloClick) }
+                    eloSummary.blitz?.let { EloBadge(EloRatingType.BLITZ, it, onEloClick) }
                 }
-                if (identifiedPlayerName != null) {
-                    IdentifiedBadge(name = identifiedPlayerName)
+                if (isTournamentManager) {
+                    Icon(
+                        imageVector = Icons.Default.EmojiEvents,
+                        contentDescription = stringResource(R.string.manage_tournaments),
+                        tint = ChessoraGold,
+                        modifier = Modifier
+                            .padding(start = 4.dp)
+                            .clickable(onClick = onManageTournamentsClick)
+                            .padding(6.dp),
+                    )
                 }
             }
         }
@@ -427,7 +528,7 @@ private fun IdentifiedBadge(name: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .padding(end = 12.dp)
+            .padding(end = 8.dp)
             .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(50))
             .padding(horizontal = 10.dp, vertical = 5.dp),
     ) {
@@ -442,6 +543,38 @@ private fun IdentifiedBadge(name: String) {
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(start = 6.dp),
         )
+    }
+}
+
+/** Un punteggio Elo compatto con la sua freccia di trend, cliccabile per aprire
+ * "Andamento Elo" già a fuoco su questa cadenza. */
+@Composable
+private fun EloBadge(type: EloRatingType, summary: EloRatingSummary, onClick: (EloRatingType) -> Unit) {
+    val (arrow, tint) = when (summary.trend) {
+        EloTrend.UP -> "▲" to Color(0xFF4CAF50)
+        EloTrend.DOWN -> "▼" to MaterialTheme.colorScheme.error
+        EloTrend.FLAT -> "" to MaterialTheme.colorScheme.onSurfaceVariant
+    }
+    val typeColor = type.color()
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .padding(end = 6.dp)
+            .clip(RoundedCornerShape(50))
+            .background(typeColor.copy(alpha = 0.22f))
+            .clickable { onClick(type) }
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+    ) {
+        Icon(type.icon(), contentDescription = null, tint = typeColor, modifier = Modifier.size(14.dp))
+        Text(
+            summary.value.toString(),
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 4.dp),
+        )
+        if (arrow.isNotEmpty()) {
+            Text(arrow, style = MaterialTheme.typography.labelSmall, color = tint, modifier = Modifier.padding(start = 3.dp))
+        }
     }
 }
 

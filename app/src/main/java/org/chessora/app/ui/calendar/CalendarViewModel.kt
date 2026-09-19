@@ -7,7 +7,9 @@ import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.chessora.app.data.local.ClubPreferences
 import org.chessora.app.data.remote.NetworkModule
 import org.chessora.app.data.remote.dto.CalendarEvent
 import org.chessora.app.data.repository.ChessoraRepository
@@ -20,7 +22,10 @@ import org.chessora.app.ui.common.toUiState
  * durante il caricamento del mese successivo) cosi' l'intestazione/le frecce
  * restano utilizzabili senza aspettare la risposta del server.
  */
-class CalendarViewModel(private val repository: ChessoraRepository) : ViewModel() {
+class CalendarViewModel(
+    private val repository: ChessoraRepository,
+    private val clubPreferences: ClubPreferences,
+) : ViewModel() {
     private val isoDate = DateTimeFormatter.ISO_LOCAL_DATE
 
     private val _month = MutableStateFlow(YearMonth.now())
@@ -29,12 +34,19 @@ class CalendarViewModel(private val repository: ChessoraRepository) : ViewModel(
     private val _state = MutableStateFlow<UiState<List<CalendarEvent>>>(UiState.Loading)
     val state: StateFlow<UiState<List<CalendarEvent>>> = _state.asStateFlow()
 
+    /** Id dei tornei a cui il chiamante risulta preiscritto - per l'evidenziazione
+     * "lampeggiante" del giorno (vedi CalendarScreen.DayCell). Stessa logica già usata
+     * in HomeViewModel.myPreRegisteredTournamentIds. */
+    private val _registeredTournamentIds = MutableStateFlow<Set<Int>>(emptySet())
+    val registeredTournamentIds: StateFlow<Set<Int>> = _registeredTournamentIds.asStateFlow()
+
     private var club: String? = null
 
     fun load(club: String) {
         if (this.club == club) return
         this.club = club
         fetchMonth(_month.value)
+        viewModelScope.launch { _registeredTournamentIds.value = myPreRegisteredTournamentIds() }
     }
 
     fun goToMonth(deltaMonths: Long) {
@@ -52,6 +64,16 @@ class CalendarViewModel(private val repository: ChessoraRepository) : ViewModel(
         val idEvento = event.idEvento ?: return null
         val bandoPath = repository.getEventoBando(idEvento, club).getOrNull()?.bandoPath ?: return null
         return NetworkModule.resolveAssetUrl(bandoPath)
+    }
+
+    private suspend fun myPreRegisteredTournamentIds(): Set<Int> {
+        val contactId = clubPreferences.preRegistrationContactId.first()
+        val idPlayer = clubPreferences.identifiedPlayerId.first()
+        val email = clubPreferences.authenticatedEmail.first()
+        val phone = clubPreferences.authenticatedPhone.first()
+        if (contactId == null && idPlayer == null && email == null && phone == null) return emptySet()
+        return repository.getMyPreRegistrations(contactId, idPlayer, email, phone)
+            .getOrNull()?.map { it.id }?.toSet() ?: emptySet()
     }
 
     private fun fetchMonth(yearMonth: YearMonth) {

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.ShowChart
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.People
@@ -27,14 +26,14 @@ import org.chessora.app.R
  * Impostazioni) in un unico menu invece di occupare altri slot nella bottom
  * bar - vedi ui/navigation/ChessoraDestinations.kt. Il Calendario è stato
  * spostato qui (il suo slot in bottom bar ora è "Iscrizioni",
- * ui/registrations/) su richiesta esplicita.
+ * ui/registrations/) su richiesta esplicita. "La mia foto" è stata spostata
+ * dentro Impostazioni (ui/settings/SettingsScreen.kt).
  */
 @Composable
 fun MoreScreen(
     onCalendarClick: () -> Unit,
     onRankingClick: () -> Unit,
     onPerformanceClick: () -> Unit,
-    onProfilePhotoClick: () -> Unit,
     onBoardClick: () -> Unit,
     onShopClick: () -> Unit,
     onSettingsClick: () -> Unit,
@@ -63,12 +62,6 @@ fun MoreScreen(
             leadingContent = { Icon(Icons.AutoMirrored.Filled.ShowChart, contentDescription = null) },
             trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
             modifier = Modifier.clickable(onClick = onPerformanceClick),
-        )
-        ListItem(
-            headlineContent = { Text(stringResource(R.string.more_profile_photo)) },
-            leadingContent = { Icon(Icons.Default.AccountCircle, contentDescription = null) },
-            trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
-            modifier = Modifier.clickable(onClick = onProfilePhotoClick),
         )
         if (!isPlatformMode) {
             ListItem(

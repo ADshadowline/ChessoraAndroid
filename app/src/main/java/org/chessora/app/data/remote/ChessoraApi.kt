@@ -14,6 +14,7 @@ import org.chessora.app.data.remote.dto.IdentifyNationalRequestDto
 import org.chessora.app.data.remote.dto.IdentifyRequestDto
 import org.chessora.app.data.remote.dto.IdentifyResultDto
 import org.chessora.app.data.remote.dto.MarkReadRequest
+import org.chessora.app.data.remote.dto.NetworkNewsItem
 import org.chessora.app.data.remote.dto.NewsArticle
 import org.chessora.app.data.remote.dto.PerformanceHistoryDto
 import org.chessora.app.data.remote.dto.NewsComment
@@ -68,12 +69,16 @@ interface ChessoraApi {
     // ---------- News ----------
 
     @GET("api/news")
-    suspend fun getNews(@Query("club") club: String, @Query("limit") limit: Int = 30): List<NewsArticle>
+    suspend fun getNews(@Query("club") club: String, @Query("limit") limit: Int = 30, @Query("search") search: String? = null): List<NewsArticle>
 
     /** Ultime [limit] news su tutti i circoli attivi - scheda News in "modalità
      * piattaforma" (nessun circolo scelto, vedi ui/onboarding/MembershipQuestionScreen.kt). */
     @GET("api/news/all-clubs")
-    suspend fun getNewsAllClubs(@Query("limit") limit: Int = 30): List<NewsArticle>
+    suspend fun getNewsAllClubs(@Query("limit") limit: Int = 30, @Query("search") search: String? = null): List<NewsArticle>
+
+    /** Notizie FIDE/globali (filtro "Mondo") - separate dalle news di circolo sopra. */
+    @GET("api/network-news")
+    suspend fun getNetworkNews(@Query("limit") limit: Int = 30, @Query("search") search: String? = null): List<NetworkNewsItem>
 
     @GET("api/news/{idNews}/comments")
     suspend fun getNewsComments(@Path("idNews") idNews: Int): List<NewsComment>
@@ -173,6 +178,12 @@ interface ChessoraApi {
 
     @DELETE("api/players/{idPlayer}/photo")
     suspend fun deletePlayerPhoto(@Path("idPlayer") idPlayer: Int)
+
+    /** Ruoli organizzativi pubblici del socio in questo circolo (es. "Responsabile dei
+     * tornei") - usato per mostrare l'icona "Gestione tornei" in ui/session/SessionViewModel.kt,
+     * nessun login richiesto (stesso livello di fiducia di /identify). */
+    @GET("api/players/{idPlayer}/roles")
+    suspend fun getPlayerRoles(@Path("idPlayer") idPlayer: Int, @Query("club") club: String): List<String>
 
     // ---------- Messaggi (ui/messaging/) ----------
     // Pubblici come tutto il resto: il chiamante fornisce il proprio idPlayer, già

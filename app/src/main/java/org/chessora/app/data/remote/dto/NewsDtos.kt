@@ -30,3 +30,16 @@ data class NewsComment(
     val text: String,
     val createdAt: String,
 )
+
+/** Specchio di Chessora.Contracts.NetworkNews.NetworkNewsItemDto (GET
+ * /api/network-news) - notizie FIDE/globali, non di un circolo specifico (filtro
+ * "Mondo" della schermata News). A differenza di [NewsArticle] non ha un corpo articolo
+ * proprio: [link] punta al contenuto originale esterno, aperto fuori dall'app. */
+@Serializable
+data class NetworkNewsItem(
+    val id: Int,
+    val title: String,
+    val createdAt: String,
+    val link: String? = null,
+    val source: String,
+)
