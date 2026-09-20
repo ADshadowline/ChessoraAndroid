@@ -71,6 +71,14 @@ class HomeViewModel(
     val desktopBackgroundUri: StateFlow<String?> = clubPreferences.desktopBackgroundUri
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
+    /** Ordine/visibilità delle icone scelti in ui/settings/IconSettingsScreen.kt - vedi
+     * DesktopHomeGrid.applyIconPreferences. */
+    val desktopIconOrder: StateFlow<List<String>> = clubPreferences.desktopIconOrder
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val desktopHiddenIcons: StateFlow<Set<String>> = clubPreferences.desktopHiddenIcons
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptySet())
+
     private var loadedForClub: String? = null
     private var hasLoadedOnce = false
 

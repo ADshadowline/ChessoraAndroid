@@ -32,6 +32,9 @@ object ChessoraDestinations {
     const val BOARD = "board"
     const val SHOP = "shop"
     const val SETTINGS = "settings"
+    /** Elenco riordinabile/attivabile delle icone della Home desktop - vedi
+     * ui/settings/IconSettingsScreen.kt, raggiungibile solo da Impostazioni. */
+    const val ICON_SETTINGS = "icon-settings"
     // Non più in bottom bar (spostati dentro "Altro") - raggiungibili solo da lì,
     // come Direttivo/Negozio.
     const val CALENDAR = "calendar"

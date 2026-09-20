@@ -57,6 +57,8 @@ class ClubPreferences(context: Context) {
         val DISPLAY_MODE = stringPreferencesKey("display_mode")
         val SPLASH_BACKGROUND_URI = stringPreferencesKey("splash_background_uri")
         val DESKTOP_BACKGROUND_URI = stringPreferencesKey("desktop_background_uri")
+        val DESKTOP_ICON_ORDER = stringPreferencesKey("desktop_icon_order")
+        val DESKTOP_HIDDEN_ICONS = stringPreferencesKey("desktop_hidden_icons")
     }
 
     val selectedClub: Flow<String?> = dataStore.data.map { it[Keys.SELECTED_CLUB_CODE] }
@@ -111,6 +113,33 @@ class ClubPreferences(context: Context) {
      * restano leggibili anche dopo il riavvio del processo. */
     val splashBackgroundUri: Flow<String?> = dataStore.data.map { it[Keys.SPLASH_BACKGROUND_URI] }
     val desktopBackgroundUri: Flow<String?> = dataStore.data.map { it[Keys.DESKTOP_BACKGROUND_URI] }
+
+    /** Ordine personalizzato delle icone della Home desktop (id separati da virgola -
+     * vedi ui/home/HomeScreen.kt DESKTOP_ICON_DESCRIPTORS), scelto dall'utente in
+     * ui/settings/IconSettingsScreen.kt. Lista vuota = nessuna personalizzazione,
+     * resta l'ordine di default; un id assente qui (icona aggiunta in una versione
+     * successiva) viene sempre accodato in fondo, mai perso. */
+    val desktopIconOrder: Flow<List<String>> = dataStore.data.map {
+        it[Keys.DESKTOP_ICON_ORDER]?.split(',')?.filter { id -> id.isNotBlank() } ?: emptyList()
+    }
+
+    /** Id delle icone della Home desktop nascoste dall'utente (stesso elenco di id di
+     * [desktopIconOrder]) - vedi ui/settings/IconSettingsScreen.kt. */
+    val desktopHiddenIcons: Flow<Set<String>> = dataStore.data.map {
+        it[Keys.DESKTOP_HIDDEN_ICONS]?.split(',')?.filter { id -> id.isNotBlank() }?.toSet() ?: emptySet()
+    }
+
+    suspend fun setDesktopIconOrder(order: List<String>) {
+        dataStore.edit { it[Keys.DESKTOP_ICON_ORDER] = order.joinToString(",") }
+    }
+
+    suspend fun setDesktopIconHidden(id: String, hidden: Boolean) {
+        dataStore.edit { prefs ->
+            val current = prefs[Keys.DESKTOP_HIDDEN_ICONS]?.split(',')?.filter { it.isNotBlank() }?.toMutableSet() ?: mutableSetOf()
+            if (hidden) current.add(id) else current.remove(id)
+            prefs[Keys.DESKTOP_HIDDEN_ICONS] = current.joinToString(",")
+        }
+    }
 
     suspend fun setDisplayMode(mode: String) {
         dataStore.edit { it[Keys.DISPLAY_MODE] = mode }

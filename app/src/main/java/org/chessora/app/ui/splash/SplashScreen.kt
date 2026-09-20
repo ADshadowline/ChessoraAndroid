@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -141,41 +142,53 @@ fun SplashScreen(clubLogoUrl: String? = null, backgroundUri: String? = null, onF
         }
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            val iconModifier = Modifier
-                .size(140.dp)
-                .graphicsLayer {
-                    alpha = iconAlpha.value
-                    scaleX = iconScale.value
-                    scaleY = iconScale.value
+            // Riquadro bianco semi-trasparente dietro simbolo + scritta "CHESSORA":
+            // garantisce leggibilità anche quando l'immagine di apertura è quella
+            // personalizzata dall'utente (Impostazioni > Immagine di apertura), che
+            // potrebbe non contrastare abbastanza con logo/testo scuri.
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(28.dp))
+                    .background(Color.White.copy(alpha = 0.55f))
+                    .padding(horizontal = 32.dp, vertical = 24.dp),
+            ) {
+                val iconModifier = Modifier
+                    .size(140.dp)
+                    .graphicsLayer {
+                        alpha = iconAlpha.value
+                        scaleX = iconScale.value
+                        scaleY = iconScale.value
+                    }
+                    .padding(bottom = 4.dp)
+                if (clubLogoUrl != null) {
+                    AsyncImage(
+                        model = clubLogoUrl,
+                        contentDescription = null,
+                        modifier = iconModifier.clip(CircleShape),
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(R.drawable.ic_launcher_foreground),
+                        contentDescription = null,
+                        modifier = iconModifier,
+                    )
                 }
-                .padding(bottom = 4.dp)
-            if (clubLogoUrl != null) {
-                AsyncImage(
-                    model = clubLogoUrl,
-                    contentDescription = null,
-                    modifier = iconModifier.clip(CircleShape),
-                )
-            } else {
-                Image(
-                    painter = painterResource(R.drawable.ic_launcher_foreground),
-                    contentDescription = null,
-                    modifier = iconModifier,
+                Text(
+                    text = "CHESSORA",
+                    color = ChessoraInk.copy(alpha = logoAlpha.value),
+                    fontSize = 34.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 6.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .graphicsLayer {
+                            scaleX = logoScale.value
+                            scaleY = logoScale.value
+                        },
                 )
             }
-            Text(
-                text = "CHESSORA",
-                color = ChessoraInk.copy(alpha = logoAlpha.value),
-                fontSize = 34.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 6.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .graphicsLayer {
-                        scaleX = logoScale.value
-                        scaleY = logoScale.value
-                    },
-            )
             Box(
                 modifier = Modifier
                     .padding(top = 14.dp)

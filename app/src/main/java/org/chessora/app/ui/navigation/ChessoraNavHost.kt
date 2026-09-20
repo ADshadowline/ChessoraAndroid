@@ -81,6 +81,7 @@ import org.chessora.app.ui.session.EloRatingSummary
 import org.chessora.app.ui.session.EloSummary
 import org.chessora.app.ui.session.EloTrend
 import org.chessora.app.ui.session.SessionViewModel
+import org.chessora.app.ui.settings.IconSettingsScreen
 import org.chessora.app.ui.settings.SettingsScreen
 import org.chessora.app.ui.shop.ShopScreen
 import org.chessora.app.ui.splash.SplashScreen
@@ -433,7 +434,11 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                         navController.navigate(ChessoraDestinations.IDENTITY)
                     },
                     onOpenProfilePhoto = { navController.navigate(ChessoraDestinations.PROFILE_PHOTO) },
+                    onOpenIconSettings = { navController.navigate(ChessoraDestinations.ICON_SETTINGS) },
                 )
+            }
+            composable(ChessoraDestinations.ICON_SETTINGS) {
+                IconSettingsScreen(isPlatformMode = selectedClub == ClubPreferences.PLATFORM_CLUB_CODE)
             }
         }
     }

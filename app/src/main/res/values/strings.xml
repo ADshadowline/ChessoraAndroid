@@ -133,8 +133,17 @@
     <string name="settings_desktop_background">Immagine di sfondo del desktop</string>
     <string name="settings_choose_image">Scegli immagine</string>
     <string name="settings_remove_image">Rimuovi</string>
+    <string name="settings_icon_settings_button">Personalizza icone Home</string>
     <string name="topbar_members_count">%1$d soci</string>
     <string name="manage_tournaments">Gestione tornei</string>
+
+    <!-- Icone della Home desktop (ui/home/HomeScreen.kt DesktopHomeGrid,
+         ui/settings/IconSettingsScreen.kt) -->
+    <string name="desktop_icon_board">Direttivo</string>
+    <string name="desktop_icon_shop">Negozio</string>
+    <string name="icon_settings_title">Icone della Home</string>
+    <string name="icon_settings_subtitle">Tieni premuta la maniglia e trascina per cambiare l\'ordine. Usa l\'interruttore per nascondere un\'icona dalla Home.</string>
+    <string name="icon_settings_drag_handle">Trascina per riordinare</string>
 
     <!-- Domanda iniziale sull'appartenenza a un circolo (ui/onboarding/MembershipQuestionScreen) -->
     <string name="membership_question_title">Sei socio di un circolo?</string>

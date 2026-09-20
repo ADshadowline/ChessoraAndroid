@@ -52,6 +52,7 @@ fun SettingsScreen(
     onChangeClub: () -> Unit,
     onIdentify: () -> Unit,
     onOpenProfilePhoto: () -> Unit,
+    onOpenIconSettings: () -> Unit,
 ) {
     val viewModel = chessoraViewModel { app -> SettingsViewModel(app.repository, app.clubPreferences) }
     val notificationsEnabled by viewModel.notificationsEnabled.collectAsState()
@@ -127,6 +128,11 @@ fun SettingsScreen(
                 onClick = { viewModel.setDisplayMode(ClubPreferences.DISPLAY_MODE_DESKTOP) },
                 modifier = Modifier.weight(1f),
             )
+        }
+        if (displayMode == ClubPreferences.DISPLAY_MODE_DESKTOP) {
+            OutlinedButton(onClick = onOpenIconSettings, modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
+                Text(stringResource(R.string.settings_icon_settings_button))
+            }
         }
 
         BackgroundImagePicker(

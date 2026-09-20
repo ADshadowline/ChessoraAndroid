@@ -96,11 +96,18 @@ fun HomeScreen(club: String?, onOpenTournament: (Int) -> Unit, desktop: DesktopH
     val viewModel = chessoraViewModel { app -> HomeViewModel(app.repository, app.clubPreferences) }
     val displayMode by viewModel.displayMode.collectAsState()
     val desktopBackgroundUri by viewModel.desktopBackgroundUri.collectAsState()
+    val desktopIconOrder by viewModel.desktopIconOrder.collectAsState()
+    val desktopHiddenIcons by viewModel.desktopHiddenIcons.collectAsState()
 
     if (displayMode == ClubPreferences.DISPLAY_MODE_DESKTOP) {
         Box(modifier = Modifier.fillMaxSize()) {
             desktopBackgroundUri?.let { BackgroundImageWithScrim(uri = it) }
-            DesktopHomeGrid(desktop = desktop, isPlatformMode = isPlatformMode)
+            DesktopHomeGrid(
+                desktop = desktop,
+                isPlatformMode = isPlatformMode,
+                iconOrder = desktopIconOrder,
+                hiddenIcons = desktopHiddenIcons,
+            )
         }
     } else {
         EventsListScreen(club = club, onOpenTournament = onOpenTournament)
@@ -172,31 +179,77 @@ fun EventsListScreen(club: String?, onOpenTournament: (Int) -> Unit) {
     }
 }
 
-private data class DesktopIcon(val label: String, val icon: ImageVector, val onClick: () -> Unit)
+private data class DesktopIcon(val id: String, val labelRes: Int, val icon: ImageVector, val onClick: () -> Unit)
+
+/**
+ * Descrittore statico di una icona della griglia Home desktop - id stabile usato per
+ * persistere ordine/visibilità (vedi ClubPreferences.desktopIconOrder/desktopHiddenIcons)
+ * e per l'elenco riordinabile di ui/settings/IconSettingsScreen.kt. Messaggi e
+ * Impostazioni NON compaiono qui: restano ancorate agli angoli in basso per scelta
+ * esplicita, non fanno parte dell'ordine/visibilità personalizzabile.
+ */
+data class DesktopIconDescriptor(
+    val id: String,
+    val labelRes: Int,
+    val icon: ImageVector,
+    /** true = l'icona non ha senso in "modalità piattaforma" (nessun circolo scelto,
+     * vedi ClubPreferences.isPlatformMode) e viene sempre esclusa in quel caso, a
+     * prescindere da ordine/visibilità salvati. */
+    val hiddenInPlatformMode: Boolean = false,
+)
+
+val DESKTOP_ICON_DESCRIPTORS = listOf(
+    DesktopIconDescriptor("events", R.string.nav_home, Icons.AutoMirrored.Filled.EventNote),
+    DesktopIconDescriptor("calendar", R.string.more_calendar, Icons.Default.CalendarMonth, hiddenInPlatformMode = true),
+    DesktopIconDescriptor("news", R.string.nav_news, Icons.Default.Newspaper),
+    DesktopIconDescriptor("registrations", R.string.nav_registrations, Icons.Default.HowToReg),
+    DesktopIconDescriptor("ranking", R.string.nav_ranking, Icons.Default.Leaderboard),
+    DesktopIconDescriptor("performance", R.string.more_performance, Icons.AutoMirrored.Filled.ShowChart),
+    DesktopIconDescriptor("board", R.string.desktop_icon_board, Icons.Default.People, hiddenInPlatformMode = true),
+    DesktopIconDescriptor("shop", R.string.desktop_icon_shop, Icons.Default.ShoppingCart, hiddenInPlatformMode = true),
+)
+
+/** Applica ordine personalizzato e icone nascoste (vedi ClubPreferences) all'elenco di
+ * default: un id salvato ma non più tra [defaults] (es. modalità piattaforma) viene
+ * ignorato, uno nuovo non ancora salvato in [order] viene accodato in fondo. */
+private fun applyIconPreferences(
+    defaults: List<DesktopIconDescriptor>,
+    order: List<String>,
+    hidden: Set<String>,
+): List<DesktopIconDescriptor> {
+    val visible = defaults.filter { it.id !in hidden }
+    if (order.isEmpty()) return visible
+    val byId = visible.associateBy { it.id }
+    return order.mapNotNull { byId[it] } + visible.filter { it.id !in order }
+}
+
+private fun callbackFor(id: String, desktop: DesktopHomeCallbacks): (() -> Unit)? = when (id) {
+    "events" -> desktop.onOpenEvents
+    "calendar" -> desktop.onOpenCalendar
+    "news" -> desktop.onOpenNews
+    "registrations" -> desktop.onOpenRegistrations
+    "ranking" -> desktop.onOpenRanking
+    "performance" -> desktop.onOpenPerformance
+    "board" -> desktop.onOpenBoard
+    "shop" -> desktop.onOpenShop
+    else -> null
+}
 
 @Composable
-private fun DesktopHomeGrid(desktop: DesktopHomeCallbacks, isPlatformMode: Boolean) {
-    val eventsLabel = stringResource(R.string.nav_home)
-    val calendarLabel = stringResource(R.string.more_calendar)
-    val newsLabel = stringResource(R.string.nav_news)
-    val registrationsLabel = stringResource(R.string.nav_registrations)
-    val messagingLabel = stringResource(R.string.nav_messaging)
-    val rankingLabel = stringResource(R.string.nav_ranking)
-    val performanceLabel = stringResource(R.string.more_performance)
-    val settingsLabel = stringResource(R.string.settings_title)
+private fun DesktopHomeGrid(
+    desktop: DesktopHomeCallbacks,
+    isPlatformMode: Boolean,
+    iconOrder: List<String>,
+    hiddenIcons: Set<String>,
+) {
     // Messaggi e Impostazioni sono ancorate agli angoli in basso (sinistra/destra), non
-    // parte della griglia scorrevole - posizione fissa richiesta esplicitamente.
-    val icons = remember(desktop, isPlatformMode) {
-        buildList {
-            add(DesktopIcon(eventsLabel, Icons.AutoMirrored.Filled.EventNote, desktop.onOpenEvents))
-            if (!isPlatformMode) add(DesktopIcon(calendarLabel, Icons.Default.CalendarMonth, desktop.onOpenCalendar))
-            add(DesktopIcon(newsLabel, Icons.Default.Newspaper, desktop.onOpenNews))
-            add(DesktopIcon(registrationsLabel, Icons.Default.HowToReg, desktop.onOpenRegistrations))
-            add(DesktopIcon(rankingLabel, Icons.Default.Leaderboard, desktop.onOpenRanking))
-            add(DesktopIcon(performanceLabel, Icons.AutoMirrored.Filled.ShowChart, desktop.onOpenPerformance))
-            if (!isPlatformMode) {
-                add(DesktopIcon("Direttivo", Icons.Default.People, desktop.onOpenBoard))
-                add(DesktopIcon("Negozio", Icons.Default.ShoppingCart, desktop.onOpenShop))
+    // parte della griglia scorrevole - posizione fissa richiesta esplicitamente, non
+    // riordinabili/nascondibili da Impostazioni > Icone Home.
+    val icons = remember(desktop, isPlatformMode, iconOrder, hiddenIcons) {
+        val defaults = DESKTOP_ICON_DESCRIPTORS.filter { !(isPlatformMode && it.hiddenInPlatformMode) }
+        applyIconPreferences(defaults, iconOrder, hiddenIcons).mapNotNull { descriptor ->
+            callbackFor(descriptor.id, desktop)?.let { onClick ->
+                DesktopIcon(descriptor.id, descriptor.labelRes, descriptor.icon, onClick)
             }
         }
     }
@@ -207,18 +260,18 @@ private fun DesktopHomeGrid(desktop: DesktopHomeCallbacks, isPlatformMode: Boole
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            items(icons) { entry -> DesktopIconTile(entry) }
+            items(icons, key = { it.id }) { entry -> DesktopIconTile(entry) }
         }
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             DesktopIconTile(
-                DesktopIcon(messagingLabel, Icons.AutoMirrored.Filled.Chat, desktop.onOpenMessaging),
+                DesktopIcon("messaging", R.string.nav_messaging, Icons.AutoMirrored.Filled.Chat, desktop.onOpenMessaging),
                 modifier = Modifier.weight(1f, fill = false).widthIn(max = 120.dp),
             )
             DesktopIconTile(
-                DesktopIcon(settingsLabel, Icons.Default.Settings, desktop.onOpenSettings),
+                DesktopIcon("settings", R.string.settings_title, Icons.Default.Settings, desktop.onOpenSettings),
                 modifier = Modifier.weight(1f, fill = false).widthIn(max = 120.dp),
             )
         }
@@ -235,7 +288,7 @@ private fun DesktopIconTile(entry: DesktopIcon, modifier: Modifier = Modifier) {
         ) {
             Icon(entry.icon, contentDescription = null, modifier = Modifier.size(36.dp))
             Text(
-                entry.label,
+                stringResource(entry.labelRes),
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier.padding(top = 8.dp),
             )
