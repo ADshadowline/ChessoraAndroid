@@ -3,17 +3,27 @@ package org.chessora.app.data.remote
 import org.chessora.app.data.remote.dto.BoardMember
 import org.chessora.app.data.remote.dto.CalendarEvent
 import org.chessora.app.data.remote.dto.ChatMessage
+import org.chessora.app.data.remote.dto.CheckFideResultDto
 import org.chessora.app.data.remote.dto.ClubDirectoryItem
+import org.chessora.app.data.remote.dto.ClubRosterEntryDto
 import org.chessora.app.data.remote.dto.ClubSearchResult
 import org.chessora.app.data.remote.dto.ClubStats
+import org.chessora.app.data.remote.dto.CompletePlayerProfileRequestDto
 import org.chessora.app.data.remote.dto.ConversationSummary
 import org.chessora.app.data.remote.dto.EventType
+import org.chessora.app.data.remote.dto.EmptyRequestBody
 import org.chessora.app.data.remote.dto.EventoBandoInfo
+import org.chessora.app.data.remote.dto.FidePlayerSearchResultDto
+import org.chessora.app.data.remote.dto.ForgotPasswordRequestDto
+import org.chessora.app.data.remote.dto.GoogleLoginRequestDto
+import org.chessora.app.data.remote.dto.GoogleLoginResponseDto
 import org.chessora.app.data.remote.dto.GoogleReviewsResponse
-import org.chessora.app.data.remote.dto.IdentifyNationalRequestDto
-import org.chessora.app.data.remote.dto.IdentifyRequestDto
-import org.chessora.app.data.remote.dto.IdentifyResultDto
 import org.chessora.app.data.remote.dto.MarkReadRequest
+import org.chessora.app.data.remote.dto.PlayerAuthResponseDto
+import org.chessora.app.data.remote.dto.PlayerLoginRequestDto
+import org.chessora.app.data.remote.dto.RegisterResponseDto
+import org.chessora.app.data.remote.dto.RegisterWithFideRequestDto
+import org.chessora.app.data.remote.dto.ResendConfirmationRequestDto
 import org.chessora.app.data.remote.dto.NetworkNewsItem
 import org.chessora.app.data.remote.dto.NewsArticle
 import org.chessora.app.data.remote.dto.PerformanceHistoryDto
@@ -29,7 +39,6 @@ import org.chessora.app.data.remote.dto.ReportDeliveryRequest
 import org.chessora.app.data.remote.dto.ResolveClubResponse
 import org.chessora.app.data.remote.dto.ShopProduct
 import org.chessora.app.data.remote.dto.SiteSettings
-import org.chessora.app.data.remote.dto.PreRegistrationRequest
 import org.chessora.app.data.remote.dto.TournamentPreRegistrationResult
 import org.chessora.app.data.remote.dto.TournamentSummary
 import org.chessora.app.data.remote.dto.VideoNewsItem
@@ -46,17 +55,73 @@ import retrofit2.http.Query
 
 /**
  * Specchio 1:1 di docs/android-app-spec.md §6 (repository server Chessora,
- * https://api.chessora.org): TUTTI gli endpoint elencati lì sono pubblici,
- * senza autenticazione, esattamente come dichiarato in cima a quella sezione.
+ * https://api.chessora.org). La maggior parte degli endpoint qui sotto resta
+ * pubblica/senza autenticazione, MA l'app ora HA un vero login (Google/ID FIDE/
+ * email+password, vedi ui/auth/) - gli endpoint sotto "api/auth" e "api/me" (vedi
+ * sezione dedicata) richiedono un Bearer token, allegato automaticamente
+ * dall'interceptor in NetworkModule quando presente (vedi data/local/AuthSession.kt).
  * Se un endpoint nuovo viene aggiunto lato server, questa è la prima cosa da
  * estendere - dopodiché il DTO corrispondente in data/remote/dto/ e infine il
  * punto di chiamata in data/repository/ChessoraRepository.kt.
  *
- * NON aggiungere qui endpoint che richiedono autenticazione admin (tutto ciò
- * che sta sotto un percorso "…/admin" oppure "api/platform/…"): l'app non ha
- * login, per design (vedi docs/android-app-spec.md §1 "Fuori scope").
+ * NON aggiungere qui endpoint che richiedono autenticazione ADMIN (tutto ciò che
+ * sta sotto un percorso "…/admin" oppure "api/platform/…") - quelli restano fuori
+ * scope, distinti dal login giocatori sopra (vedi PlayerAuthService lato server).
  */
 interface ChessoraApi {
+
+    // ---------- Autenticazione (ui/auth/) ----------
+
+    /** Login con email o ID FIDE (numerico, come stringa) + password. */
+    @POST("api/auth/player-login")
+    suspend fun playerLogin(@Body request: PlayerLoginRequestDto): PlayerAuthResponseDto
+
+    /** Verifica il Google ID token (non più uno scambio con Firebase) e
+     * recupera/crea SUBITO l'account - auth.profileComplete=false segnala di
+     * proseguire con completeProfile prima di considerarsi loggato del tutto. */
+    @POST("api/auth/google")
+    suspend fun loginWithGoogle(@Body request: GoogleLoginRequestDto): GoogleLoginResponseDto
+
+    /** Secondo passo dopo un login Google con profilo incompleto - stesso account
+     * già autenticato dal passo precedente (Bearer già valido). */
+    @POST("api/me/complete-profile")
+    suspend fun completeProfile(@Body request: CompletePlayerProfileRequestDto): PlayerAuthResponseDto
+
+    /** ID FIDE valido ma non ancora associato a nessun utente - crea l'account,
+     * richiede conferma email prima di poter accedere. */
+    @POST("api/auth/register-fide")
+    suspend fun registerWithFide(@Body request: RegisterWithFideRequestDto): RegisterResponseDto
+
+    /** Null implicito (404) se idFide non esiste affatto in anagrafica FIDE - vedi
+     * ChessoraRepository.checkFide, che lo traduce in Result<CheckFideResultDto?>. */
+    @GET("api/auth/check-fide")
+    suspend fun checkFide(@Query("idFide") idFide: Int): CheckFideResultDto
+
+    /** Un solo campo di ricerca su anag.FidePlayers.Name - mai auto-selezione, il
+     * client mostra sempre l'elenco per conferma esplicita. */
+    @GET("api/auth/search-fide")
+    suspend fun searchFide(@Query("q") query: String): List<FidePlayerSearchResultDto>
+
+    /** Elenco soci di un circolo (selezione manuale del proprio nominativo quando
+     * il club non è auto-risolvibile da orga.PlayerCard). */
+    @GET("api/auth/club-roster")
+    suspend fun getClubRoster(@Query("idClub") idClub: Int): List<ClubRosterEntryDto>
+
+    @POST("api/auth/forgot-password")
+    suspend fun forgotPassword(@Body request: ForgotPasswordRequestDto)
+
+    @POST("api/auth/resend-confirmation")
+    suspend fun resendConfirmation(@Body request: ResendConfirmationRequestDto)
+
+    /** Foto dell'utente autenticato (sostituisce le vecchie {idPlayer}/photo
+     * scrivibili da chiunque) - la sola LETTURA di una foto (anche la propria)
+     * resta pubblica su GET api/players/{idPlayer}/photo, vedi sotto. */
+    @Multipart
+    @POST("api/me/photo")
+    suspend fun setMyPhoto(@Part photo: MultipartBody.Part)
+
+    @DELETE("api/me/photo")
+    suspend fun deleteMyPhoto()
 
     // ---------- Circoli ----------
 
@@ -153,31 +218,15 @@ interface ChessoraApi {
     @GET("api/site-settings")
     suspend fun getSiteSettings(@Query("club") club: String): SiteSettings
 
-    // ---------- Identificazione socio (facoltativa, vedi ui/identity/) ----------
-    // Anche questi sono pubblici come tutto il resto di questa interfaccia: non è un
-    // vero login/sessione, solo un modo per allineare email/telefono in anagrafica.
-
-    @POST("api/players/identify")
-    suspend fun identifyPlayer(@Body request: IdentifyRequestDto): IdentifyResultDto
-
-    /** Per chi ha dichiarato di non essere socio di alcun circolo (vedi
-     * ui/onboarding/MembershipQuestionScreen.kt) - ricerca su tutta l'anagrafica
-     * nazionale invece che nel roster di un solo circolo. */
-    @POST("api/players/identify-national")
-    suspend fun identifyPlayerNational(@Body request: IdentifyNationalRequestDto): IdentifyResultDto
+    // ---------- Dati pubblici di un giocatore (per idPlayer) ----------
 
     /** Storico Elo per il grafico "Le mie performance" (ui/performance/). */
     @GET("api/players/{idPlayer}/performance")
     suspend fun getPlayerPerformance(@Path("idPlayer") idPlayer: Int): PerformanceHistoryDto
 
-    /** Foto profilo (fotocamera/galleria) mostrata accanto al nome nelle liste
-     * giocatori - salvata come blob in orga.PlayerContacts (ui/profile/). */
-    @Multipart
-    @POST("api/players/{idPlayer}/photo")
-    suspend fun setPlayerPhoto(@Path("idPlayer") idPlayer: Int, @Part photo: MultipartBody.Part)
-
-    @DELETE("api/players/{idPlayer}/photo")
-    suspend fun deletePlayerPhoto(@Path("idPlayer") idPlayer: Int)
+    // Nota: GET api/players/{idPlayer}/photo (lettura pubblica) non compare qui: è
+    // consumata direttamente come URL immagine da Coil (vedi NetworkModule.resolveAssetUrl),
+    // mai tramite una chiamata Retrofit - solo la SCRITTURA (api/me/photo sopra) passa da qui.
 
     /** Ruoli organizzativi pubblici del socio in questo circolo (es. "Responsabile dei
      * tornei") - usato per mostrare l'icona "Gestione tornei" in ui/session/SessionViewModel.kt,
@@ -226,37 +275,23 @@ interface ChessoraApi {
     @GET("api/tornei")
     suspend fun getTornei(): List<TournamentSummary>
 
-    /** PREISCRIZIONE (non conferma di partecipazione, vedi PreRegistrationRequest) -
-     * richiede un utente autenticato (vedi ClubPreferences.isAuthenticated), socio
-     * riconosciuto o meno - vedi TournamentRegistrationService.PreRegisterAsync. */
+    /** PREISCRIZIONE (non conferma di partecipazione) - richiede login (vedi ui/auth/),
+     * l'identità è quella dell'utente autenticato (Bearer), mai passata nel corpo. Il
+     * corpo vuoto è comunque necessario: IIS in produzione rifiuta con 411 "Length
+     * Required" una POST senza alcun body/Content-Length (vedi EmptyRequestBody). */
     @POST("api/tornei/{id}/preiscrivi")
-    suspend fun preRegisterForTournament(
-        @Path("id") id: Int,
-        @Body request: PreRegistrationRequest,
-    ): TournamentPreRegistrationResult
+    suspend fun preRegisterForTournament(@Path("id") id: Int, @Body body: EmptyRequestBody = EmptyRequestBody()): TournamentPreRegistrationResult
 
-    /** Tutti i tornei a cui il chiamante risulta preiscritto - schermata Iscrizioni e
-     * segno di spunta in Home. [contactId] (salvato in ClubPreferences dopo una
-     * preiscrizione riuscita) è il percorso veloce; idPlayer/email/phoneNumber sono un
-     * fallback per risalire al contatto altrimenti. */
+    /** Tutti i tornei a cui l'utente autenticato risulta preiscritto - schermata
+     * Iscrizioni e segno di spunta in Home. */
     @GET("api/tornei/mie-preiscrizioni")
-    suspend fun getMyPreRegistrations(
-        @Query("contactId") contactId: Int? = null,
-        @Query("idPlayer") idPlayer: Int? = null,
-        @Query("email") email: String? = null,
-        @Query("phoneNumber") phoneNumber: String? = null,
-    ): List<TournamentSummary>
+    suspend fun getMyPreRegistrations(): List<TournamentSummary>
 
-    /** Ritira una preiscrizione - stesse credenziali di identità di getMyPreRegistrations
-     * (nessuna sessione server-side). Serve anche per poter scegliere un altro torneo
-     * "fratello" dello stesso evento, dato che se ne può scegliere uno solo per volta. */
+    /** Ritira una preiscrizione - stessa identità (Bearer) di preRegisterForTournament.
+     * Serve anche per poter scegliere un altro torneo "fratello" dello stesso evento,
+     * dato che se ne può scegliere uno solo per volta. */
     @DELETE("api/tornei/{id}/preiscrivi")
-    suspend fun cancelPreRegistration(
-        @Path("id") id: Int,
-        @Query("idPlayer") idPlayer: Int? = null,
-        @Query("email") email: String? = null,
-        @Query("phoneNumber") phoneNumber: String? = null,
-    ): TournamentPreRegistrationResult
+    suspend fun cancelPreRegistration(@Path("id") id: Int): TournamentPreRegistrationResult
 
     // ---------- Notifiche push ----------
 

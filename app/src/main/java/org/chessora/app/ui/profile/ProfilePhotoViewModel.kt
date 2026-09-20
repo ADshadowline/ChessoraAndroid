@@ -43,7 +43,7 @@ class ProfilePhotoViewModel(
         val (idPlayer, version) = currentIdAndVersion() ?: return
         viewModelScope.launch {
             _state.value = ProfilePhotoState.Saving(idPlayer, version)
-            repository.setPlayerPhoto(idPlayer, compressToJpeg(bitmap))
+            repository.setMyPhoto(compressToJpeg(bitmap))
                 .onSuccess { _state.value = ProfilePhotoState.Ready(idPlayer, version + 1) }
                 .onFailure { _state.value = ProfilePhotoState.Error("Caricamento non riuscito, riprova.", idPlayer, version) }
         }
@@ -53,7 +53,7 @@ class ProfilePhotoViewModel(
         val (idPlayer, version) = currentIdAndVersion() ?: return
         viewModelScope.launch {
             _state.value = ProfilePhotoState.Saving(idPlayer, version)
-            repository.deletePlayerPhoto(idPlayer)
+            repository.deleteMyPhoto()
                 .onSuccess { _state.value = ProfilePhotoState.Ready(idPlayer, version + 1) }
                 .onFailure { _state.value = ProfilePhotoState.Error("Rimozione non riuscita, riprova.", idPlayer, version) }
         }

@@ -51,6 +51,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import coil.compose.AsyncImage
 import org.chessora.app.R
+import androidx.compose.runtime.DisposableEffect
 import org.chessora.app.data.local.ClubPreferences
 import org.chessora.app.data.remote.NetworkModule
 import org.chessora.app.data.remote.dto.SiteBranding
@@ -60,8 +61,13 @@ import org.chessora.app.ui.calendar.CalendarScreen
 import org.chessora.app.ui.common.chessoraViewModel
 import org.chessora.app.ui.home.DesktopHomeCallbacks
 import org.chessora.app.ui.home.EventsListScreen
+import org.chessora.app.ui.auth.CompleteProfileScreen
+import org.chessora.app.ui.auth.EmailPendingScreen
+import org.chessora.app.ui.auth.ForgotPasswordScreen
+import org.chessora.app.ui.auth.LoginEmailScreen
+import org.chessora.app.ui.auth.LoginFideScreen
+import org.chessora.app.ui.auth.LoginScreen
 import org.chessora.app.ui.home.HomeScreen
-import org.chessora.app.ui.identity.IdentityScreen
 import org.chessora.app.ui.messaging.ConversationScreen
 import org.chessora.app.ui.messaging.MessagingListScreen
 import org.chessora.app.ui.messaging.NewMessageScreen
@@ -114,9 +120,28 @@ private val BOTTOM_TABS = listOf(
 fun ChessoraNavHost(pendingConversationId: Int? = null) {
     val navController = rememberNavController()
     var unconsumedConversationId by remember { mutableStateOf(pendingConversationId) }
-    val sessionViewModel = chessoraViewModel { app -> SessionViewModel(app.repository, app.clubPreferences) }
+    val sessionViewModel = chessoraViewModel { app -> SessionViewModel(app.repository, app.clubPreferences, app.authPreferences) }
     val selectedClub by sessionViewModel.selectedClub.collectAsState()
     val identityResolved by sessionViewModel.identityResolved.collectAsState()
+    val isLoggedIn by sessionViewModel.isLoggedIn.collectAsState()
+
+    // Il token JWT non ha refresh in questa prima versione (vedi ui/auth/): un 401
+    // qualunque invalida subito la sessione e riporta al login, da qualunque schermata
+    // ci si trovi - l'interceptor OkHttp (data/remote/NetworkModule.kt) non ha accesso a
+    // un NavController, quindi registra qui solo la callback.
+    val mainHandler = remember { android.os.Handler(android.os.Looper.getMainLooper()) }
+    DisposableEffect(Unit) {
+        // L'interceptor OkHttp gira su un thread di rete, mai sul main thread: la
+        // navigazione va per forza spostata li' con un Handler, altrimenti
+        // navController.navigate lancerebbe (o si comporterebbe in modo indefinito).
+        NetworkModule.onUnauthorized = {
+            mainHandler.post {
+                sessionViewModel.onUnauthorized()
+                navController.navigate(ChessoraDestinations.AUTH_LOGIN) { popUpTo(0) }
+            }
+        }
+        onDispose { NetworkModule.onUnauthorized = null }
+    }
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
@@ -132,10 +157,9 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
     // scelto (riavvii a freddo, o back button di sistema durante l'identificazione),
     // salta in avanti fino al punto giusto - HOME solo se anche l'identità è già
     // risolta, altrimenti IDENTITY - senza mai far rivedere l'onboarding.
-    LaunchedEffect(selectedClub, identityResolved, currentRoute) {
+    LaunchedEffect(selectedClub, currentRoute) {
         if (selectedClub != null && currentRoute == ChessoraDestinations.ONBOARDING) {
-            val target = if (identityResolved) ChessoraDestinations.HOME else ChessoraDestinations.IDENTITY
-            navController.navigate(target) {
+            navController.navigate(ChessoraDestinations.HOME) {
                 popUpTo(ChessoraDestinations.ONBOARDING) { inclusive = true }
             }
         }
@@ -213,9 +237,14 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                 val clubLogoUrl = NetworkModule.resolveAssetUrl(branding?.logoImage)
                 val splashBackgroundUri by sessionViewModel.splashBackgroundUri.collectAsState()
                 SplashScreen(clubLogoUrl = clubLogoUrl, backgroundUri = splashBackgroundUri, onFinished = {
+                    // Accesso obbligatorio (vedi ui/auth/): AUTH_LOGIN prima di tutto se non
+                    // già loggati. selectedClub viene già valorizzato da AuthSessionPersister
+                    // quando il login risolve un circolo (socio riconosciuto) - se resta null
+                    // dopo un login riuscito, l'utente non è socio di alcun circolo e sceglie
+                    // solo quale contenuto sfogliare (MembershipQuestionScreen).
                     val target = when {
+                        !isLoggedIn -> ChessoraDestinations.AUTH_LOGIN
                         selectedClub == null -> ChessoraDestinations.MEMBERSHIP_QUESTION
-                        !identityResolved -> ChessoraDestinations.IDENTITY
                         else -> ChessoraDestinations.HOME
                     }
                     navController.navigate(target) {
@@ -223,12 +252,64 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                     }
                 })
             }
+            composable(ChessoraDestinations.AUTH_LOGIN) {
+                LoginScreen(
+                    onLoggedIn = {
+                        sessionViewModel.onLoggedIn()
+                        navController.navigate(ChessoraDestinations.SPLASH) { popUpTo(0) }
+                    },
+                    onNeedsProfile = { navController.navigate(ChessoraDestinations.AUTH_COMPLETE_PROFILE) },
+                    onLoginEmail = { navController.navigate(ChessoraDestinations.AUTH_LOGIN_EMAIL) },
+                    onLoginFide = { navController.navigate(ChessoraDestinations.AUTH_LOGIN_FIDE) },
+                )
+            }
+            composable(ChessoraDestinations.AUTH_LOGIN_EMAIL) {
+                LoginEmailScreen(
+                    onLoggedIn = {
+                        sessionViewModel.onLoggedIn()
+                        navController.navigate(ChessoraDestinations.SPLASH) { popUpTo(0) }
+                    },
+                    onForgotPassword = { navController.navigate(ChessoraDestinations.AUTH_FORGOT_PASSWORD) },
+                )
+            }
+            composable(ChessoraDestinations.AUTH_LOGIN_FIDE) {
+                LoginFideScreen(
+                    onLoggedIn = {
+                        sessionViewModel.onLoggedIn()
+                        navController.navigate(ChessoraDestinations.SPLASH) { popUpTo(0) }
+                    },
+                    onRegistered = { email ->
+                        navController.navigate(ChessoraDestinations.emailPending(email)) {
+                            popUpTo(ChessoraDestinations.AUTH_LOGIN)
+                        }
+                    },
+                )
+            }
+            composable(ChessoraDestinations.AUTH_FORGOT_PASSWORD) {
+                ForgotPasswordScreen()
+            }
+            composable(ChessoraDestinations.AUTH_COMPLETE_PROFILE) {
+                CompleteProfileScreen(onDone = {
+                    sessionViewModel.onLoggedIn()
+                    navController.navigate(ChessoraDestinations.SPLASH) { popUpTo(0) }
+                })
+            }
+            composable(
+                ChessoraDestinations.AUTH_EMAIL_PENDING,
+                arguments = listOf(navArgument("email") { type = NavType.StringType }),
+            ) { backStack ->
+                val encodedEmail = backStack.arguments?.getString("email") ?: return@composable
+                EmailPendingScreen(
+                    email = java.net.URLDecoder.decode(encodedEmail, "UTF-8"),
+                    onBackToLogin = { navController.navigate(ChessoraDestinations.AUTH_LOGIN) { popUpTo(0) } },
+                )
+            }
             composable(ChessoraDestinations.MEMBERSHIP_QUESTION) {
                 MembershipQuestionScreen(
                     onHasClub = { navController.navigate(ChessoraDestinations.ONBOARDING) },
                     onNoClub = {
                         sessionViewModel.selectClub(ClubPreferences.PLATFORM_CLUB_CODE)
-                        navController.navigate(ChessoraDestinations.IDENTITY) {
+                        navController.navigate(ChessoraDestinations.HOME) {
                             popUpTo(ChessoraDestinations.MEMBERSHIP_QUESTION) { inclusive = true }
                         }
                     },
@@ -237,23 +318,10 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
             composable(ChessoraDestinations.ONBOARDING) {
                 OnboardingScreen(onClubSelected = { club ->
                     sessionViewModel.selectClub(club)
-                    navController.navigate(ChessoraDestinations.IDENTITY) {
+                    navController.navigate(ChessoraDestinations.HOME) {
                         popUpTo(ChessoraDestinations.ONBOARDING) { inclusive = true }
                     }
                 })
-            }
-            composable(ChessoraDestinations.IDENTITY) {
-                RequireClub(selectedClub) { club ->
-                    val isPlatformMode = club == ClubPreferences.PLATFORM_CLUB_CODE
-                    val effectiveClub = if (isPlatformMode) null else club
-                    val clubName = branding?.let { "${it.namePrefix}${it.nameHighlight}" }?.takeIf { it.isNotBlank() && !isPlatformMode }
-                    IdentityScreen(club = effectiveClub, clubName = clubName, onDone = {
-                        sessionViewModel.refreshIdentity()
-                        navController.navigate(ChessoraDestinations.HOME) {
-                            popUpTo(ChessoraDestinations.IDENTITY) { inclusive = true }
-                        }
-                    })
-                }
             }
             composable(ChessoraDestinations.HOME) {
                 RequireClub(selectedClub) {
@@ -291,7 +359,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                 val idTournament = backStack.arguments?.getInt("idTournament") ?: return@composable
                 TournamentDetailScreen(
                     idTournament = idTournament,
-                    onIdentify = { navController.navigate(ChessoraDestinations.IDENTITY) },
+                    onLogin = { navController.navigate(ChessoraDestinations.AUTH_LOGIN) },
                 )
             }
             composable(ChessoraDestinations.NEWS_LIST) {
@@ -331,17 +399,17 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                 arguments = listOf(navArgument("focus") { type = NavType.StringType; nullable = true; defaultValue = null }),
             ) { backStack ->
                 val focus = EloRatingType.fromRouteValue(backStack.arguments?.getString("focus"))
-                PerformanceScreen(onIdentify = { navController.navigate(ChessoraDestinations.IDENTITY) }, focus = focus)
+                PerformanceScreen(onIdentify = { navController.navigate(ChessoraDestinations.AUTH_LOGIN) }, focus = focus)
             }
             composable(ChessoraDestinations.PROFILE_PHOTO) {
-                ProfilePhotoScreen(onIdentify = { navController.navigate(ChessoraDestinations.IDENTITY) })
+                ProfilePhotoScreen(onIdentify = { navController.navigate(ChessoraDestinations.AUTH_LOGIN) })
             }
             composable(ChessoraDestinations.REGISTRATIONS) {
                 // Le iscrizioni ai tornei (orga.TournamentPlayerRegistrations) non sono
                 // legate a un circolo - a differenza delle altre schermate qui, non
                 // serve RequireClub: funziona identica anche in modalità piattaforma.
                 RegistrationsScreen(
-                    onIdentify = { navController.navigate(ChessoraDestinations.IDENTITY) },
+                    onIdentify = { navController.navigate(ChessoraDestinations.AUTH_LOGIN) },
                     onOpenTournament = { idTournament -> navController.navigate(ChessoraDestinations.tournamentDetail(idTournament)) },
                 )
             }
@@ -356,7 +424,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                         )
                     },
                     onNewMessage = { navController.navigate(ChessoraDestinations.NEW_MESSAGE) },
-                    onIdentify = { navController.navigate(ChessoraDestinations.IDENTITY) },
+                    onIdentify = { navController.navigate(ChessoraDestinations.AUTH_LOGIN) },
                 )
             }
             composable(ChessoraDestinations.NEW_MESSAGE) {
@@ -428,10 +496,9 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                             popUpTo(0) // svuota tutto il back stack: si riparte da zero col nuovo circolo
                         }
                     },
-                    onIdentify = {
-                        // Niente popUpTo qui (a differenza degli altri usi di IDENTITY): il
-                        // back button deve tornare a Impostazioni, non a Home.
-                        navController.navigate(ChessoraDestinations.IDENTITY)
+                    onLogout = {
+                        sessionViewModel.logout()
+                        navController.navigate(ChessoraDestinations.AUTH_LOGIN) { popUpTo(0) }
                     },
                     onOpenProfilePhoto = { navController.navigate(ChessoraDestinations.PROFILE_PHOTO) },
                     onOpenIconSettings = { navController.navigate(ChessoraDestinations.ICON_SETTINGS) },

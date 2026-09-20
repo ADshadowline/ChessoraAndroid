@@ -16,7 +16,18 @@ object ChessoraDestinations {
     const val SPLASH = "splash"
     const val MEMBERSHIP_QUESTION = "membership-question"
     const val ONBOARDING = "onboarding"
-    const val IDENTITY = "identity"
+
+    // ---------- Autenticazione (ui/auth/) - accesso obbligatorio, vedi SPLASH ----------
+    const val AUTH_LOGIN = "auth/login"
+    const val AUTH_LOGIN_EMAIL = "auth/login-email"
+    const val AUTH_LOGIN_FIDE = "auth/login-fide"
+    const val AUTH_FORGOT_PASSWORD = "auth/forgot-password"
+    /** Secondo passo dopo un login Google con profilo incompleto - vedi
+     * CompleteProfileScreen.kt. */
+    const val AUTH_COMPLETE_PROFILE = "auth/complete-profile"
+    /** [email] mostrato in "Controlla la tua posta" dopo una registrazione via ID FIDE -
+     * vedi EmailPendingScreen.kt. */
+    const val AUTH_EMAIL_PENDING = "auth/email-pending/{email}"
 
     const val HOME = "home"
     /** Elenco eventi "classico" - stesso contenuto della Home in visualizzazione classica,
@@ -56,6 +67,8 @@ object ChessoraDestinations {
      * non ancora creata, primo messaggio in arrivo da NewMessageScreen); per una
      * conversazione già esistente vale 0 e non viene usato (vedi ConversationViewModel). */
     const val CONVERSATION = "messaging/conversation/{idConversation}/{isClubConversation}/{recipientId}/{displayName}"
+
+    fun emailPending(email: String) = "auth/email-pending/${java.net.URLEncoder.encode(email, "UTF-8")}"
 
     fun newsDetail(idNews: Int) = "news/$idNews"
 

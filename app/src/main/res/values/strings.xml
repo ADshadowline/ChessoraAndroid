@@ -43,11 +43,11 @@
 
     <!-- Iscrizioni ai tornei -->
     <string name="registrations_empty">Non sei iscritto a nessun torneo.</string>
-    <string name="registrations_not_identified">Identificati per vedere i tornei a cui sei iscritto.</string>
+    <string name="registrations_not_identified">Accedi per vedere i tornei a cui sei iscritto.</string>
 
     <!-- Messaggi (ui/messaging/) -->
     <string name="messaging_new">Nuovo messaggio</string>
-    <string name="messaging_not_identified">Identificati per usare i messaggi.</string>
+    <string name="messaging_not_identified">Accedi per usare i messaggi.</string>
     <string name="messaging_empty">Nessuna conversazione. Tocca + per iniziarne una.</string>
     <string name="messaging_chessora_empty">Nessuna notifica ricevuta finora.</string>
     <string name="messaging_conversation_empty">Nessun messaggio. Scrivi il primo!</string>
@@ -67,7 +67,7 @@
     <string name="performance_standard">Standard</string>
     <string name="performance_rapid">Rapid</string>
     <string name="performance_blitz">Blitz</string>
-    <string name="performance_not_identified">Identificati per vedere le tue performance.</string>
+    <string name="performance_not_identified">Accedi per vedere le tue performance.</string>
     <string name="performance_no_fide">Non hai un codice Fide associato: questa funzione richiede una tessera con rating Fide.</string>
     <string name="performance_empty">Nessuno storico rating disponibile per il tuo profilo Fide.</string>
     <string name="performance_zoom_hint">Pizzica per zoomare, trascina per scorrere, tocca un punto per vedere il valore esatto.</string>
@@ -101,7 +101,7 @@
     <string name="tournament_other_tornei">Altri tornei dello stesso evento</string>
     <string name="tournament_not_found">Torneo non trovato.</string>
     <string name="tournament_already_registered">Sei preiscritto</string>
-    <string name="tournament_identify_to_register">Identificati per preiscriverti a questo evento.</string>
+    <string name="tournament_identify_to_register">Accedi per preiscriverti a questo evento.</string>
     <string name="tournament_manual_identity_title">Completa la preiscrizione</string>
     <string name="tournament_manual_identity_body">Non risulti socio di un circolo riconosciuto: inserisci il tuo ID FIDE oppure nome e cognome per continuare (almeno uno dei due).</string>
     <string name="tournament_manual_identity_idfide_label">ID FIDE (facoltativo)</string>
@@ -124,7 +124,7 @@
     <string name="settings_about">Informazioni sull\'app</string>
     <string name="settings_identity_none">Non identificato</string>
     <string name="settings_identity_as">Identificato come %1$s</string>
-    <string name="settings_identity_button">Identificati</string>
+    <string name="settings_identity_button">Accedi</string>
     <string name="settings_my_photo">La mia foto</string>
     <string name="settings_display_mode">Tipo di visualizzazione</string>
     <string name="settings_display_mode_classic">Visualizzazione attuale</string>
@@ -152,21 +152,56 @@
     <string name="membership_question_no">No, non sono iscritto a nessun circolo</string>
     <string name="platform_branding_name">Chessora Platform</string>
 
-    <!-- Identificazione socio (ui/identity/) -->
-    <string name="identity_title">Ti riconosciamo?</string>
-    <string name="identity_subtitle">Identificandoti teniamo aggiornati i tuoi contatti in anagrafica.</string>
-    <string name="identity_google">Accedi con Google</string>
-    <string name="identity_phone">Usa il numero di telefono</string>
-    <string name="identity_idfide_label">Codice FIDE (facoltativo)</string>
-    <string name="identity_idfide_hint">Es. 800000</string>
-    <string name="identity_welcome">Bentornato, %1$s!</string>
-    <string name="identity_not_identified">Ok, entrerai come utente non identificato.</string>
+    <!-- Autenticazione (ui/auth/) - accesso obbligatorio, sostituisce la vecchia identificazione facoltativa -->
     <string name="identity_error_retry">Riprova</string>
-    <string name="identity_phone_rationale_title">Salvare il tuo numero in rubrica?</string>
-    <string name="identity_phone_rationale_body_club">Vuoi salvare il numero di telefono di questo dispositivo nella rubrica del circolo %1$s? Il numero non verrà mai venduto né diffuso in alcun modo: sarà gestito solo dal circolo, ai fini di comunicazioni di servizio.</string>
-    <string name="identity_phone_rationale_body_generic">Vuoi salvare il numero di telefono di questo dispositivo nella rubrica del circolo? Il numero non verrà mai venduto né diffuso in alcun modo: sarà gestito solo dal circolo, ai fini di comunicazioni di servizio.</string>
-    <string name="identity_phone_rationale_allow">Consenti</string>
-    <string name="identity_phone_rationale_deny">No, grazie</string>
+    <string name="common_yes">Sì</string>
+    <string name="common_no">No</string>
+    <string name="common_confirm">Conferma</string>
+
+    <string name="login_title">Accedi a Chessora</string>
+    <string name="login_subtitle">Per usare l\'app devi prima accedere.</string>
+    <string name="login_google">Accedi con Google</string>
+    <string name="login_fide">Accedi con ID FIDE</string>
+    <string name="login_email">Accedi con email e password</string>
+    <string name="login_email_title">Accedi</string>
+    <string name="login_email_field_label">Email o ID FIDE</string>
+    <string name="login_password_label">Password</string>
+    <string name="login_submit">Accedi</string>
+    <string name="login_forgot_password">Password dimenticata?</string>
+    <string name="login_email_not_confirmed">Devi prima confermare la tua email.</string>
+    <string name="login_resend_confirmation">Invia di nuovo l\'email</string>
+    <string name="login_confirmation_resent">Ti abbiamo inviato una nuova email di conferma.</string>
+
+    <string name="forgot_password_title">Password dimenticata</string>
+    <string name="forgot_password_subtitle">Inserisci la tua email: se corrisponde a un account, riceverai le istruzioni per reimpostare la password.</string>
+    <string name="forgot_password_submit">Invia</string>
+    <string name="forgot_password_sent">Se l\'indirizzo esiste, riceverai un\'email con le istruzioni.</string>
+    <string name="forgot_password_network_error">Connessione non riuscita. Riprova.</string>
+
+    <string name="login_fide_title">Accedi con ID FIDE</string>
+    <string name="login_fide_field_label">ID FIDE</string>
+    <string name="login_fide_submit">Continua</string>
+    <string name="login_fide_dont_know">Non conosco il mio ID FIDE</string>
+    <string name="login_fide_search_label">Cerca per nome e cognome</string>
+    <string name="login_fide_found">Ciao, %1$s</string>
+    <string name="login_fide_ask_club_membership">Sei socio di un circolo?</string>
+    <string name="pick_club_title">Scegli il tuo circolo</string>
+    <string name="pick_roster_title">Scegli il tuo nominativo</string>
+    <string name="pick_roster_search_hint">Cerca per nome…</string>
+    <string name="register_confirm_password_label">Conferma password</string>
+    <string name="register_first_name_label">Nome</string>
+    <string name="register_last_name_label">Cognome</string>
+    <string name="register_submit">Registrati</string>
+
+    <string name="complete_profile_title">Ancora un passo</string>
+    <string name="complete_profile_ask_fide">Hai un ID FIDE oppure sei socio di un circolo?</string>
+    <string name="complete_profile_amateur_title">Completa il tuo profilo</string>
+
+    <string name="email_pending_title">Controlla la tua posta</string>
+    <string name="email_pending_body">Ti abbiamo inviato un\'email a %1$s: apri il link per confermare il tuo indirizzo prima di poter accedere.</string>
+    <string name="email_pending_back_to_login">Torna al login</string>
+
+    <string name="settings_logout">Esci</string>
 
     <!-- "La mia foto" (ui/profile/) -->
     <string name="more_profile_photo">La mia foto</string>
@@ -175,7 +210,7 @@
     <string name="profile_photo_camera">Scatta una foto</string>
     <string name="profile_photo_gallery">Scegli dalla galleria</string>
     <string name="profile_photo_remove">Rimuovi foto</string>
-    <string name="profile_photo_not_identified">Devi prima identificarti per impostare una foto.</string>
+    <string name="profile_photo_not_identified">Devi prima accedere per impostare una foto.</string>
 
     <!-- Web client ID OAuth generato da Firebase Authentication (provider Google) -
          da compilare in console Firebase > Authentication > Sign-in method > Google,

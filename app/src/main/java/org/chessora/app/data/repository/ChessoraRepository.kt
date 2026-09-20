@@ -7,17 +7,27 @@ import org.chessora.app.data.remote.ChessoraApi
 import org.chessora.app.data.remote.dto.BoardMember
 import org.chessora.app.data.remote.dto.CalendarEvent
 import org.chessora.app.data.remote.dto.ChatMessage
+import org.chessora.app.data.remote.dto.CheckFideResultDto
 import org.chessora.app.data.remote.dto.ClubDirectoryItem
+import org.chessora.app.data.remote.dto.ClubRosterEntryDto
 import org.chessora.app.data.remote.dto.ClubSearchResult
 import org.chessora.app.data.remote.dto.ClubStats
+import org.chessora.app.data.remote.dto.CompletePlayerProfileRequestDto
 import org.chessora.app.data.remote.dto.ConversationSummary
 import org.chessora.app.data.remote.dto.EventType
 import org.chessora.app.data.remote.dto.EventoBandoInfo
+import org.chessora.app.data.remote.dto.FidePlayerSearchResultDto
+import org.chessora.app.data.remote.dto.ForgotPasswordRequestDto
+import org.chessora.app.data.remote.dto.GoogleLoginRequestDto
+import org.chessora.app.data.remote.dto.GoogleLoginResponseDto
 import org.chessora.app.data.remote.dto.GoogleReviewsResponse
-import org.chessora.app.data.remote.dto.IdentifyNationalRequestDto
-import org.chessora.app.data.remote.dto.IdentifyRequestDto
-import org.chessora.app.data.remote.dto.IdentifyResultDto
 import org.chessora.app.data.remote.dto.MarkReadRequest
+import org.chessora.app.data.remote.dto.PlayerAuthResponseDto
+import org.chessora.app.data.remote.dto.PlayerLoginRequestDto
+import org.chessora.app.data.remote.dto.RegisterResponseDto
+import org.chessora.app.data.remote.dto.RegisterWithFideRequestDto
+import org.chessora.app.data.remote.dto.ResendConfirmationRequestDto
+import retrofit2.HttpException
 import org.chessora.app.data.remote.dto.NetworkNewsItem
 import org.chessora.app.data.remote.dto.NewsArticle
 import org.chessora.app.data.remote.dto.NewsComment
@@ -31,7 +41,6 @@ import org.chessora.app.data.remote.dto.ShopProduct
 import org.chessora.app.data.remote.dto.StartClubConversationRequest
 import org.chessora.app.data.remote.dto.StartDirectConversationRequest
 import org.chessora.app.data.remote.dto.SiteSettings
-import org.chessora.app.data.remote.dto.PreRegistrationRequest
 import org.chessora.app.data.remote.dto.TournamentPreRegistrationResult
 import org.chessora.app.data.remote.dto.TournamentSummary
 import org.chessora.app.data.remote.dto.VideoNewsItem
@@ -53,6 +62,51 @@ class ChessoraRepository(private val api: ChessoraApi) {
         } catch (e: Exception) {
             Result.failure(e)
         }
+
+    // ---------- Autenticazione (ui/auth/) ----------
+
+    suspend fun playerLogin(emailOrIdFide: String, password: String): Result<PlayerAuthResponseDto> =
+        safeCall { api.playerLogin(PlayerLoginRequestDto(emailOrIdFide, password)) }
+
+    suspend fun loginWithGoogle(idToken: String): Result<GoogleLoginResponseDto> =
+        safeCall { api.loginWithGoogle(GoogleLoginRequestDto(idToken)) }
+
+    suspend fun completeProfile(request: CompletePlayerProfileRequestDto): Result<PlayerAuthResponseDto> =
+        safeCall { api.completeProfile(request) }
+
+    suspend fun registerWithFide(request: RegisterWithFideRequestDto): Result<RegisterResponseDto> =
+        safeCall { api.registerWithFide(request) }
+
+    /** Null (non un errore) se idFide non esiste affatto in anagrafica FIDE (404
+     * dal server) - qualunque altro fallimento resta un Result.failure normale. */
+    suspend fun checkFide(idFide: Int): Result<CheckFideResultDto?> =
+        try {
+            Result.success(api.checkFide(idFide))
+        } catch (e: HttpException) {
+            if (e.code() == 404) Result.success(null) else Result.failure(e)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
+    suspend fun searchFide(query: String): Result<List<FidePlayerSearchResultDto>> =
+        safeCall { api.searchFide(query) }
+
+    suspend fun getClubRoster(idClub: Int): Result<List<ClubRosterEntryDto>> =
+        safeCall { api.getClubRoster(idClub) }
+
+    suspend fun forgotPassword(email: String): Result<Unit> = safeCall { api.forgotPassword(ForgotPasswordRequestDto(email)) }
+
+    suspend fun resendConfirmation(email: String): Result<Unit> = safeCall { api.resendConfirmation(ResendConfirmationRequestDto(email)) }
+
+    /** [jpegBytes] è già compresso/ridimensionato lato client (ui/profile/) prima di
+     * arrivare qui - sempre JPEG, cosi' il repository non deve occuparsi di formati. */
+    suspend fun setMyPhoto(jpegBytes: ByteArray): Result<Unit> = safeCall {
+        val body = jpegBytes.toRequestBody("image/jpeg".toMediaType())
+        val part = MultipartBody.Part.createFormData("photo", "avatar.jpg", body)
+        api.setMyPhoto(part)
+    }
+
+    suspend fun deleteMyPhoto(): Result<Unit> = safeCall { api.deleteMyPhoto() }
 
     // ---------- Circoli ----------
 
@@ -99,24 +153,15 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun getTornei(): Result<List<TournamentSummary>> = safeCall { api.getTornei() }
 
-    suspend fun preRegisterForTournament(id: Int, request: PreRegistrationRequest): Result<TournamentPreRegistrationResult> =
-        safeCall { api.preRegisterForTournament(id, request) }
+    /** Richiede login (vedi ui/auth/) - l'identità è quella dell'utente autenticato. */
+    suspend fun preRegisterForTournament(id: Int): Result<TournamentPreRegistrationResult> =
+        safeCall { api.preRegisterForTournament(id) }
 
-    suspend fun getMyPreRegistrations(
-        contactId: Int? = null,
-        idPlayer: Int? = null,
-        email: String? = null,
-        phoneNumber: String? = null,
-    ): Result<List<TournamentSummary>> =
-        safeCall { api.getMyPreRegistrations(contactId, idPlayer, email, phoneNumber) }
+    suspend fun getMyPreRegistrations(): Result<List<TournamentSummary>> =
+        safeCall { api.getMyPreRegistrations() }
 
-    suspend fun cancelPreRegistration(
-        id: Int,
-        idPlayer: Int? = null,
-        email: String? = null,
-        phoneNumber: String? = null,
-    ): Result<TournamentPreRegistrationResult> =
-        safeCall { api.cancelPreRegistration(id, idPlayer, email, phoneNumber) }
+    suspend fun cancelPreRegistration(id: Int): Result<TournamentPreRegistrationResult> =
+        safeCall { api.cancelPreRegistration(id) }
 
     // ---------- Classifica ----------
 
@@ -154,41 +199,13 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun getSiteSettings(club: String): Result<SiteSettings> = safeCall { api.getSiteSettings(club) }
 
-    // ---------- Identificazione socio ----------
-
-    suspend fun identifyPlayer(
-        idClub: Int,
-        email: String?,
-        phoneNumber: String?,
-        displayName: String? = null,
-    ): Result<IdentifyResultDto> =
-        safeCall { api.identifyPlayer(IdentifyRequestDto(idClub, email, phoneNumber, displayName)) }
-
-    /** Per chi ha dichiarato di non essere socio di alcun circolo (vedi
-     * ui/onboarding/MembershipQuestionScreen.kt). */
-    suspend fun identifyPlayerNational(
-        email: String?,
-        phoneNumber: String?,
-        idFide: String?,
-        displayName: String? = null,
-    ): Result<IdentifyResultDto> =
-        safeCall { api.identifyPlayerNational(IdentifyNationalRequestDto(email, phoneNumber, idFide, displayName)) }
+    // ---------- Dati pubblici di un giocatore ----------
 
     suspend fun getPlayerPerformance(idPlayer: Int): Result<PerformanceHistoryDto> =
         safeCall { api.getPlayerPerformance(idPlayer) }
 
     suspend fun getPlayerRoles(idPlayer: Int, club: String): Result<List<String>> =
         safeCall { api.getPlayerRoles(idPlayer, club) }
-
-    /** [jpegBytes] è già compresso/ridimensionato lato client (ui/profile/) prima di
-     * arrivare qui - sempre JPEG, cosi' il repository non deve occuparsi di formati. */
-    suspend fun setPlayerPhoto(idPlayer: Int, jpegBytes: ByteArray): Result<Unit> = safeCall {
-        val body = jpegBytes.toRequestBody("image/jpeg".toMediaType())
-        val part = MultipartBody.Part.createFormData("photo", "avatar.jpg", body)
-        api.setPlayerPhoto(idPlayer, part)
-    }
-
-    suspend fun deletePlayerPhoto(idPlayer: Int): Result<Unit> = safeCall { api.deletePlayerPhoto(idPlayer) }
 
     // ---------- Messaggi ----------
 

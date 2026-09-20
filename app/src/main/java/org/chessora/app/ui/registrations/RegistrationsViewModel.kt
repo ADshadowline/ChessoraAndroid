@@ -56,12 +56,7 @@ class RegistrationsViewModel(
             return
         }
 
-        val contactId = clubPreferences.preRegistrationContactId.first()
-        val idPlayer = clubPreferences.identifiedPlayerId.first()
-        val email = clubPreferences.authenticatedEmail.first()
-        val phone = clubPreferences.authenticatedPhone.first()
-
-        _state.value = repository.getMyPreRegistrations(contactId, idPlayer, email, phone)
+        _state.value = repository.getMyPreRegistrations()
             .map { tornei ->
                 tornei.map { t -> TournamentRegistrationEntry(id = t.id, title = t.eventoNome, dateLabel = formatDateLabel(t.inizio, t.fine)) }
             }

@@ -99,13 +99,8 @@ class HomeViewModel(
      * ClubPreferences.isAuthenticated) - nessuna delle due condizione presente equivale a
      * "non può essersi preiscritto a nulla", niente chiamata di rete. */
     private suspend fun myPreRegisteredTournamentIds(): Set<Int> {
-        val contactId = clubPreferences.preRegistrationContactId.first()
-        val idPlayer = clubPreferences.identifiedPlayerId.first()
-        val email = clubPreferences.authenticatedEmail.first()
-        val phone = clubPreferences.authenticatedPhone.first()
-        if (contactId == null && idPlayer == null && email == null && phone == null) return emptySet()
-        return repository.getMyPreRegistrations(contactId, idPlayer, email, phone)
-            .getOrNull()?.map { it.id }?.toSet() ?: emptySet()
+        if (!clubPreferences.isAuthenticated.first()) return emptySet()
+        return repository.getMyPreRegistrations().getOrNull()?.map { it.id }?.toSet() ?: emptySet()
     }
 
     private fun fetch(club: String?) {

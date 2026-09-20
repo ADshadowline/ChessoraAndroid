@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import org.chessora.app.BuildConfig
+import org.chessora.app.data.local.AuthSession
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import java.util.concurrent.TimeUnit
@@ -46,10 +47,31 @@ object NetworkModule {
         encodeDefaults = true
     }
 
+    /** Chiamato quando una risposta torna 401 (token JWT assente/scaduto/revocato) - non
+     * c'è un refresh-token in questa prima versione (vedi ui/auth/), quindi la sessione va
+     * invalidata subito e l'utente rimandato al login. Registrato da ChessoraNavHost
+     * all'avvio, cosi' l'interceptor (che non ha accesso a un NavController) può comunque
+     * far scattare la navigazione. */
+    var onUnauthorized: (() -> Unit)? = null
+
     private val okHttpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(15, TimeUnit.SECONDS)
+            .addInterceptor { chain ->
+                val token = AuthSession.accessToken
+                val request = if (!token.isNullOrBlank()) {
+                    chain.request().newBuilder().addHeader("Authorization", "Bearer $token").build()
+                } else {
+                    chain.request()
+                }
+                val response = chain.proceed(request)
+                if (response.code == 401 && !token.isNullOrBlank()) {
+                    AuthSession.accessToken = null
+                    onUnauthorized?.invoke()
+                }
+                response
+            }
             .apply {
                 if (BuildConfig.DEBUG) {
                     // Log delle chiamate HTTP solo in build debug: mai in release,

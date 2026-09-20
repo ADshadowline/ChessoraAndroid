@@ -33,8 +33,8 @@ android {
         // valerne la pena su un'app di sola consultazione.
         minSdk = 26
         targetSdk = 35
-        versionCode = 42
-        versionName = "1.12.0"
+        versionCode = 43
+        versionName = "1.13.0"
 
         // URL base dell'Api Chessora in produzione: iniettato come BuildConfig
         // string invece che hard-codato nel client Retrofit, cosi' un domani un
@@ -130,23 +130,17 @@ dependencies {
     implementation("androidx.exifinterface:exifinterface:1.3.7")
 
     // --- Firebase Cloud Messaging (solo il modulo Messaging, niente Analytics: non
-    // serve e complicherebbe l'informativa privacy per un'app senza account utente) ---
-    // Firebase Auth è stato aggiunto in seguito, solo per il login Google del flusso di
-    // identificazione facoltativa (vedi ui/identity/) - non introduce un vero account
-    // utente lato Firebase persistito tra le sessioni, serve solo a ottenere l'email.
+    // serve e complicherebbe l'informativa privacy) ---
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
     implementation("com.google.firebase:firebase-messaging-ktx")
-    implementation("com.google.firebase:firebase-auth-ktx")
 
-    // --- Identificazione facoltativa del socio (ui/identity/): login Google via
-    // Credential Manager (API moderna raccomandata da Google, sostituisce la vecchia
-    // GoogleSignInClient) + Phone Number Hint (popup nativo con il numero della SIM/
-    // account, l'utente conferma con un tap - non esiste un modo per leggere il numero
-    // in silenzio su Android moderno). ---
+    // --- Login Google (ui/auth/): Credential Manager (API moderna raccomandata da
+    // Google, sostituisce la vecchia GoogleSignInClient) - restituisce l'ID token
+    // grezzo, verificato lato server con Google.Apis.Auth, non più uno scambio con
+    // Firebase Authentication. ---
     implementation("androidx.credentials:credentials:1.3.0")
     implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
-    implementation("com.google.android.gms:play-services-auth:21.2.0")
 
     // --- Test (scaffolding minimo di default, nessun test scritto in questa
     // prima versione - vedi README.md "Cosa NON è stato fatto") ---

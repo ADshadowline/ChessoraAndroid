@@ -52,26 +52,12 @@ data class TournamentRegistrationCount(
 @Serializable
 class EmptyRequestBody
 
-/** Specchio di Chessora.Contracts.Tournaments.PreRegistrationRequest (corpo di POST
- * /api/tornei/{id}/preiscrivi) - PREISCRIZIONE, non conferma di partecipazione: la
- * conferma reale avviene in loco al torneo. Se [idPlayer] è valorizzato (socio
- * riconosciuto) gli altri campi sono facoltativi; altrimenti serve almeno uno tra
- * [displayName] e [idFideManuale] (validato lato server). */
-@Serializable
-data class PreRegistrationRequest(
-    val idPlayer: Int? = null,
-    val email: String? = null,
-    val phoneNumber: String? = null,
-    val displayName: String? = null,
-    val idFideManuale: String? = null,
-)
-
 /** Specchio di Chessora.Contracts.Tournaments.TournamentPreRegistrationResultDto -
- * [contactId] va salvato in ClubPreferences (non c'è alcuna sessione server-side) per le
- * successive GET /api/tornei/mie-preiscrizioni. */
+ * PREISCRIZIONE (non conferma di partecipazione, richiede login - vedi ui/auth/):
+ * userId è l'AspNetUsers.Id dell'utente autenticato che ha effettuato la preiscrizione. */
 @Serializable
 data class TournamentPreRegistrationResult(
-    val contactId: Int,
+    val userId: String,
     val nPreRegisteredPlayers: Int,
     val limiteIscrizioni: Int,
 )

@@ -4,6 +4,10 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import org.chessora.app.data.local.AuthPreferences
+import org.chessora.app.data.local.AuthSession
 import org.chessora.app.data.local.ClubPreferences
 import org.chessora.app.data.remote.NetworkModule
 import org.chessora.app.data.repository.ChessoraRepository
@@ -20,13 +24,23 @@ class ChessoraApplication : Application() {
     lateinit var clubPreferences: ClubPreferences
         private set
 
+    lateinit var authPreferences: AuthPreferences
+        private set
+
     lateinit var repository: ChessoraRepository
         private set
 
     override fun onCreate() {
         super.onCreate()
         clubPreferences = ClubPreferences(this)
+        authPreferences = AuthPreferences(this)
         repository = ChessoraRepository(NetworkModule.api)
+        // Lettura locale bloccante ma rapida (DataStore su file, nessuna rete): serve
+        // che AuthSession.accessToken sia già valorizzato PRIMA della primissima
+        // chiamata di rete di SessionViewModel/SplashScreen, che parte quasi subito
+        // dopo onCreate - un populamento asincrono lascerebbe una finestra in cui
+        // l'interceptor (data/remote/NetworkModule.kt) non allegherebbe il Bearer.
+        AuthSession.accessToken = runBlocking { authPreferences.accessToken.first() }
         createNotificationChannel()
     }
 

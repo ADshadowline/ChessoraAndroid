@@ -12,24 +12,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -52,16 +45,14 @@ private val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.IT
 /** Dettaglio di un EVENTO (mai i singoli giorni di gioco - quelli restano solo nel
  * calendario) aperto dalla Home - mostra luogo, formato, link al sito/bando (condivisi
  * da tutto l'evento), e l'elenco dei tornei dell'evento (uno solo se non ha "fratelli")
- * tra cui scegliere UNA SOLA preiscrizione: richiede di essersi autenticati (Google/
- * telefono), e se non si risulta un socio riconosciuto chiede prima idFide o
- * nome+cognome (vedi ManualIdentityDialog). */
+ * tra cui scegliere UNA SOLA preiscrizione: richiede il login (vedi ui/auth/), l'identità
+ * usata è sempre quella dell'utente autenticato, mai chiesta a mano qui. */
 @Composable
-fun TournamentDetailScreen(idTournament: Int, onIdentify: () -> Unit) {
+fun TournamentDetailScreen(idTournament: Int, onLogin: () -> Unit) {
     val viewModel = chessoraViewModel { app -> TournamentDetailViewModel(app.repository, app.clubPreferences) }
     val state by viewModel.state.collectAsState()
     val registering by viewModel.registering.collectAsState()
     val context = LocalContext.current
-    var manualIdentityTarget by rememberSaveable { mutableStateOf<Int?>(null) }
 
     LaunchedEffect(idTournament) { viewModel.load(idTournament) }
 
@@ -75,7 +66,7 @@ fun TournamentDetailScreen(idTournament: Int, onIdentify: () -> Unit) {
             EventHeaderCard(
                 tournament = data.tournament,
                 eventoNome = data.eventoNome,
-                isAuthenticated = data.isAuthenticated,
+                isAuthenticated = data.isLoggedIn,
                 onOpenLink = { url -> context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) },
             )
             Text(
@@ -87,13 +78,12 @@ fun TournamentDetailScreen(idTournament: Int, onIdentify: () -> Unit) {
                 TournamentOptionCard(
                     option = option,
                     registering = registering,
-                    isAuthenticated = data.isAuthenticated,
+                    isAuthenticated = data.isLoggedIn,
                     disabledByOther = data.hasAnyRegistration && !option.isRegistered,
                     onRegister = {
                         viewModel.register(
                             option.tournament.id,
-                            onNeedsIdentification = onIdentify,
-                            onNeedsManualIdentity = { manualIdentityTarget = option.tournament.id },
+                            onNeedsLogin = onLogin,
                             onError = { error -> Toast.makeText(context, error, Toast.LENGTH_SHORT).show() },
                         )
                     },
@@ -106,67 +96,6 @@ fun TournamentDetailScreen(idTournament: Int, onIdentify: () -> Unit) {
             }
         }
     }
-
-    manualIdentityTarget?.let { targetId ->
-        ManualIdentityDialog(
-            onDismiss = { manualIdentityTarget = null },
-            onConfirm = { idFide, displayName ->
-                manualIdentityTarget = null
-                viewModel.registerWithManualIdentity(
-                    targetId,
-                    idFideManuale = idFide,
-                    displayName = displayName,
-                    onError = { error -> Toast.makeText(context, error, Toast.LENGTH_SHORT).show() },
-                )
-            },
-        )
-    }
-}
-
-/** Chiesta prima di completare la preiscrizione quando l'utente è autenticato ma non
- * risulta un socio riconosciuto (vedi TournamentDetailViewModel.registerWithManualIdentity)
- * - almeno uno dei due campi è obbligatorio (validato anche lato server), servono a
- * mostrare il giocatore su tourn.chessora.org anche senza un socio collegato. */
-@Composable
-private fun ManualIdentityDialog(onDismiss: () -> Unit, onConfirm: (idFide: String?, displayName: String?) -> Unit) {
-    var idFide by rememberSaveable { mutableStateOf("") }
-    var displayName by rememberSaveable { mutableStateOf("") }
-    val canConfirm = idFide.isNotBlank() || displayName.isNotBlank()
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.tournament_manual_identity_title)) },
-        text = {
-            Column {
-                Text(stringResource(R.string.tournament_manual_identity_body), style = MaterialTheme.typography.bodyMedium)
-                OutlinedTextField(
-                    value = idFide,
-                    onValueChange = { idFide = it },
-                    label = { Text(stringResource(R.string.tournament_manual_identity_idfide_label)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
-                )
-                OutlinedTextField(
-                    value = displayName,
-                    onValueChange = { displayName = it },
-                    label = { Text(stringResource(R.string.tournament_manual_identity_name_label)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = { onConfirm(idFide.ifBlank { null }, displayName.ifBlank { null }) },
-                enabled = canConfirm,
-            ) {
-                Text(stringResource(R.string.tournament_register))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.tournament_manual_identity_cancel)) }
-        },
-    )
 }
 
 /** Informazioni condivise da tutto l'evento (identiche per ogni torneo "fratello", vedi

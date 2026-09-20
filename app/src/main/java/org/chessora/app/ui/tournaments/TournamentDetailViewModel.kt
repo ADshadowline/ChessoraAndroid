@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.chessora.app.data.local.ClubPreferences
 import org.chessora.app.data.remote.apiErrorMessage
-import org.chessora.app.data.remote.dto.PreRegistrationRequest
 import org.chessora.app.data.remote.dto.TournamentSummary
 import org.chessora.app.data.repository.ChessoraRepository
 import org.chessora.app.ui.common.UiState
@@ -33,14 +32,9 @@ data class TournamentDetailData(
     /** Un solo elemento se il torneo non ha fratelli, altrimenti uno per ciascun
      * torneo dell'evento (compreso [tournament]), ordinati per id. */
     val options: List<TournamentEventOption>,
-    /** False = l'utente non si è mai identificato (Google/telefono): la preiscrizione
-     * richiede prima di identificarsi, anche solo per provare di essere una persona reale
-     * (vedi ClubPreferences.isAuthenticated). */
-    val isAuthenticated: Boolean,
-    /** Non null solo se l'utente autenticato è anche un socio riconosciuto - altrimenti
-     * la preiscrizione chiede prima idFide o nome+cognome (vedi
-     * registerWithManualIdentity). */
-    val identifiedPlayerId: Int?,
+    /** False = l'utente non ha effettuato il login (Google/ID FIDE/email) - la
+     * preiscrizione richiede un account (vedi ui/auth/). */
+    val isLoggedIn: Boolean,
 ) {
     /** True se il chiamante è già preiscritto a un torneo di questo evento (qualunque
      * esso sia) - gli altri tornei dell'evento vanno mostrati disabilitati finché non
@@ -55,7 +49,8 @@ data class TournamentDetailData(
  * la conferma reale avviene in loco al torneo) A UNO SOLO di essi per volta - per
  * sceglierne un altro va prima ritirata la preiscrizione corrente (cancelRegistration).
  * Un secondo tocco sullo stesso torneo è idempotente (lato server, vedi
- * TournamentRegistrationService.PreRegisterAsync).
+ * TournamentRegistrationService.PreRegisterAsync). Richiede login (ui/auth/): l'identità
+ * del chiamante è sempre quella dell'utente autenticato, mai passata dal client.
  */
 class TournamentDetailViewModel(
     private val repository: ChessoraRepository,
@@ -71,80 +66,42 @@ class TournamentDetailViewModel(
     fun load(idTournament: Int) {
         viewModelScope.launch {
             _state.value = UiState.Loading
-            val isAuthenticated = clubPreferences.isAuthenticated.first()
-            val idPlayer = clubPreferences.identifiedPlayerId.first()
-            val myTorneiIds = myPreRegisteredTournamentIds()
+            val isLoggedIn = clubPreferences.isAuthenticated.first()
+            val myTorneiIds = if (isLoggedIn) myPreRegisteredTournamentIds() else emptySet()
             _state.value = repository.getTornei().mapCatching { list ->
                 val tournament = list.first { it.id == idTournament }
                 val eventGroupId = tournament.eventGroupId
                 val eventoOptions = (if (eventGroupId != null) list.filter { it.eventGroupId == eventGroupId } else listOf(tournament))
                     .sortedBy { it.id }
                     .map { TournamentEventOption(it, it.id in myTorneiIds) }
-                TournamentDetailData(tournament, tournament.eventoNome, eventoOptions, isAuthenticated, idPlayer)
+                TournamentDetailData(tournament, tournament.eventoNome, eventoOptions, isLoggedIn)
             }.toUiState()
         }
     }
 
-    private suspend fun myPreRegisteredTournamentIds(): Set<Int> {
-        val contactId = clubPreferences.preRegistrationContactId.first()
-        val idPlayer = clubPreferences.identifiedPlayerId.first()
-        val email = clubPreferences.authenticatedEmail.first()
-        val phone = clubPreferences.authenticatedPhone.first()
-        if (contactId == null && idPlayer == null && email == null && phone == null) return emptySet()
-        return repository.getMyPreRegistrations(contactId, idPlayer, email, phone)
-            .getOrNull()?.map { it.id }?.toSet() ?: emptySet()
-    }
+    private suspend fun myPreRegisteredTournamentIds(): Set<Int> =
+        repository.getMyPreRegistrations().getOrNull()?.map { it.id }?.toSet() ?: emptySet()
 
-    /** Tre esiti possibili, decisi da [TournamentDetailData]: non autenticato →
-     * [onNeedsIdentification] (schermata di identificazione); autenticato ma non socio
-     * riconosciuto → [onNeedsManualIdentity] (dialog idFide/nome+cognome, poi
-     * registerWithManualIdentity); socio riconosciuto → preiscrizione diretta a
-     * [idTournament] (uno specifico tra le [TournamentDetailData.options]). */
-    fun register(idTournament: Int, onNeedsIdentification: () -> Unit, onNeedsManualIdentity: () -> Unit, onError: (String) -> Unit) {
+    /** Due esiti possibili, decisi da [TournamentDetailData]: non loggato →
+     * [onNeedsLogin]; loggato → preiscrizione diretta a [idTournament] (uno specifico
+     * tra le [TournamentDetailData.options]), l'identità è quella dell'utente
+     * autenticato (Bearer), mai passata dal client. */
+    fun register(idTournament: Int, onNeedsLogin: () -> Unit, onError: (String) -> Unit) {
         val current = _state.value
         if (current !is UiState.Success) return
-        if (!current.data.isAuthenticated) {
-            onNeedsIdentification()
-            return
-        }
-        val idPlayer = current.data.identifiedPlayerId
-        if (idPlayer == null) {
-            onNeedsManualIdentity()
+        if (!current.data.isLoggedIn) {
+            onNeedsLogin()
             return
         }
         viewModelScope.launch {
-            val email = clubPreferences.authenticatedEmail.first()
-            val phone = clubPreferences.authenticatedPhone.first()
-            doRegister(idTournament, PreRegistrationRequest(idPlayer = idPlayer, email = email, phoneNumber = phone), onError)
+            _registering.value = true
+            repository.preRegisterForTournament(idTournament)
+                .onSuccess { result ->
+                    _state.value = UiState.Success(withUpdatedOption(current.data, idTournament, isRegistered = true, result.nPreRegisteredPlayers, result.limiteIscrizioni))
+                }
+                .onFailure { onError(it.apiErrorMessage() ?: "Impossibile completare la preiscrizione. Riprova.") }
+            _registering.value = false
         }
-    }
-
-    /** Completa la preiscrizione di un utente autenticato ma non (ancora) socio
-     * riconosciuto, dopo che ha inserito idFide o nome+cognome nella dialog (almeno uno
-     * dei due obbligatorio, validato anche lato server). */
-    fun registerWithManualIdentity(idTournament: Int, idFideManuale: String?, displayName: String?, onError: (String) -> Unit) {
-        viewModelScope.launch {
-            val email = clubPreferences.authenticatedEmail.first()
-            val phone = clubPreferences.authenticatedPhone.first()
-            doRegister(
-                idTournament,
-                PreRegistrationRequest(email = email, phoneNumber = phone, displayName = displayName, idFideManuale = idFideManuale),
-                onError,
-            )
-        }
-    }
-
-    private suspend fun doRegister(idTournament: Int, request: PreRegistrationRequest, onError: (String) -> Unit) {
-        val current = _state.value
-        if (current !is UiState.Success) return
-        _registering.value = true
-        repository.preRegisterForTournament(idTournament, request)
-            .onSuccess { result ->
-                clubPreferences.setPreRegistrationContactId(result.contactId)
-                _state.value = UiState.Success(withUpdatedOption(current.data, idTournament, isRegistered = true, result.nPreRegisteredPlayers, result.limiteIscrizioni))
-            }
-            .onFailure { onError(it.apiErrorMessage() ?: "Impossibile completare la preiscrizione. Riprova.") }
-        _registering.value = false
     }
 
     /** Ritira la preiscrizione a [idTournament] - permette di sceglierne un altro tra i
@@ -155,10 +112,7 @@ class TournamentDetailViewModel(
         if (current !is UiState.Success) return
         viewModelScope.launch {
             _registering.value = true
-            val idPlayer = current.data.identifiedPlayerId
-            val email = clubPreferences.authenticatedEmail.first()
-            val phone = clubPreferences.authenticatedPhone.first()
-            repository.cancelPreRegistration(idTournament, idPlayer, email, phone)
+            repository.cancelPreRegistration(idTournament)
                 .onSuccess { result ->
                     _state.value = UiState.Success(withUpdatedOption(current.data, idTournament, isRegistered = false, result.nPreRegisteredPlayers, result.limiteIscrizioni))
                 }

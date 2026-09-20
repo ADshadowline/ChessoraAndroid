@@ -50,7 +50,7 @@ fun SettingsScreen(
     club: String?,
     identifiedPlayerName: String?,
     onChangeClub: () -> Unit,
-    onIdentify: () -> Unit,
+    onLogout: () -> Unit,
     onOpenProfilePhoto: () -> Unit,
     onOpenIconSettings: () -> Unit,
 ) {
@@ -85,17 +85,18 @@ fun SettingsScreen(
             Text(stringResource(R.string.settings_change_club))
         }
 
-        Text(
-            text = identifiedPlayerName?.let { stringResource(R.string.settings_identity_as, it) }
-                ?: stringResource(R.string.settings_identity_none),
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(top = 20.dp),
-        )
-        OutlinedButton(onClick = onIdentify, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
-            Text(stringResource(R.string.settings_identity_button))
+        identifiedPlayerName?.let {
+            Text(
+                text = stringResource(R.string.settings_identity_as, it),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(top = 20.dp),
+            )
         }
         OutlinedButton(onClick = onOpenProfilePhoto, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
             Text(stringResource(R.string.settings_my_photo))
+        }
+        OutlinedButton(onClick = onLogout, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+            Text(stringResource(R.string.settings_logout))
         }
 
         Row(

@@ -8,11 +8,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.chessora.app.data.local.AuthPreferences
+import org.chessora.app.data.local.AuthSession
 import org.chessora.app.data.local.ClubPreferences
 import org.chessora.app.data.remote.dto.PerformancePointDto
 import org.chessora.app.data.remote.dto.SiteBranding
 import org.chessora.app.data.repository.ChessoraRepository
 import org.chessora.app.push.DeviceRegistration
+import org.chessora.app.ui.auth.AuthSessionPersister
 
 enum class EloTrend { UP, DOWN, FLAT }
 
@@ -35,7 +38,47 @@ data class EloSummary(val standard: EloRatingSummary?, val rapid: EloRatingSumma
 class SessionViewModel(
     private val repository: ChessoraRepository,
     private val clubPreferences: ClubPreferences,
+    private val authPreferences: AuthPreferences,
 ) : ViewModel() {
+
+    /** True appena AuthSession.accessToken (già popolato in modo sincrono da
+     * ChessoraApplication.onCreate) risulta non vuoto - fonte di verità per "l'utente ha
+     * fatto un vero login" (vedi ui/auth/), a differenza di [ClubPreferences.isAuthenticated]
+     * che [AuthSessionPersister] valorizza ANCHE lui a ogni login riuscito ma che, per
+     * installazioni esistenti aggiornate da questa versione, potrebbe già risultare true
+     * dalla vecchia identificazione debole senza che esista alcun token. */
+    private val _isLoggedIn = MutableStateFlow(!AuthSession.accessToken.isNullOrBlank())
+    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
+
+    /** Richiamata da ChessoraNavHost quando NetworkModule.onUnauthorized scatta (risposta
+     * 401): il token non è più valido, azzera tutto e rimanda l'utente al login. */
+    fun onUnauthorized() {
+        _isLoggedIn.value = false
+        viewModelScope.launch { AuthSessionPersister.clear(authPreferences, clubPreferences) }
+    }
+
+    /** Richiamata da ui/auth/ subito dopo un login/registrazione completata con successo. */
+    fun onLoggedIn() {
+        _isLoggedIn.value = true
+        viewModelScope.launch { _selectedClub.value = clubPreferences.selectedClub.first() }
+    }
+
+    /** Richiamata da Impostazioni ("Esci"): azzera sessione E circolo scelto, cosi' un
+     * prossimo utente sullo stesso dispositivo non eredita niente del precedente. */
+    fun logout() {
+        _isLoggedIn.value = false
+        _selectedClub.value = null
+        _branding.value = null
+        _membersCount.value = null
+        _identityResolved.value = false
+        _identifiedPlayerName.value = null
+        _eloSummary.value = null
+        _isTournamentManager.value = false
+        viewModelScope.launch {
+            AuthSessionPersister.clear(authPreferences, clubPreferences)
+            clubPreferences.clearSelectedClub()
+        }
+    }
 
     // MutableStateFlow di proprietà del ViewModel (non più un semplice stateIn() sopra
     // clubPreferences.selectedClub): clearSelectedClub() deve poter azzerare il valore
