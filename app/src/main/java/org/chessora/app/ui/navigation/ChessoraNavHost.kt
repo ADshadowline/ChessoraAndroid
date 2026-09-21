@@ -21,6 +21,8 @@ import androidx.compose.material.icons.filled.HowToReg
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Newspaper
 import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -173,7 +175,17 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
     val identifiedPlayerName by sessionViewModel.identifiedPlayerName.collectAsState()
     val membersCount by sessionViewModel.membersCount.collectAsState()
     val isTournamentManager by sessionViewModel.isTournamentManager.collectAsState()
+    val registeredTournamentsCount by sessionViewModel.registeredTournamentsCount.collectAsState()
     val context = LocalContext.current
+
+    // Un torneo può essere (pre)iscritto/ritirato da TournamentDetailScreen, un
+    // ViewModel diverso da questo: senza un refresh esplicito il badge sull'icona
+    // "Iscrizioni ai tornei" (sotto e in HomeScreen) resterebbe indietro finché non si
+    // riavvia l'app - ricaricarlo a ogni cambio di rotta lo mantiene corretto appena si
+    // torna su una qualunque schermata dopo aver toccato una preiscrizione.
+    LaunchedEffect(currentRoute) {
+        sessionViewModel.refreshRegisteredTournamentsCount()
+    }
 
     Scaffold(
         topBar = {
@@ -206,7 +218,15 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                                     restoreState = true
                                 }
                             },
-                            icon = { Icon(tab.icon, contentDescription = null) },
+                            icon = {
+                                if (tab.route == ChessoraDestinations.REGISTRATIONS && registeredTournamentsCount > 0) {
+                                    BadgedBox(badge = { Badge { Text(registeredTournamentsCount.toString()) } }) {
+                                        Icon(tab.icon, contentDescription = null)
+                                    }
+                                } else {
+                                    Icon(tab.icon, contentDescription = null)
+                                }
+                            },
                             label = { Text(stringResource(tab.labelRes)) },
                         )
                     }
@@ -318,6 +338,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                         club = selectedClub?.takeIf { it != ClubPreferences.PLATFORM_CLUB_CODE },
                         onOpenTournament = { idTournament -> navController.navigate(ChessoraDestinations.tournamentDetail(idTournament)) },
                         isPlatformMode = selectedClub == ClubPreferences.PLATFORM_CLUB_CODE,
+                        registeredTournamentsCount = registeredTournamentsCount,
                         desktop = DesktopHomeCallbacks(
                             onOpenEvents = { navController.navigate(ChessoraDestinations.EVENTS) },
                             onOpenCalendar = { navController.navigate(ChessoraDestinations.CALENDAR) },

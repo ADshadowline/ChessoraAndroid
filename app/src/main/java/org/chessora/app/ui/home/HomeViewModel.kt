@@ -100,6 +100,22 @@ class HomeViewModel(
 
     fun retry(club: String?) = fetch(club)
 
+    /** Richiamata quando la schermata torna in primo piano (vedi EventsListScreen,
+     * LifecycleEventEffect ON_RESUME) - una (pre)iscrizione/ritiro fatta da
+     * TournamentDetailScreen (un ViewModel diverso, aperto sopra questa schermata)
+     * lascerebbe altrimenti il segno di spunta indietro finché [load] non viene
+     * richiamato con un [club] diverso o l'app non viene riavviata: qui si aggiorna solo
+     * l'elenco degli id preiscritti, senza rifare l'intera chiamata al calendario. */
+    fun refreshRegisteredIds() {
+        viewModelScope.launch {
+            val ids = myPreRegisteredTournamentIds()
+            val current = _state.value
+            if (current is UiState.Success) {
+                _state.value = UiState.Success(current.data.copy(registeredTournamentIds = ids))
+            }
+        }
+    }
+
     /** Id dei tornei a cui il chiamante risulta preiscritto - per il segno di spunta in
      * Home. Funziona sia per un socio riconosciuto (idPlayer) sia per un utente
      * autenticato ma non ancora socio (email/telefono verificati, vedi

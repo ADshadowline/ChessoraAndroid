@@ -54,6 +54,7 @@ class SessionViewModel(
     fun onLoggedIn() {
         _isLoggedIn.value = true
         viewModelScope.launch { refreshClubAndIdentity() }
+        refreshRegisteredTournamentsCount()
     }
 
     /** Richiamata da Impostazioni ("Esci"): azzera sessione E circolo scelto, cosi' un
@@ -68,6 +69,7 @@ class SessionViewModel(
         _identityResolved.value = false
         _identifiedPlayerName.value = null
         _isTournamentManager.value = false
+        _registeredTournamentsCount.value = 0
         viewModelScope.launch {
             AuthSessionPersister.clear(authPreferences, clubPreferences)
             clubPreferences.clearSelectedClub()
@@ -86,6 +88,7 @@ class SessionViewModel(
         _identityResolved.value = false
         _identifiedPlayerName.value = null
         _isTournamentManager.value = false
+        _registeredTournamentsCount.value = 0
         viewModelScope.launch {
             authPreferences.clearSession()
             AuthSession.accessToken = null
@@ -127,6 +130,24 @@ class SessionViewModel(
     private val _isTournamentManager = MutableStateFlow(false)
     val isTournamentManager: StateFlow<Boolean> = _isTournamentManager
 
+    /** Quanti tornei risultano preiscritti (vedi GET api/tornei/mie-preiscrizioni) -
+     * mostrato come badge sull'icona "Iscrizioni ai tornei" (bottom bar e griglia Home
+     * desktop, vedi ChessoraNavHost/HomeScreen). Aggiornato a ogni cambio di rotta (vedi
+     * ChessoraNavHost), cosi' torna corretto anche dopo una (pre)iscrizione/ritiro fatto
+     * da TournamentDetailScreen, un ViewModel diverso che questo non osserva. */
+    private val _registeredTournamentsCount = MutableStateFlow(0)
+    val registeredTournamentsCount: StateFlow<Int> = _registeredTournamentsCount
+
+    fun refreshRegisteredTournamentsCount() {
+        if (!_isLoggedIn.value) {
+            _registeredTournamentsCount.value = 0
+            return
+        }
+        viewModelScope.launch {
+            _registeredTournamentsCount.value = repository.getMyPreRegistrations().getOrNull()?.size ?: 0
+        }
+    }
+
     /** Immagine di sfondo scelta in Impostazioni per lo SplashScreen (mai inviata al
      * server, vedi ClubPreferences.splashBackgroundUri) - letta qui perché SplashScreen è
      * mostrato prima ancora che esista un circolo scelto/identità risolta. */
@@ -145,6 +166,7 @@ class SessionViewModel(
         // token FCM potrebbe essere lo stesso di sempre, ma repository.registerDevice
         // è un upsert innocuo da ripetere - vedi push/DeviceRegistration.kt).
         viewModelScope.launch { refreshClubAndIdentity() }
+        refreshRegisteredTournamentsCount()
     }
 
     /** Carica circolo scelto/branding/identità/ruolo da ClubPreferences - usata sia

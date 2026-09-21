@@ -26,6 +26,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.automirrored.filled.ShowChart
@@ -39,6 +41,8 @@ import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -105,7 +109,13 @@ data class DesktopHomeCallbacks(
 )
 
 @Composable
-fun HomeScreen(club: String?, onOpenTournament: (Int) -> Unit, desktop: DesktopHomeCallbacks, isPlatformMode: Boolean = false) {
+fun HomeScreen(
+    club: String?,
+    onOpenTournament: (Int) -> Unit,
+    desktop: DesktopHomeCallbacks,
+    isPlatformMode: Boolean = false,
+    registeredTournamentsCount: Int = 0,
+) {
     val viewModel = chessoraViewModel { app -> HomeViewModel(app.repository, app.clubPreferences) }
     val displayMode by viewModel.displayMode.collectAsState()
     val desktopBackgroundUri by viewModel.desktopBackgroundUri.collectAsState()
@@ -121,6 +131,7 @@ fun HomeScreen(club: String?, onOpenTournament: (Int) -> Unit, desktop: DesktopH
                 iconOrder = desktopIconOrder,
                 hiddenIcons = desktopHiddenIcons,
                 onReorder = viewModel::setDesktopIconOrder,
+                registeredTournamentsCount = registeredTournamentsCount,
             )
         }
     } else {
@@ -140,6 +151,10 @@ fun EventsListScreen(club: String?, onOpenTournament: (Int) -> Unit) {
     var query by remember { mutableStateOf("") }
 
     LaunchedEffect(club) { viewModel.load(club) }
+    // Tornare qui dal dettaglio di un torneo (dopo una (pre)iscrizione/ritiro) non
+    // ricrea questo ViewModel - senza questo, il segno di spunta resterebbe quello di
+    // prima di aver toccato "Preiscriviti"/"Ritira".
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refreshRegisteredIds() }
 
     UiStateContent(state = state, onRetry = { viewModel.load(club) }) { data ->
         val filtered = remember(data.upcoming, query) {
@@ -193,7 +208,15 @@ fun EventsListScreen(club: String?, onOpenTournament: (Int) -> Unit) {
     }
 }
 
-private data class DesktopIcon(val id: String, val labelRes: Int, val icon: ImageVector, val onClick: () -> Unit)
+private data class DesktopIcon(
+    val id: String,
+    val labelRes: Int,
+    val icon: ImageVector,
+    val onClick: () -> Unit,
+    /** Numero mostrato come badge sull'icona (0 = nessun badge) - solo "Iscrizioni ai
+     * tornei" ne ha uno per ora, vedi DesktopHomeGrid. */
+    val badgeCount: Int = 0,
+)
 
 /**
  * Descrittore statico di una icona della griglia Home desktop - id stabile usato per
@@ -272,15 +295,17 @@ private fun DesktopHomeGrid(
     iconOrder: List<String>,
     hiddenIcons: Set<String>,
     onReorder: (List<String>) -> Unit,
+    registeredTournamentsCount: Int = 0,
 ) {
     // Messaggi e Impostazioni sono ancorate agli angoli in basso (sinistra/destra), non
     // parte della griglia scorrevole - posizione fissa richiesta esplicitamente, non
     // riordinabili/nascondibili da Impostazioni > Icone Home.
-    val baseIcons = remember(desktop, isPlatformMode, iconOrder, hiddenIcons) {
+    val baseIcons = remember(desktop, isPlatformMode, iconOrder, hiddenIcons, registeredTournamentsCount) {
         val defaults = DESKTOP_ICON_DESCRIPTORS.filter { !(isPlatformMode && it.hiddenInPlatformMode) }
         applyIconPreferences(defaults, iconOrder, hiddenIcons).mapNotNull { descriptor ->
             callbackFor(descriptor.id, desktop)?.let { onClick ->
-                DesktopIcon(descriptor.id, descriptor.labelRes, descriptor.icon, onClick)
+                val badgeCount = if (descriptor.id == "registrations") registeredTournamentsCount else 0
+                DesktopIcon(descriptor.id, descriptor.labelRes, descriptor.icon, onClick, badgeCount)
             }
         }
     }
@@ -399,7 +424,13 @@ private fun DesktopIconTile(entry: DesktopIcon, modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Icon(entry.icon, contentDescription = null, modifier = Modifier.size(36.dp))
+            if (entry.badgeCount > 0) {
+                BadgedBox(badge = { Badge { Text(entry.badgeCount.toString()) } }) {
+                    Icon(entry.icon, contentDescription = null, modifier = Modifier.size(36.dp))
+                }
+            } else {
+                Icon(entry.icon, contentDescription = null, modifier = Modifier.size(36.dp))
+            }
             Text(
                 stringResource(entry.labelRes),
                 style = MaterialTheme.typography.labelMedium,

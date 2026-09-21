@@ -22,6 +22,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import org.chessora.app.R
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
@@ -33,6 +35,9 @@ fun RegistrationsScreen(onIdentify: () -> Unit, onOpenTournament: (Int) -> Unit)
     val isAuthenticated by viewModel.isAuthenticated.collectAsState()
 
     LaunchedEffect(Unit) { viewModel.load() }
+    // Tornare qui dal dettaglio di un torneo (dopo una preiscrizione/ritiro) non
+    // ricrea questo ViewModel - senza questo, l'elenco resterebbe quello di prima.
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.load() }
 
     UiStateContent(state = state, onRetry = { viewModel.retry() }) { registrations ->
         when {

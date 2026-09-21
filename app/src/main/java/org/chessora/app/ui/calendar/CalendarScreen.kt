@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
@@ -74,6 +76,7 @@ fun CalendarScreen(club: String, onOpenBando: (url: String) -> Unit) {
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(club) { viewModel.load(club) }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refreshRegisteredIds() }
     // Se l'utente naviga a un mese diverso, la selezione del giorno precedente
     // non ha più senso (potrebbe non esistere in quel mese) - riparte da "oggi"
     // se il mese mostrato è quello corrente, altrimenti nessun giorno selezionato.

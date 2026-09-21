@@ -56,6 +56,14 @@ class CalendarViewModel(
 
     fun retry() = fetchMonth(_month.value)
 
+    /** Richiamata quando la schermata torna in primo piano (vedi CalendarScreen,
+     * LifecycleEventEffect ON_RESUME) - stesso motivo di HomeViewModel.refreshRegisteredIds:
+     * una (pre)iscrizione/ritiro fatta dal dettaglio di un torneo, aperto sopra questa
+     * schermata, lascerebbe altrimenti l'evidenziazione indietro. */
+    fun refreshRegisteredIds() {
+        viewModelScope.launch { _registeredTournamentIds.value = myPreRegisteredTournamentIds() }
+    }
+
     /** Url assoluto del bando dell'evento, se ne ha uno - stessa logica di
      * HomeViewModel.resolveBandoUrl: quello di un torneo è già nella riga di
      * calendario, quello di un evento richiede una fetch dedicata. */

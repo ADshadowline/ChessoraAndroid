@@ -33,8 +33,8 @@ android {
         // valerne la pena su un'app di sola consultazione.
         minSdk = 26
         targetSdk = 35
-        versionCode = 48
-        versionName = "1.15.1"
+        versionCode = 49
+        versionName = "1.16.0"
 
         // URL base dell'Api Chessora in produzione: iniettato come BuildConfig
         // string invece che hard-codato nel client Retrofit, cosi' un domani un
@@ -104,6 +104,11 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.8.5")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+    // LifecycleEventEffect (ON_RESUME) - usato per riaggiornare i segni di spunta
+    // "preiscritto" quando si torna su Home/Eventi/Calendario/Iscrizioni dal dettaglio
+    // di un torneo, senza il quale resterebbero al valore letto alla primissima
+    // apertura della schermata (il ViewModel non viene ricreato tornando indietro).
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     implementation("androidx.navigation:navigation-compose:2.8.4")
 
     // --- Rete: Retrofit + OkHttp + kotlinx.serialization (niente Gson: coerente
