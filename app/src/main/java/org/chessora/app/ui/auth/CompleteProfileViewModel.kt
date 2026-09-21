@@ -2,6 +2,8 @@ package org.chessora.app.ui.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -61,12 +63,18 @@ class CompleteProfileViewModel(
         _phase.value = if (hasFide) ProfileUiPhase.EnterIdFide else ProfileUiPhase.AmateurDetails
     }
 
+    private var searchJob: Job? = null
+
+    /** Cerca automaticamente man mano che si digita, a partire dal 4° carattere - stesso
+     * comportamento/motivazione di LoginFideViewModel.searchByName. */
     fun searchByName(query: String) {
-        if (query.isBlank()) {
+        searchJob?.cancel()
+        if (query.trim().length < 4) {
             _searchResults.value = emptyList()
             return
         }
-        viewModelScope.launch {
+        searchJob = viewModelScope.launch {
+            delay(300)
             repository.searchFide(query).onSuccess { _searchResults.value = it }
         }
     }

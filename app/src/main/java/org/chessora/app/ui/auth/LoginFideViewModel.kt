@@ -2,6 +2,8 @@ package org.chessora.app.ui.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -64,12 +66,21 @@ class LoginFideViewModel(
     private var selectedIdClub: Int? = null
     private var selectedIdPlayer: Int? = null
 
+    private var searchJob: Job? = null
+
+    /** Cerca automaticamente man mano che si digita, a partire dal 4° carattere (sotto
+     * quella soglia il risultato sarebbe troppo rumoroso - il server comunque accetta
+     * già da 2, vedi FidePlayerLookupRepository.SearchByNameAsync) - un breve debounce
+     * evita di sparare una richiesta per ogni tasto e che una risposta più lenta di una
+     * successiva sovrascriva poi risultati più recenti. */
     fun searchByName(query: String) {
-        if (query.isBlank()) {
+        searchJob?.cancel()
+        if (query.trim().length < 4) {
             _searchResults.value = emptyList()
             return
         }
-        viewModelScope.launch {
+        searchJob = viewModelScope.launch {
+            delay(300)
             repository.searchFide(query).onSuccess { _searchResults.value = it }
         }
     }
