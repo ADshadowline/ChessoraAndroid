@@ -218,6 +218,14 @@ class ClubPreferences(context: Context) {
         }
     }
 
+    /** "Reimposta impostazioni" da Impostazioni (vedi SessionViewModel.resetAllSettings) -
+     * a differenza di [clearIdentity]/[clearSelectedClub] azzera TUTTO (circolo, identità,
+     * sfondi, ordine/visibilità icone Home, preferenza notifiche...), riportando l'app allo
+     * stato di primissimo avvio. */
+    suspend fun clearAll() {
+        dataStore.edit { it.clear() }
+    }
+
     companion object {
         /** Valore sentinella per [selectedClub]: soddisfa "un circolo è già stato
          * scelto" (non fa ripartire l'onboarding) ma NON è un vero publicCode -

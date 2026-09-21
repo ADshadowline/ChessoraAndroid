@@ -12,10 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.EmojiEvents
@@ -78,14 +75,9 @@ import org.chessora.app.ui.onboarding.MembershipQuestionScreen
 import org.chessora.app.ui.onboarding.OnboardingScreen
 import org.chessora.app.ui.performance.EloRatingType
 import org.chessora.app.ui.performance.PerformanceScreen
-import org.chessora.app.ui.performance.color
-import org.chessora.app.ui.performance.icon
 import org.chessora.app.ui.profile.ProfilePhotoScreen
 import org.chessora.app.ui.ranking.RankingScreen
 import org.chessora.app.ui.registrations.RegistrationsScreen
-import org.chessora.app.ui.session.EloRatingSummary
-import org.chessora.app.ui.session.EloSummary
-import org.chessora.app.ui.session.EloTrend
 import org.chessora.app.ui.session.SessionViewModel
 import org.chessora.app.ui.settings.IconSettingsScreen
 import org.chessora.app.ui.settings.SettingsScreen
@@ -180,7 +172,6 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
     val branding by sessionViewModel.branding.collectAsState()
     val identifiedPlayerName by sessionViewModel.identifiedPlayerName.collectAsState()
     val membersCount by sessionViewModel.membersCount.collectAsState()
-    val eloSummary by sessionViewModel.eloSummary.collectAsState()
     val isTournamentManager by sessionViewModel.isTournamentManager.collectAsState()
     val context = LocalContext.current
 
@@ -191,9 +182,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                     branding = branding,
                     identifiedPlayerName = identifiedPlayerName,
                     membersCount = membersCount,
-                    eloSummary = eloSummary,
                     isPlatformMode = selectedClub == ClubPreferences.PLATFORM_CLUB_CODE,
-                    onEloClick = { type -> navController.navigate(ChessoraDestinations.performance(type.routeValue)) },
                     isTournamentManager = isTournamentManager,
                     // Nessun login/gestione nativa in app (nessun account con password
                     // esiste qui) - apre il wizard nel browser, dove il gestore usa le sue
@@ -500,6 +489,10 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                         sessionViewModel.logout()
                         navController.navigate(ChessoraDestinations.AUTH_LOGIN) { popUpTo(0) }
                     },
+                    onResetSettings = {
+                        sessionViewModel.resetAllSettings()
+                        navController.navigate(ChessoraDestinations.AUTH_LOGIN) { popUpTo(0) }
+                    },
                     onOpenProfilePhoto = { navController.navigate(ChessoraDestinations.PROFILE_PHOTO) },
                     onOpenIconSettings = { navController.navigate(ChessoraDestinations.ICON_SETTINGS) },
                 )
@@ -519,10 +512,9 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
  * numero soci è mostrato tra parentesi subito dopo il nome del circolo (es.
  * "Circolo Scacchi Torino (125 soci)"), non più in una riga separata.
  *
- * Sotto la barra, allineati a sinistra: il nome del socio identificato (se
- * valorizzato, vedi ui/identity/) seguito dai suoi tre punteggi Elo (Standard/
- * Rapid/Blitz, [eloSummary]) con una freccia di trend - click su un punteggio
- * apre "Andamento Elo" già filtrato su quella cadenza ([onEloClick]).
+ * Sotto la barra, allineato a sinistra: il nome dell'utente loggato (se valorizzato,
+ * vedi ui/auth/) - i punteggi Elo non sono più mostrati qui (restano in "Andamento
+ * Elo", raggiungibile da Altro/griglia desktop).
  */
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
@@ -530,9 +522,7 @@ private fun ClubBrandingTopBar(
     branding: SiteBranding?,
     identifiedPlayerName: String? = null,
     membersCount: Int? = null,
-    eloSummary: EloSummary? = null,
     isPlatformMode: Boolean = false,
-    onEloClick: (EloRatingType) -> Unit = {},
     isTournamentManager: Boolean = false,
     onManageTournamentsClick: () -> Unit = {},
 ) {
@@ -573,11 +563,6 @@ private fun ClubBrandingTopBar(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 IdentifiedBadge(name = identifiedPlayerName)
-                if (eloSummary != null) {
-                    eloSummary.standard?.let { EloBadge(EloRatingType.STANDARD, it, onEloClick) }
-                    eloSummary.rapid?.let { EloBadge(EloRatingType.RAPID, it, onEloClick) }
-                    eloSummary.blitz?.let { EloBadge(EloRatingType.BLITZ, it, onEloClick) }
-                }
                 if (isTournamentManager) {
                     Icon(
                         imageVector = Icons.Default.EmojiEvents,
@@ -618,37 +603,6 @@ private fun IdentifiedBadge(name: String) {
     }
 }
 
-/** Un punteggio Elo compatto con la sua freccia di trend, cliccabile per aprire
- * "Andamento Elo" già a fuoco su questa cadenza. */
-@Composable
-private fun EloBadge(type: EloRatingType, summary: EloRatingSummary, onClick: (EloRatingType) -> Unit) {
-    val (arrow, tint) = when (summary.trend) {
-        EloTrend.UP -> "▲" to Color(0xFF4CAF50)
-        EloTrend.DOWN -> "▼" to MaterialTheme.colorScheme.error
-        EloTrend.FLAT -> "" to MaterialTheme.colorScheme.onSurfaceVariant
-    }
-    val typeColor = type.color()
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .padding(end = 6.dp)
-            .clip(RoundedCornerShape(50))
-            .background(typeColor.copy(alpha = 0.22f))
-            .clickable { onClick(type) }
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-    ) {
-        Icon(type.icon(), contentDescription = null, tint = typeColor, modifier = Modifier.size(14.dp))
-        Text(
-            summary.value.toString(),
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(start = 4.dp),
-        )
-        if (arrow.isNotEmpty()) {
-            Text(arrow, style = MaterialTheme.typography.labelSmall, color = tint, modifier = Modifier.padding(start = 3.dp))
-        }
-    }
-}
 
 /**
  * Piccola guardia usata da ogni schermata che richiede un circolo scelto:

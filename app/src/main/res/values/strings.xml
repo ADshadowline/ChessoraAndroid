@@ -202,6 +202,11 @@
     <string name="email_pending_back_to_login">Torna al login</string>
 
     <string name="settings_logout">Esci</string>
+    <string name="settings_reset_button">Reimposta impostazioni</string>
+    <string name="settings_reset_title">Reimposta impostazioni</string>
+    <string name="settings_reset_body">Verranno azzerate tutte le preferenze locali (circolo scelto, sfondi, ordine e visibilità delle icone Home, notifiche) e dovrai autenticarti di nuovo. L\'operazione non può essere annullata.</string>
+    <string name="settings_reset_confirm">Reimposta</string>
+    <string name="settings_reset_cancel">Annulla</string>
 
     <!-- "La mia foto" (ui/profile/) -->
     <string name="more_profile_photo">La mia foto</string>

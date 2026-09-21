@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -26,6 +27,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,6 +55,7 @@ fun SettingsScreen(
     identifiedPlayerName: String?,
     onChangeClub: () -> Unit,
     onLogout: () -> Unit,
+    onResetSettings: () -> Unit,
     onOpenProfilePhoto: () -> Unit,
     onOpenIconSettings: () -> Unit,
 ) {
@@ -60,6 +65,7 @@ fun SettingsScreen(
     val splashBackgroundUri by viewModel.splashBackgroundUri.collectAsState()
     val desktopBackgroundUri by viewModel.desktopBackgroundUri.collectAsState()
     val context = LocalContext.current
+    var showResetConfirmation by remember { mutableStateOf(false) }
 
     val splashPickerLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia(),
@@ -149,10 +155,34 @@ fun SettingsScreen(
             onRemove = { viewModel.setDesktopBackgroundUri(null) },
         )
 
+        TextButton(
+            onClick = { showResetConfirmation = true },
+            modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
+        ) {
+            Text(stringResource(R.string.settings_reset_button), color = MaterialTheme.colorScheme.error)
+        }
+
         Text(
             "${stringResource(R.string.settings_about)}: Chessora ${BuildConfig.VERSION_NAME}",
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(top = 32.dp, bottom = 16.dp),
+            modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
+        )
+    }
+
+    if (showResetConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showResetConfirmation = false },
+            title = { Text(stringResource(R.string.settings_reset_title)) },
+            text = { Text(stringResource(R.string.settings_reset_body)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    showResetConfirmation = false
+                    onResetSettings()
+                }) { Text(stringResource(R.string.settings_reset_confirm)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showResetConfirmation = false }) { Text(stringResource(R.string.settings_reset_cancel)) }
+            },
         )
     }
 }

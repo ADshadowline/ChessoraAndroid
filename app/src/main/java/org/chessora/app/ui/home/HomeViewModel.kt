@@ -79,6 +79,13 @@ class HomeViewModel(
     val desktopHiddenIcons: StateFlow<Set<String>> = clubPreferences.desktopHiddenIcons
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptySet())
 
+    /** Riordino diretto sulla griglia Home (trascinamento con le dita, vedi
+     * DesktopHomeGrid) - stessa persistenza usata da ui/settings/IconSettingsScreen.kt,
+     * cosi' le due schermate restano sempre coerenti. */
+    fun setDesktopIconOrder(order: List<String>) {
+        viewModelScope.launch { clubPreferences.setDesktopIconOrder(order) }
+    }
+
     private var loadedForClub: String? = null
     private var hasLoadedOnce = false
 

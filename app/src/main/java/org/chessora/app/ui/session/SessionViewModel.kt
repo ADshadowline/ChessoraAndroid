@@ -11,21 +11,10 @@ import kotlinx.coroutines.launch
 import org.chessora.app.data.local.AuthPreferences
 import org.chessora.app.data.local.AuthSession
 import org.chessora.app.data.local.ClubPreferences
-import org.chessora.app.data.remote.dto.PerformancePointDto
 import org.chessora.app.data.remote.dto.SiteBranding
 import org.chessora.app.data.repository.ChessoraRepository
 import org.chessora.app.push.DeviceRegistration
 import org.chessora.app.ui.auth.AuthSessionPersister
-
-enum class EloTrend { UP, DOWN, FLAT }
-
-data class EloRatingSummary(val value: Int, val trend: EloTrend)
-
-/** Punteggi Elo attuali del socio identificato, mostrati in barra accanto al suo nome
- * (vedi ChessoraNavHost.ClubBrandingTopBar) - null per una cadenza se lo storico non ha
- * ancora nessun punto valutato per quella cadenza (non necessariamente "non ha IdFide",
- * vedi [SessionViewModel.eloSummary] che è null del tutto in quel caso). */
-data class EloSummary(val standard: EloRatingSummary?, val rapid: EloRatingSummary?, val blitz: EloRatingSummary?)
 
 /**
  * Unico ViewModel creato a livello di MainActivity (non per-schermata) e
@@ -64,7 +53,9 @@ class SessionViewModel(
     }
 
     /** Richiamata da Impostazioni ("Esci"): azzera sessione E circolo scelto, cosi' un
-     * prossimo utente sullo stesso dispositivo non eredita niente del precedente. */
+     * prossimo utente sullo stesso dispositivo non eredita niente del precedente. Le altre
+     * preferenze locali (sfondi, ordine icone, notifiche...) restano intatte - per quelle
+     * vedi [resetAllSettings]. */
     fun logout() {
         _isLoggedIn.value = false
         _selectedClub.value = null
@@ -72,11 +63,29 @@ class SessionViewModel(
         _membersCount.value = null
         _identityResolved.value = false
         _identifiedPlayerName.value = null
-        _eloSummary.value = null
         _isTournamentManager.value = false
         viewModelScope.launch {
             AuthSessionPersister.clear(authPreferences, clubPreferences)
             clubPreferences.clearSelectedClub()
+        }
+    }
+
+    /** Richiamata da Impostazioni ("Reimposta impostazioni"): a differenza di [logout],
+     * azzera OGNI preferenza locale (circolo scelto, sessione, sfondi, ordine/visibilità
+     * delle icone Home, notifiche...) - non solo l'identità - riportando l'app allo stato
+     * di primissimo avvio, poi richiede di autenticarsi di nuovo da zero. */
+    fun resetAllSettings() {
+        _isLoggedIn.value = false
+        _selectedClub.value = null
+        _branding.value = null
+        _membersCount.value = null
+        _identityResolved.value = false
+        _identifiedPlayerName.value = null
+        _isTournamentManager.value = false
+        viewModelScope.launch {
+            authPreferences.clearSession()
+            AuthSession.accessToken = null
+            clubPreferences.clearAll()
         }
     }
 
@@ -107,11 +116,6 @@ class SessionViewModel(
      * caricato. */
     private val _membersCount = MutableStateFlow<Int?>(null)
     val membersCount: StateFlow<Int?> = _membersCount
-
-    /** Null se non identificato, o se identificato ma senza alcuno storico Elo (mai
-     * giocato una partita valutata). */
-    private val _eloSummary = MutableStateFlow<EloSummary?>(null)
-    val eloSummary: StateFlow<EloSummary?> = _eloSummary
 
     /** True se il socio identificato ha il ruolo pubblico "Responsabile dei tornei" nel
      * circolo scelto (vedi GET /api/players/{idPlayer}/roles, nessun login richiesto) -
@@ -149,7 +153,6 @@ class SessionViewModel(
             _identifiedPlayerName.value = clubPreferences.identifiedPlayerName.first()
             val idPlayer = clubPreferences.identifiedPlayerId.first()
             if (idPlayer != null) {
-                loadEloSummary(idPlayer)
                 clubPreferences.selectedClub.first()?.let { loadTournamentManagerStatus(idPlayer, it) }
             }
         }
@@ -177,7 +180,6 @@ class SessionViewModel(
         _membersCount.value = null
         _identityResolved.value = false
         _identifiedPlayerName.value = null
-        _eloSummary.value = null
         _isTournamentManager.value = false
         viewModelScope.launch {
             clubPreferences.clearSelectedClub()
@@ -193,10 +195,8 @@ class SessionViewModel(
             _identityResolved.value = clubPreferences.identityResolved.first()
             _identifiedPlayerName.value = clubPreferences.identifiedPlayerName.first()
             val idPlayer = clubPreferences.identifiedPlayerId.first()
-            _eloSummary.value = null
             _isTournamentManager.value = false
             if (idPlayer != null) {
-                loadEloSummary(idPlayer)
                 clubPreferences.selectedClub.first()?.let { loadTournamentManagerStatus(idPlayer, it) }
             }
         }
@@ -227,28 +227,4 @@ class SessionViewModel(
         }
     }
 
-    private suspend fun loadEloSummary(idPlayer: Int) {
-        repository.getPlayerPerformance(idPlayer).onSuccess { history ->
-            _eloSummary.value = if (!history.hasFide) null else EloSummary(
-                standard = ratingSummary(history.points) { it.standard },
-                rapid = ratingSummary(history.points) { it.rapid },
-                blitz = ratingSummary(history.points) { it.blitz },
-            )
-        }
-    }
-
-    /** Ultimo valore non nullo della cadenza scelta, e il suo trend rispetto al
-     * penultimo valore non nullo (non necessariamente il mese precedente: un mese
-     * senza partite valutate in quella cadenza è semplicemente saltato). */
-    private fun ratingSummary(points: List<PerformancePointDto>, selector: (PerformancePointDto) -> Int?): EloRatingSummary? {
-        val values = points.sortedWith(compareBy({ it.year }, { it.month })).mapNotNull(selector)
-        val last = values.lastOrNull() ?: return null
-        val previous = values.dropLast(1).lastOrNull()
-        val trend = when {
-            previous == null || last == previous -> EloTrend.FLAT
-            last > previous -> EloTrend.UP
-            else -> EloTrend.DOWN
-        }
-        return EloRatingSummary(last, trend)
-    }
 }

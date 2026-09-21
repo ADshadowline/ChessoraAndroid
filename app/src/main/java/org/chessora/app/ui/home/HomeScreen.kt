@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,18 +51,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import kotlin.math.roundToInt
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.chessora.app.R
@@ -107,6 +115,7 @@ fun HomeScreen(club: String?, onOpenTournament: (Int) -> Unit, desktop: DesktopH
                 isPlatformMode = isPlatformMode,
                 iconOrder = desktopIconOrder,
                 hiddenIcons = desktopHiddenIcons,
+                onReorder = viewModel::setDesktopIconOrder,
             )
         }
     } else {
@@ -235,17 +244,31 @@ private fun callbackFor(id: String, desktop: DesktopHomeCallbacks): (() -> Unit)
     else -> null
 }
 
+private const val DESKTOP_GRID_COLUMNS = 3
+private val DESKTOP_GRID_SPACING = 12.dp
+
+/**
+ * Griglia riordinabile trascinando le icone con un dito (tieni premuto e sposta) -
+ * stessa idea di ui/settings/IconSettingsScreen.kt (lista), qui adattata a una griglia
+ * 2D: l'offset di trascinamento accumulato viene convertito in "quante celle" (righe *
+ * colonne + colonne) tramite [DESKTOP_GRID_SPACING]/la dimensione di cella misurata a
+ * runtime, poi l'elemento trascinato viene spostato in quella posizione nella lista -
+ * un'approssimazione a "indice piatto" (non un vero drop-target per posizione XY), che
+ * resta comunque naturale per un utente che trascina in una direzione. Il nuovo ordine
+ * viene persistito solo al rilascio ([onReorder]), non a ogni micro-spostamento.
+ */
 @Composable
 private fun DesktopHomeGrid(
     desktop: DesktopHomeCallbacks,
     isPlatformMode: Boolean,
     iconOrder: List<String>,
     hiddenIcons: Set<String>,
+    onReorder: (List<String>) -> Unit,
 ) {
     // Messaggi e Impostazioni sono ancorate agli angoli in basso (sinistra/destra), non
     // parte della griglia scorrevole - posizione fissa richiesta esplicitamente, non
     // riordinabili/nascondibili da Impostazioni > Icone Home.
-    val icons = remember(desktop, isPlatformMode, iconOrder, hiddenIcons) {
+    val baseIcons = remember(desktop, isPlatformMode, iconOrder, hiddenIcons) {
         val defaults = DESKTOP_ICON_DESCRIPTORS.filter { !(isPlatformMode && it.hiddenInPlatformMode) }
         applyIconPreferences(defaults, iconOrder, hiddenIcons).mapNotNull { descriptor ->
             callbackFor(descriptor.id, desktop)?.let { onClick ->
@@ -253,14 +276,86 @@ private fun DesktopHomeGrid(
             }
         }
     }
+    // Durante un trascinamento è questa lista, non [baseIcons], a decidere l'ordine
+    // mostrato a schermo (aggiornata subito, prima che il DataStore confermi la
+    // scrittura - altrimenti l'icona trascinata "scatterebbe" indietro al rilascio).
+    var icons by remember(baseIcons) { mutableStateOf(baseIcons) }
+
+    var draggingId by remember { mutableStateOf<String?>(null) }
+    var dragOffset by remember { mutableStateOf(Offset.Zero) }
+    var cellStepPx by remember { mutableStateOf(0f) }
+    val density = LocalDensity.current
+    val spacingPx = with(density) { DESKTOP_GRID_SPACING.toPx() }
+
     Column(modifier = Modifier.fillMaxSize()) {
         LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            modifier = Modifier.weight(1f).padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            columns = GridCells.Fixed(DESKTOP_GRID_COLUMNS),
+            modifier = Modifier
+                .weight(1f)
+                .padding(16.dp)
+                .onSizeChanged { size ->
+                    val cellWidthPx = (size.width - spacingPx * (DESKTOP_GRID_COLUMNS - 1)) / DESKTOP_GRID_COLUMNS
+                    cellStepPx = cellWidthPx + spacingPx
+                },
+            horizontalArrangement = Arrangement.spacedBy(DESKTOP_GRID_SPACING),
+            verticalArrangement = Arrangement.spacedBy(DESKTOP_GRID_SPACING),
         ) {
-            items(icons, key = { it.id }) { entry -> DesktopIconTile(entry) }
+            items(icons, key = { it.id }) { entry ->
+                val isDragging = draggingId == entry.id
+                DesktopIconTile(
+                    entry,
+                    modifier = Modifier
+                        .graphicsLayer {
+                            if (isDragging) {
+                                translationX = dragOffset.x
+                                translationY = dragOffset.y
+                            }
+                        }
+                        .zIndex(if (isDragging) 1f else 0f)
+                        .pointerInput(entry.id, icons) {
+                            detectDragGesturesAfterLongPress(
+                                onDragStart = {
+                                    draggingId = entry.id
+                                    dragOffset = Offset.Zero
+                                },
+                                onDrag = { change, amount ->
+                                    change.consume()
+                                    dragOffset += amount
+                                    val step = cellStepPx
+                                    if (step <= 0f) return@detectDragGesturesAfterLongPress
+                                    val currentIndex = icons.indexOfFirst { it.id == entry.id }
+                                    if (currentIndex == -1) return@detectDragGesturesAfterLongPress
+                                    val colDelta = (dragOffset.x / step).roundToInt()
+                                    val rowDelta = (dragOffset.y / step).roundToInt()
+                                    val indexDelta = rowDelta * DESKTOP_GRID_COLUMNS + colDelta
+                                    val targetIndex = (currentIndex + indexDelta).coerceIn(0, icons.lastIndex)
+                                    if (targetIndex != currentIndex) {
+                                        icons = icons.toMutableList().apply { add(targetIndex, removeAt(currentIndex)) }
+                                        // Compensa l'offset per la porzione di trascinamento già "consumata" dallo
+                                        // spostamento appena applicato - stesso trucco della lista in
+                                        // IconSettingsScreen.kt, qui scomposto in riga/colonna: la divisione/resto
+                                        // intera ricostruisce sempre esattamente lo spostamento applicato
+                                        // (targetIndex - currentIndex), qualunque sia il segno.
+                                        val consumed = targetIndex - currentIndex
+                                        dragOffset -= Offset(
+                                            x = (consumed % DESKTOP_GRID_COLUMNS) * step,
+                                            y = (consumed / DESKTOP_GRID_COLUMNS) * step,
+                                        )
+                                    }
+                                },
+                                onDragEnd = {
+                                    draggingId = null
+                                    dragOffset = Offset.Zero
+                                    onReorder(icons.map { it.id })
+                                },
+                                onDragCancel = {
+                                    draggingId = null
+                                    dragOffset = Offset.Zero
+                                },
+                            )
+                        },
+                )
+            }
         }
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
