@@ -42,6 +42,19 @@ data class UpcomingEvent(
     /** Sfondo della card (vedi HomeScreen.AppointmentCard) - null mostra la card a
      * tinta unita come prima, comportamento invariato per i tornei senza immagine. */
     val tournamentImmagineCopertinaPath: String?,
+    /** Null per gli eventi non-torneo. Per un evento con più tornei "fratelli" è
+     * quello del primo (rappresentativo) - condiviso da tutto l'evento nella pratica. */
+    val organizzatore: String?,
+    /** Somma dei preiscritti su TUTTI i tornei "fratelli" di questo evento (un solo
+     * torneo la maggior parte delle volte) - null per gli eventi non-torneo, dove il
+     * concetto non si applica. */
+    val registeredPlayersCount: Int?,
+    /** Null per gli eventi non-torneo (nessuna restrizione applicabile). true = le
+     * iscrizioni sono aperte ORA (calcolato lato client da inizio/fine iscrizioni,
+     * entrambi opzionali - un limite assente equivale a "nessuna restrizione su quel
+     * lato"), false = non ancora aperte o già chiuse: la card mostra un lucchetto al
+     * posto del segno di spunta. */
+    val registrationsOpen: Boolean?,
 )
 
 data class HomeData(
@@ -167,6 +180,11 @@ class HomeViewModel(
             .map { (key, rows) ->
                 val sorted = rows.sortedBy { it.eventDateTime }
                 val first = sorted.first()
+                // Un torneo multi-giorno produce una riga di calendario per giorno di
+                // gioco: senza distinctBy il conteggio iscritti verrebbe sommato più
+                // volte per lo stesso torneo. Per i tornei "fratelli" (stesso evento)
+                // invece si somma correttamente una volta per ciascuno.
+                val tournamentRows = rows.filter { it.idTournament != null }.distinctBy { it.idTournament }
                 UpcomingEvent(
                     key = key,
                     title = first.title ?: first.eventTypeDescription ?: "Evento",
@@ -178,8 +196,18 @@ class HomeViewModel(
                     idEvento = first.idEvento,
                     tournamentBandoPath = first.tournamentBandoPath,
                     tournamentImmagineCopertinaPath = first.tournamentImmagineCopertinaPath,
+                    organizzatore = first.tournamentOrganizzatore?.takeIf { it.isNotBlank() },
+                    registeredPlayersCount = if (tournamentRows.isEmpty()) null else tournamentRows.sumOf { it.tournamentNPreRegisteredPlayers ?: 0 },
+                    registrationsOpen = if (first.idTournament == null) null else isRegistrationOpen(first),
                 )
             }
+
+    private fun isRegistrationOpen(event: CalendarEvent): Boolean {
+        val now = LocalDateTime.now()
+        val inizio = event.tournamentInizioIscrizioni?.let { runCatching { LocalDateTime.parse(it) }.getOrNull() }
+        val fine = event.tournamentFineIscrizioni?.let { runCatching { LocalDateTime.parse(it) }.getOrNull() }
+        return (inizio == null || !now.isBefore(inizio)) && (fine == null || !now.isAfter(fine))
+    }
 
     private fun isUpcoming(event: CalendarEvent, now: LocalDateTime): Boolean =
         runCatching { LocalDateTime.parse(event.eventDateTime) }.getOrNull()?.isAfter(now) == true

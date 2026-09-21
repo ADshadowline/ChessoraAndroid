@@ -36,6 +36,7 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.HowToReg
 import androidx.compose.material.icons.filled.Leaderboard
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Newspaper
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Search
@@ -289,15 +290,16 @@ private val DESKTOP_GRID_SPACING = 12.dp
  * Griglia riordinabile trascinando le icone con un dito (tieni premuto e sposta), pensata
  * per sentirsi come la Home di Android: al tocco prolungato una piccola vibrazione
  * ([HapticFeedbackType.LongPress]) conferma la presa, l'icona trascinata si "alza"
- * (zoom + ombra, entrambi animati con la stessa molla vivace) e segue il dito senza
- * ritardo, le altre scorrono con un'animazione fluida ([Modifier.animateItem]) invece di
- * scattare di colpo, e al rilascio l'offset residuo torna a zero con una piccola molla
- * ([spring]) invece di un salto secco. La cella di destinazione è calcolata in riga/
- * colonna a partire dalla posizione ATTUALE dell'icona (non come indice piatto): questo
- * evita che un piccolo trascinamento vicino al bordo destro/sinistro della griglia faccia
- * "saltare" l'icona di riga per effetto del riporto (wrap) della divisione intera. Il
- * nuovo ordine viene persistito solo al rilascio ([onReorder]), non a ogni
- * micro-spostamento.
+ * (zoom + ombra, entrambi animati con la stessa molla vivace) e SEGUE LIBERAMENTE IL DITO
+ * per tutta la durata del trascinamento (nessun riordino delle altre icone finché non la
+ * rilasci - restano ferme, a differenza di una versione precedente che le "spostava"
+ * già durante il trascinamento). Solo al rilascio si calcola la cella più vicina
+ * (riga/colonna a partire dalla posizione ATTUALE dell'icona, clampate separatamente ai
+ * bordi della griglia così un rilascio vicino al bordo non "sborda" mai nella riga sopra/
+ * sotto per un riporto della divisione intera) e l'icona vi si "sistema" con una piccola
+ * molla ([spring]), mentre le altre scorrono nella loro nuova posizione con
+ * un'animazione fluida ([Modifier.animateItem]). Il nuovo ordine viene persistito solo al
+ * rilascio ([onReorder]).
  */
 @Composable
 private fun DesktopHomeGrid(
@@ -375,44 +377,47 @@ private fun DesktopHomeGrid(
                                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                                 },
                                 onDrag = { change, amount ->
+                                    // Nessun calcolo di cella qui: durante il trascinamento l'icona segue
+                                    // il dito liberamente, punto e basta - il riordino avviene solo al
+                                    // rilascio (onDragEnd).
                                     change.consume()
-                                    val newOffset = offset.value + amount
-                                    coroutineScope.launch { offset.snapTo(newOffset) }
-                                    val step = cellStepPx
-                                    if (step <= 0f) return@detectDragGesturesAfterLongPress
-                                    val currentIndex = icons.indexOfFirst { it.id == entry.id }
-                                    if (currentIndex == -1) return@detectDragGesturesAfterLongPress
-                                    // Riga/colonna ATTUALI dell'icona trascinata, non un indice piatto: il
-                                    // target è calcolato clampando riga e colonna separatamente ai bordi
-                                    // della griglia, cosi' un trascinamento orizzontale vicino al bordo non
-                                    // "sborda" mai nella riga sopra/sotto per effetto del riporto della
-                                    // divisione intera (bug della versione precedente).
-                                    val currentRow = currentIndex / DESKTOP_GRID_COLUMNS
-                                    val currentCol = currentIndex % DESKTOP_GRID_COLUMNS
-                                    val colDelta = (newOffset.x / step).roundToInt()
-                                    val rowDelta = (newOffset.y / step).roundToInt()
-                                    val maxRow = icons.lastIndex / DESKTOP_GRID_COLUMNS
-                                    val targetCol = (currentCol + colDelta).coerceIn(0, DESKTOP_GRID_COLUMNS - 1)
-                                    val targetRow = (currentRow + rowDelta).coerceIn(0, maxRow)
-                                    val targetIndex = (targetRow * DESKTOP_GRID_COLUMNS + targetCol).coerceIn(0, icons.lastIndex)
-                                    if (targetIndex != currentIndex) {
-                                        icons = icons.toMutableList().apply { add(targetIndex, removeAt(currentIndex)) }
-                                        // Compensa l'offset per la porzione di trascinamento già "consumata" dallo
-                                        // spostamento appena applicato, usando lo spostamento riga/colonna
-                                        // REALMENTE applicato (targetRow/targetCol dopo il clamp), non più una
-                                        // scomposizione a modulo dell'indice piatto - con il clamp sopra quella
-                                        // scomposizione non ricostruirebbe più lo spostamento corretto.
-                                        val compensated = newOffset - Offset(
-                                            x = (targetCol - currentCol) * step,
-                                            y = (targetRow - currentRow) * step,
-                                        )
-                                        coroutineScope.launch { offset.snapTo(compensated) }
-                                    }
+                                    coroutineScope.launch { offset.snapTo(offset.value + amount) }
                                 },
                                 onDragEnd = {
                                     draggingId = null
-                                    coroutineScope.launch { offset.animateTo(Offset.Zero, spring(dampingRatio = Spring.DampingRatioMediumBouncy)) }
-                                    onReorder(icons.map { it.id })
+                                    val finalOffset = offset.value
+                                    val step = cellStepPx
+                                    val currentIndex = icons.indexOfFirst { it.id == entry.id }
+                                    // Compenso da applicare con snapTo PRIMA della molla verso zero (nella
+                                    // stessa coroutine, per garantire l'ordine: Animatable ammette una sola
+                                    // operazione alla volta, un secondo launch separato potrebbe intrecciarsi).
+                                    var settleFrom = finalOffset
+                                    if (step > 0f && currentIndex != -1) {
+                                        // Riga/colonna ATTUALI dell'icona trascinata, non un indice piatto: il
+                                        // target è calcolato clampando riga e colonna separatamente ai bordi
+                                        // della griglia, cosi' un rilascio vicino al bordo non "sborda" mai
+                                        // nella riga sopra/sotto per effetto del riporto della divisione intera.
+                                        val currentRow = currentIndex / DESKTOP_GRID_COLUMNS
+                                        val currentCol = currentIndex % DESKTOP_GRID_COLUMNS
+                                        val colDelta = (finalOffset.x / step).roundToInt()
+                                        val rowDelta = (finalOffset.y / step).roundToInt()
+                                        val maxRow = icons.lastIndex / DESKTOP_GRID_COLUMNS
+                                        val targetCol = (currentCol + colDelta).coerceIn(0, DESKTOP_GRID_COLUMNS - 1)
+                                        val targetRow = (currentRow + rowDelta).coerceIn(0, maxRow)
+                                        val targetIndex = (targetRow * DESKTOP_GRID_COLUMNS + targetCol).coerceIn(0, icons.lastIndex)
+                                        if (targetIndex != currentIndex) {
+                                            icons = icons.toMutableList().apply { add(targetIndex, removeAt(currentIndex)) }
+                                            // La cella è cambiata: la molla deve partire dalla posizione visiva
+                                            // attuale (dove il dito l'ha lasciata) rispetto alla NUOVA cella,
+                                            // altrimenti l'icona scatterebbe di colpo prima di animare.
+                                            settleFrom = finalOffset - Offset(x = (targetCol - currentCol) * step, y = (targetRow - currentRow) * step)
+                                        }
+                                        onReorder(icons.map { it.id })
+                                    }
+                                    coroutineScope.launch {
+                                        offset.snapTo(settleFrom)
+                                        offset.animateTo(Offset.Zero, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
+                                    }
                                 },
                                 onDragCancel = {
                                     draggingId = null
@@ -501,15 +506,44 @@ private fun AppointmentCard(event: UpcomingEvent, isNext: Boolean, isRegistered:
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.weight(1f),
                     )
-                    if (isRegistered) {
-                        Icon(
+                    when {
+                        isRegistered -> Icon(
                             Icons.Default.CheckCircle,
                             contentDescription = stringResource(R.string.home_registered_check),
                             tint = if (imageUrl != null) onImageColor else MaterialTheme.colorScheme.primary,
                         )
+                        // Un lucchetto sostituisce il segno di spunta quando le iscrizioni
+                        // non sono (ancora, o più) aperte - non ha senso mostrarlo se il
+                        // chiamante è già preiscritto (caso sopra).
+                        event.registrationsOpen == false -> Icon(
+                            Icons.Default.Lock,
+                            contentDescription = stringResource(R.string.home_registrations_locked),
+                            tint = if (imageUrl != null) onImageColor else MaterialTheme.colorScheme.error,
+                        )
                     }
                 }
                 Text(formatEventRange(event), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 2.dp))
+                if (event.organizzatore != null || event.registeredPlayersCount != null) {
+                    Row(modifier = Modifier.padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        event.organizzatore?.let {
+                            Text(
+                                stringResource(R.string.home_organizer, it),
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.weight(1f, fill = false),
+                            )
+                        }
+                        event.registeredPlayersCount?.let {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.People, contentDescription = null, modifier = Modifier.size(14.dp))
+                                Text(
+                                    stringResource(R.string.home_registered_players_count, it),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.padding(start = 4.dp),
+                                )
+                            }
+                        }
+                    }
+                }
                 if (isNext) {
                     CountdownTimer(event.startDateTime)
                 }

@@ -51,6 +51,14 @@ data class CalendarEvent(
     // altrimenti ogni fratello produrrebbe la propria card duplicata con lo stesso
     // titolo (Titolo = EventoNome quando ci sono fratelli, vedi TournamentCalendarPlanner).
     val tournamentEventGroupId: String? = null,
+    // Aggiunti per la card evento in Home (organizzatore, iscritti, finestra di
+    // apertura/chiusura iscrizioni) - valorizzati solo quando idTournament non è null,
+    // stessi campi di TournamentSummary/TournamentRegistrationResult.
+    val tournamentOrganizzatore: String? = null,
+    val tournamentNPreRegisteredPlayers: Int? = null,
+    val tournamentNPlayers: Int? = null,
+    val tournamentInizioIscrizioni: String? = null,
+    val tournamentFineIscrizioni: String? = null,
 )
 
 /**

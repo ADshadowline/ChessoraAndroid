@@ -85,6 +85,9 @@
     <string name="home_countdown_minutes">MIN</string>
     <string name="home_countdown_seconds">SEC</string>
     <string name="home_registered_check">Sei preiscritto a questo torneo</string>
+    <string name="home_registrations_locked">Iscrizioni non ancora aperte o già chiuse</string>
+    <string name="home_organizer">Organizzato da %1$s</string>
+    <string name="home_registered_players_count">%1$d iscritti</string>
 
     <!-- Dettaglio torneo (ui/tournaments/) -->
     <string name="tournament_website">Sito web</string>
