@@ -46,10 +46,14 @@ class SessionViewModel(
         viewModelScope.launch { AuthSessionPersister.clear(authPreferences, clubPreferences) }
     }
 
-    /** Richiamata da ui/auth/ subito dopo un login/registrazione completata con successo. */
+    /** Richiamata da ui/auth/ subito dopo un login/registrazione completata con successo -
+     * AuthSessionPersister ha appena scritto su ClubPreferences il circolo auto-risolto
+     * (se presente) e l'identità del socio: senza questo, branding/badge del socio
+     * resterebbero a "non ancora caricato" fino al prossimo riavvio dell'app (init{}
+     * gira una sola volta, alla creazione di questo ViewModel, ben prima del login). */
     fun onLoggedIn() {
         _isLoggedIn.value = true
-        viewModelScope.launch { _selectedClub.value = clubPreferences.selectedClub.first() }
+        viewModelScope.launch { refreshClubAndIdentity() }
     }
 
     /** Richiamata da Impostazioni ("Esci"): azzera sessione E circolo scelto, cosi' un
@@ -140,21 +144,26 @@ class SessionViewModel(
         // precedente, carica subito il suo branding e registra il device (il
         // token FCM potrebbe essere lo stesso di sempre, ma repository.registerDevice
         // è un upsert innocuo da ripetere - vedi push/DeviceRegistration.kt).
-        viewModelScope.launch {
-            val club = clubPreferences.selectedClub.first()
-            _selectedClub.value = club
-            if (club != null) {
-                loadBranding(club)
-            }
-            DeviceRegistration.registerCurrentToken(repository, clubPreferences, club)
+        viewModelScope.launch { refreshClubAndIdentity() }
+    }
+
+    /** Carica circolo scelto/branding/identità/ruolo da ClubPreferences - usata sia
+     * all'avvio (init, sopra) sia dopo un login riuscito ([onLoggedIn]): stessa lettura,
+     * due momenti diversi in cui i dati su cui si basa possono essere cambiati. */
+    private suspend fun refreshClubAndIdentity() {
+        val club = clubPreferences.selectedClub.first()
+        _selectedClub.value = club
+        if (club != null) {
+            loadBranding(club)
         }
-        viewModelScope.launch {
-            _identityResolved.value = clubPreferences.identityResolved.first()
-            _identifiedPlayerName.value = clubPreferences.identifiedPlayerName.first()
-            val idPlayer = clubPreferences.identifiedPlayerId.first()
-            if (idPlayer != null) {
-                clubPreferences.selectedClub.first()?.let { loadTournamentManagerStatus(idPlayer, it) }
-            }
+        DeviceRegistration.registerCurrentToken(repository, clubPreferences, club)
+
+        _identityResolved.value = clubPreferences.identityResolved.first()
+        _identifiedPlayerName.value = clubPreferences.identifiedPlayerName.first()
+        val idPlayer = clubPreferences.identifiedPlayerId.first()
+        _isTournamentManager.value = false
+        if (idPlayer != null && club != null) {
+            loadTournamentManagerStatus(idPlayer, club)
         }
     }
 
@@ -184,21 +193,6 @@ class SessionViewModel(
         viewModelScope.launch {
             clubPreferences.clearSelectedClub()
             clubPreferences.clearIdentity()
-        }
-    }
-
-    /** Richiamata dal NavHost dopo che IdentityScreen ha salvato il proprio esito
-     * (identificato o rifiutato) su DataStore, per riflettere subito il nuovo stato
-     * senza aspettare la prossima ricomposizione da un Flow. */
-    fun refreshIdentity() {
-        viewModelScope.launch {
-            _identityResolved.value = clubPreferences.identityResolved.first()
-            _identifiedPlayerName.value = clubPreferences.identifiedPlayerName.first()
-            val idPlayer = clubPreferences.identifiedPlayerId.first()
-            _isTournamentManager.value = false
-            if (idPlayer != null) {
-                clubPreferences.selectedClub.first()?.let { loadTournamentManagerStatus(idPlayer, it) }
-            }
         }
     }
 

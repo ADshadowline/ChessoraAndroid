@@ -581,7 +581,16 @@ private fun ClubBrandingTopBar(
 
 @Composable
 private fun IdentifiedBadge(name: String) {
-    val firstName = name.trim().substringBefore(' ')
+    // Il nome può arrivare in due formati (vedi AuthSessionPersister): "Cognome, Nome"
+    // per un socio risolto da anagrafica FIDE, "Nome Cognome" per un amatoriale
+    // (nome/cognome digitati alla registrazione) - senza distinguerli, il primo formato
+    // mostrava "Cognome," (con la virgola, tagliato) invece del vero nome proprio.
+    val trimmed = name.trim()
+    val firstName = if (trimmed.contains(',')) {
+        trimmed.substringAfter(',').trim().substringBefore(' ').ifBlank { trimmed.substringBefore(',') }
+    } else {
+        trimmed.substringBefore(' ')
+    }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
