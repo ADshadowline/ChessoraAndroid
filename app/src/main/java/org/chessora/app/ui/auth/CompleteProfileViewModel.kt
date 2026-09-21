@@ -46,6 +46,11 @@ class CompleteProfileViewModel(
     private val _searchResults = MutableStateFlow<List<FidePlayerSearchResultDto>>(emptyList())
     val searchResults: StateFlow<List<FidePlayerSearchResultDto>> = _searchResults
 
+    /** Vedi LoginFideViewModel.isSearching - stesso motivo (la ricerca avviene mentre la
+     * fase resta EnterIdFide). */
+    private val _isSearching = MutableStateFlow(false)
+    val isSearching: StateFlow<Boolean> = _isSearching
+
     private val _clubs = MutableStateFlow<List<ClubDirectoryItem>>(emptyList())
     val clubs: StateFlow<List<ClubDirectoryItem>> = _clubs
 
@@ -71,11 +76,14 @@ class CompleteProfileViewModel(
         searchJob?.cancel()
         if (query.trim().length < 4) {
             _searchResults.value = emptyList()
+            _isSearching.value = false
             return
         }
+        _isSearching.value = true
         searchJob = viewModelScope.launch {
             delay(300)
             repository.searchFide(query).onSuccess { _searchResults.value = it }
+            _isSearching.value = false
         }
     }
 

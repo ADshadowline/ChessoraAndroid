@@ -157,6 +157,7 @@
     <string name="common_yes">Sì</string>
     <string name="common_no">No</string>
     <string name="common_confirm">Conferma</string>
+    <string name="common_loading">Caricamento in corso…</string>
 
     <string name="login_title">Accedi a Chessora</string>
     <string name="login_subtitle">Per usare l\'app devi prima accedere.</string>

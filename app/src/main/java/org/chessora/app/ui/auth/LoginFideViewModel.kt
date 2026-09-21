@@ -52,6 +52,13 @@ class LoginFideViewModel(
     private val _searchResults = MutableStateFlow<List<FidePlayerSearchResultDto>>(emptyList())
     val searchResults: StateFlow<List<FidePlayerSearchResultDto>> = _searchResults
 
+    /** True durante il debounce/la chiamata di rete di [searchByName] - la ricerca
+     * avviene mentre la fase resta [FideUiPhase.EnterIdFide] (non è un "vero" cambio di
+     * fase), quindi serve un flag separato perché LoginFideScreen possa mostrare un
+     * indicatore di caricamento invece di restare silenziosa per qualche secondo. */
+    private val _isSearching = MutableStateFlow(false)
+    val isSearching: StateFlow<Boolean> = _isSearching
+
     private val _clubs = MutableStateFlow<List<ClubDirectoryItem>>(emptyList())
     val clubs: StateFlow<List<ClubDirectoryItem>> = _clubs
 
@@ -77,11 +84,14 @@ class LoginFideViewModel(
         searchJob?.cancel()
         if (query.trim().length < 4) {
             _searchResults.value = emptyList()
+            _isSearching.value = false
             return
         }
+        _isSearching.value = true
         searchJob = viewModelScope.launch {
             delay(300)
             repository.searchFide(query).onSuccess { _searchResults.value = it }
+            _isSearching.value = false
         }
     }
 

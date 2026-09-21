@@ -1,9 +1,11 @@
 package org.chessora.app.ui.auth
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -22,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -42,6 +45,7 @@ fun CompleteProfileScreen(onDone: () -> Unit) {
     val viewModel = chessoraViewModel { app -> CompleteProfileViewModel(app.repository, app.clubPreferences, app.authPreferences) }
     val phase by viewModel.phase.collectAsState()
     val searchResults by viewModel.searchResults.collectAsState()
+    val isSearching by viewModel.isSearching.collectAsState()
     val clubs by viewModel.clubs.collectAsState()
     val roster by viewModel.roster.collectAsState()
 
@@ -101,12 +105,19 @@ fun CompleteProfileScreen(onDone: () -> Unit) {
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                     )
-                    LazyColumn(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
-                        items(searchResults, key = { it.idFide }) { result ->
-                            Card(onClick = { viewModel.selectFromSearch(result) }, modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-                                Column(modifier = Modifier.padding(12.dp)) {
-                                    Text(result.name, style = MaterialTheme.typography.titleSmall)
-                                    Text("ID FIDE ${result.idFide}", style = MaterialTheme.typography.bodySmall)
+                    if (isSearching) {
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 12.dp)) {
+                            CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                            Text(stringResource(R.string.common_loading), modifier = Modifier.padding(start = 8.dp))
+                        }
+                    } else {
+                        LazyColumn(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+                            items(searchResults, key = { it.idFide }) { result ->
+                                Card(onClick = { viewModel.selectFromSearch(result) }, modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                                    Column(modifier = Modifier.padding(12.dp)) {
+                                        Text(result.name, style = MaterialTheme.typography.titleSmall)
+                                        Text("ID FIDE ${result.idFide}", style = MaterialTheme.typography.bodySmall)
+                                    }
                                 }
                             }
                         }
