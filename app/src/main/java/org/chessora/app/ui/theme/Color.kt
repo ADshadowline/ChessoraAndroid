@@ -20,3 +20,6 @@ val ChessoraError = Color(0xFFB3261E)
 // Iscrizioni ai tornei) - più saturo, pensato per il testo bianco del badge.
 val ChessoraSkyBlue = Color(0xFF90CAF9)
 val ChessoraSkyBlueBadge = Color(0xFF42A5F5)
+// Freccia delta Elo in miglioramento (ui/performance/PerformanceScreen.kt) - il
+// peggioramento riusa invece ChessoraError, già esistente.
+val ChessoraGreen = Color(0xFF4CAF50)

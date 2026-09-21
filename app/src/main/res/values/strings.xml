@@ -72,6 +72,12 @@
     <string name="performance_empty">Nessuno storico rating disponibile per il tuo profilo Fide.</string>
     <string name="performance_zoom_hint">Pizzica per zoomare, trascina per scorrere, tocca un punto per vedere il valore esatto.</string>
     <string name="performance_reset_zoom">Reimposta zoom</string>
+    <string name="performance_period_6m">6 mesi</string>
+    <string name="performance_period_1y">1 anno</string>
+    <string name="performance_period_5y">5 anni</string>
+    <string name="performance_period_all">Tutto</string>
+    <string name="performance_delta_up">In miglioramento</string>
+    <string name="performance_delta_down">In peggioramento</string>
 
     <!-- Home -->
     <string name="home_upcoming_appointments">Prossimi appuntamenti</string>

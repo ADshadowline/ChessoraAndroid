@@ -19,10 +19,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,7 +58,9 @@ import org.chessora.app.data.remote.dto.PerformancePointDto
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
 import org.chessora.app.ui.theme.ChessoraCream
+import org.chessora.app.ui.theme.ChessoraError
 import org.chessora.app.ui.theme.ChessoraGold
+import org.chessora.app.ui.theme.ChessoraGreen
 
 // Colori scelti per essere ben leggibili sullo sfondo scuro dell'app (vedi
 // ui/theme/Theme.kt: un solo colorScheme, sempre scuro) - il bug segnalato
@@ -105,6 +111,31 @@ private fun EloRatingType.label(): String = when (this) {
     EloRatingType.BLITZ -> stringResource(R.string.performance_blitz)
 }
 
+/** Intervallo mostrato nel grafico/valori attuali - filtrato lato client (la serie è
+ * comunque un solo punto al mese, mai troppo grande) rispetto all'ULTIMO mese con dati
+ * disponibili (non alla data odierna reale): l'aggiornamento Elo può essere indietro di
+ * qualche mese, ancorare a "oggi" farebbe apparire vuoto un filtro "6 mesi" se l'ultimo
+ * aggiornamento risalisse a più di 6 mesi fa. */
+enum class PerformancePeriod(val months: Int?) {
+    SIX_MONTHS(6), ONE_YEAR(12), FIVE_YEARS(60), ALL(null);
+}
+
+@Composable
+private fun PerformancePeriod.label(): String = when (this) {
+    PerformancePeriod.SIX_MONTHS -> stringResource(R.string.performance_period_6m)
+    PerformancePeriod.ONE_YEAR -> stringResource(R.string.performance_period_1y)
+    PerformancePeriod.FIVE_YEARS -> stringResource(R.string.performance_period_5y)
+    PerformancePeriod.ALL -> stringResource(R.string.performance_period_all)
+}
+
+private fun filterByPeriod(points: List<PerformancePointDto>, period: PerformancePeriod): List<PerformancePointDto> {
+    val months = period.months ?: return points
+    val last = points.lastOrNull() ?: return points
+    val lastOrdinal = last.year * 12 + last.month
+    val cutoff = lastOrdinal - months
+    return points.filter { it.year * 12 + it.month > cutoff }
+}
+
 @Composable
 fun PerformanceScreen(onIdentify: () -> Unit, focus: EloRatingType? = null) {
     val viewModel = chessoraViewModel { app -> PerformanceViewModel(app.repository, app.clubPreferences) }
@@ -142,20 +173,42 @@ private fun CenteredMessage(message: String, actionLabel: String? = null, onActi
 
 @Composable
 private fun PerformanceContent(data: PerformanceHistoryDto, focus: EloRatingType?) {
+    var selectedPeriod by remember { mutableStateOf(PerformancePeriod.ALL) }
+    val filteredPoints = remember(data.points, selectedPeriod) { filterByPeriod(data.points, selectedPeriod) }
+
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text(
             stringResource(R.string.performance_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
         )
-        LatestValuesRow(data.points, focus)
+        PeriodSelector(selectedPeriod, onSelect = { selectedPeriod = it }, modifier = Modifier.padding(top = 8.dp))
+        LatestValuesRow(filteredPoints, focus)
         Legend(focus, modifier = Modifier.padding(top = 12.dp))
         Text(
             stringResource(R.string.performance_zoom_hint),
             style = MaterialTheme.typography.labelSmall,
             modifier = Modifier.padding(top = 8.dp),
         )
-        EloChartCard(points = data.points, focus = focus, modifier = Modifier.padding(top = 8.dp))
+        // key() forza EloChartCard a ripartire da zero (zoom/pan/selezione azzerati)
+        // quando cambia il periodo, invece di mantenere una finestra di zoom pensata
+        // per la lista di punti precedente (di lunghezza diversa).
+        key(selectedPeriod) {
+            EloChartCard(points = filteredPoints, focus = focus, modifier = Modifier.padding(top = 8.dp))
+        }
+    }
+}
+
+@Composable
+private fun PeriodSelector(selected: PerformancePeriod, onSelect: (PerformancePeriod) -> Unit, modifier: Modifier = Modifier) {
+    Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        PerformancePeriod.entries.forEach { period ->
+            FilterChip(
+                selected = period == selected,
+                onClick = { onSelect(period) },
+                label = { Text(period.label()) },
+            )
+        }
     }
 }
 
@@ -164,22 +217,46 @@ private fun LatestValuesRow(points: List<PerformancePointDto>, focus: EloRatingT
     val types = focus?.let { listOf(it) } ?: EloRatingType.entries
     Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
         types.forEach { type ->
-            val latest = points.lastOrNull { type.selector()(it) != null }?.let { type.selector()(it) }
-            LatestValueCell(type.label(), latest, type.color(), Modifier.weight(1f))
+            // Ultimi due valori non-null della serie (nel grafico attualmente mostrato,
+            // vedi PerformancePeriod) - il penultimo è il "valore precedente" a cui si
+            // confronta la freccia su/giù.
+            val nonNullValues = points.mapNotNull { type.selector()(it) }
+            val latest = nonNullValues.lastOrNull()
+            val previous = if (nonNullValues.size >= 2) nonNullValues[nonNullValues.size - 2] else null
+            LatestValueCell(type.label(), latest, previous, type.color(), Modifier.weight(1f))
         }
     }
 }
 
 @Composable
-private fun LatestValueCell(label: String, value: Int?, color: Color, modifier: Modifier = Modifier) {
+private fun LatestValueCell(label: String, value: Int?, previous: Int?, color: Color, modifier: Modifier = Modifier) {
+    val delta = if (value != null && previous != null) value - previous else null
     Column(modifier = modifier) {
         Text(label, style = MaterialTheme.typography.labelSmall)
-        Text(
-            value?.toString() ?: "-",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            color = color,
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                value?.toString() ?: "-",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = color,
+            )
+            if (delta != null && delta != 0) {
+                val isUp = delta > 0
+                val deltaColor = if (isUp) ChessoraGreen else ChessoraError
+                Icon(
+                    if (isUp) Icons.Default.ArrowUpward else Icons.Default.ArrowDownward,
+                    contentDescription = stringResource(if (isUp) R.string.performance_delta_up else R.string.performance_delta_down),
+                    tint = deltaColor,
+                    modifier = Modifier.padding(start = 4.dp).size(16.dp),
+                )
+                Text(
+                    (if (isUp) "+$delta" else "$delta"),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = deltaColor,
+                )
+            }
+        }
     }
 }
 
