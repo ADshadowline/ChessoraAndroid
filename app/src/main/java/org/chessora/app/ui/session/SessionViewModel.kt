@@ -55,6 +55,7 @@ class SessionViewModel(
         _isLoggedIn.value = true
         viewModelScope.launch { refreshClubAndIdentity() }
         refreshRegisteredTournamentsCount()
+        refreshUnreadMessagesCount()
     }
 
     /** Richiamata da Impostazioni ("Esci"): azzera sessione E circolo scelto, cosi' un
@@ -70,6 +71,7 @@ class SessionViewModel(
         _identifiedPlayerName.value = null
         _isTournamentManager.value = false
         _registeredTournamentsCount.value = 0
+        _unreadMessagesCount.value = 0
         viewModelScope.launch {
             AuthSessionPersister.clear(authPreferences, clubPreferences)
             clubPreferences.clearSelectedClub()
@@ -89,6 +91,7 @@ class SessionViewModel(
         _identifiedPlayerName.value = null
         _isTournamentManager.value = false
         _registeredTournamentsCount.value = 0
+        _unreadMessagesCount.value = 0
         viewModelScope.launch {
             authPreferences.clearSession()
             AuthSession.accessToken = null
@@ -148,6 +151,28 @@ class SessionViewModel(
         }
     }
 
+    /** Somma di ConversationSummary.unreadCount su TUTTE le conversazioni (inclusa la chat
+     * "Chessora" sintetica, vedi MessagingService.GetConversationsAsync lato server) -
+     * mostrato come badge sull'icona "Messaggi" (bottom bar e griglia Home desktop),
+     * stesso pattern/stessi punti di refresh di [registeredTournamentsCount] qui sopra. */
+    private val _unreadMessagesCount = MutableStateFlow(0)
+    val unreadMessagesCount: StateFlow<Int> = _unreadMessagesCount
+
+    fun refreshUnreadMessagesCount() {
+        if (!_isLoggedIn.value) {
+            _unreadMessagesCount.value = 0
+            return
+        }
+        viewModelScope.launch {
+            val idPlayer = clubPreferences.identifiedPlayerId.first()
+            _unreadMessagesCount.value = if (idPlayer != null) {
+                repository.getConversations(idPlayer).getOrNull()?.sumOf { it.unreadCount } ?: 0
+            } else {
+                0
+            }
+        }
+    }
+
     /** Immagine di sfondo scelta in Impostazioni per lo SplashScreen (mai inviata al
      * server, vedi ClubPreferences.splashBackgroundUri) - letta qui perché SplashScreen è
      * mostrato prima ancora che esista un circolo scelto/identità risolta. */
@@ -158,7 +183,7 @@ class SessionViewModel(
      * ChessoraNavHost deve nascondere la bottom bar su OGNI schermata quando la
      * navigazione avviene tramite la griglia di icone (vedi ui/home/HomeScreen.kt). */
     val displayMode: StateFlow<String> = clubPreferences.displayMode
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ClubPreferences.DISPLAY_MODE_CLASSIC)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ClubPreferences.DISPLAY_MODE_DESKTOP)
 
     init {
         // Al primo avvio, se un circolo era già stato scelto in una sessione
@@ -167,6 +192,7 @@ class SessionViewModel(
         // è un upsert innocuo da ripetere - vedi push/DeviceRegistration.kt).
         viewModelScope.launch { refreshClubAndIdentity() }
         refreshRegisteredTournamentsCount()
+        refreshUnreadMessagesCount()
     }
 
     /** Carica circolo scelto/branding/identità/ruolo da ClubPreferences - usata sia

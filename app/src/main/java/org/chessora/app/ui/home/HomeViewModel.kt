@@ -79,7 +79,7 @@ class HomeViewModel(
     /** "classic" (elenco appuntamenti, comportamento storico) o "desktop" (griglia di
      * icone, vedi ui/settings/SettingsScreen.kt) - preferenza puramente locale. */
     val displayMode: StateFlow<String> = clubPreferences.displayMode
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ClubPreferences.DISPLAY_MODE_CLASSIC)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ClubPreferences.DISPLAY_MODE_DESKTOP)
 
     val desktopBackgroundUri: StateFlow<String?> = clubPreferences.desktopBackgroundUri
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)

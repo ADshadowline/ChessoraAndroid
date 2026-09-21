@@ -4,7 +4,7 @@
     <!-- News (ui/news/) -->
     <string name="news_search_hint">Cerca una notizia…</string>
     <string name="news_scope_circolo">Circolo</string>
-    <string name="news_scope_mondo">Mondo</string>
+    <string name="news_scope_mondo">In rete</string>
 
     <!-- Bando in-app (ui/calendar/BandoViewerScreen.kt) -->
     <string name="bando_viewer_error">Impossibile visualizzare il bando. Riprova più tardi.</string>

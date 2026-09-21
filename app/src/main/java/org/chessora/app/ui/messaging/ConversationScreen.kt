@@ -41,7 +41,7 @@ import kotlinx.coroutines.launch
 import org.chessora.app.R
 import org.chessora.app.data.remote.dto.ChatMessage
 import org.chessora.app.ui.common.chessoraViewModel
-import org.chessora.app.ui.theme.ChessoraGold
+import org.chessora.app.ui.theme.ChessoraSkyBlue
 
 /**
  * Thread di una conversazione (ui/messaging/): bolle allineate a destra (miei
@@ -131,7 +131,7 @@ private fun MessageBubble(message: ChatMessage) {
             modifier = Modifier
                 .widthIn(max = 280.dp)
                 .background(
-                    if (isMine) ChessoraGold else MaterialTheme.colorScheme.surfaceVariant,
+                    if (isMine) ChessoraSkyBlue else MaterialTheme.colorScheme.surfaceVariant,
                     RoundedCornerShape(12.dp),
                 )
                 .padding(horizontal = 12.dp, vertical = 8.dp),

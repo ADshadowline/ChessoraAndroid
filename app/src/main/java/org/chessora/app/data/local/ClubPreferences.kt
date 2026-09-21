@@ -104,9 +104,9 @@ class ClubPreferences(context: Context) {
      * email/telefono lato server. */
     val preRegistrationContactId: Flow<Int?> = dataStore.data.map { it[Keys.PRE_REGISTRATION_CONTACT_ID] }
 
-    /** "classic" (elenco, comportamento attuale) o "desktop" (griglia di icone in Home) -
-     * vedi ui/home/HomeScreen.kt. */
-    val displayMode: Flow<String> = dataStore.data.map { it[Keys.DISPLAY_MODE] ?: DISPLAY_MODE_CLASSIC }
+    /** "classic" (elenco) o "desktop" (griglia di icone in Home, ora il default per un
+     * utente che non ha ancora scelto - vedi ui/home/HomeScreen.kt). */
+    val displayMode: Flow<String> = dataStore.data.map { it[Keys.DISPLAY_MODE] ?: DISPLAY_MODE_DESKTOP }
 
     /** Uri content:// locali scelti dall'utente per personalizzare l'app - MAI inviati al
      * server, persistiti con takePersistableUriPermission (vedi SettingsScreen.kt) cosi'

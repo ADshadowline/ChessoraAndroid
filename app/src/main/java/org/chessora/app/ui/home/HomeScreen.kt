@@ -42,7 +42,6 @@ import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -90,6 +89,7 @@ import org.chessora.app.data.local.ClubPreferences
 import org.chessora.app.data.remote.NetworkModule
 import org.chessora.app.data.remote.dto.NewsArticle
 import org.chessora.app.ui.common.BackgroundImageWithScrim
+import org.chessora.app.ui.common.ChessoraCountBadge
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
 
@@ -119,6 +119,7 @@ fun HomeScreen(
     desktop: DesktopHomeCallbacks,
     isPlatformMode: Boolean = false,
     registeredTournamentsCount: Int = 0,
+    unreadMessagesCount: Int = 0,
 ) {
     val viewModel = chessoraViewModel { app -> HomeViewModel(app.repository, app.clubPreferences) }
     val displayMode by viewModel.displayMode.collectAsState()
@@ -143,6 +144,7 @@ fun HomeScreen(
                 hiddenIcons = desktopHiddenIcons,
                 onReorder = viewModel::setDesktopIconOrder,
                 registeredTournamentsCount = registeredTournamentsCount,
+                unreadMessagesCount = unreadMessagesCount,
             )
         }
     } else {
@@ -309,6 +311,7 @@ private fun DesktopHomeGrid(
     hiddenIcons: Set<String>,
     onReorder: (List<String>) -> Unit,
     registeredTournamentsCount: Int = 0,
+    unreadMessagesCount: Int = 0,
 ) {
     // Messaggi e Impostazioni sono ancorate agli angoli in basso (sinistra/destra), non
     // parte della griglia scorrevole - posizione fissa richiesta esplicitamente, non
@@ -433,7 +436,7 @@ private fun DesktopHomeGrid(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             DesktopIconTile(
-                DesktopIcon("messaging", R.string.nav_messaging, Icons.AutoMirrored.Filled.Chat, desktop.onOpenMessaging),
+                DesktopIcon("messaging", R.string.nav_messaging, Icons.AutoMirrored.Filled.Chat, desktop.onOpenMessaging, unreadMessagesCount),
                 modifier = Modifier.weight(1f, fill = false).widthIn(max = 120.dp),
             )
             DesktopIconTile(
@@ -453,7 +456,7 @@ private fun DesktopIconTile(entry: DesktopIcon, modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.Center,
         ) {
             if (entry.badgeCount > 0) {
-                BadgedBox(badge = { Badge { Text(entry.badgeCount.toString()) } }) {
+                BadgedBox(badge = { ChessoraCountBadge(entry.badgeCount) }) {
                     Icon(entry.icon, contentDescription = null, modifier = Modifier.size(36.dp))
                 }
             } else {

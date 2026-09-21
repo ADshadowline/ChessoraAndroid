@@ -21,7 +21,6 @@ import androidx.compose.material.icons.filled.HowToReg
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Newspaper
 import androidx.compose.material.icons.automirrored.filled.Chat
-import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -57,6 +56,7 @@ import org.chessora.app.data.remote.dto.SiteBranding
 import org.chessora.app.ui.board.BoardScreen
 import org.chessora.app.ui.calendar.BandoViewerScreen
 import org.chessora.app.ui.calendar.CalendarScreen
+import org.chessora.app.ui.common.ChessoraCountBadge
 import org.chessora.app.ui.common.chessoraViewModel
 import org.chessora.app.ui.home.DesktopHomeCallbacks
 import org.chessora.app.ui.home.EventsListScreen
@@ -176,6 +176,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
     val membersCount by sessionViewModel.membersCount.collectAsState()
     val isTournamentManager by sessionViewModel.isTournamentManager.collectAsState()
     val registeredTournamentsCount by sessionViewModel.registeredTournamentsCount.collectAsState()
+    val unreadMessagesCount by sessionViewModel.unreadMessagesCount.collectAsState()
     val context = LocalContext.current
 
     // Un torneo può essere (pre)iscritto/ritirato da TournamentDetailScreen, un
@@ -185,6 +186,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
     // torna su una qualunque schermata dopo aver toccato una preiscrizione.
     LaunchedEffect(currentRoute) {
         sessionViewModel.refreshRegisteredTournamentsCount()
+        sessionViewModel.refreshUnreadMessagesCount()
     }
 
     Scaffold(
@@ -219,8 +221,13 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                                 }
                             },
                             icon = {
-                                if (tab.route == ChessoraDestinations.REGISTRATIONS && registeredTournamentsCount > 0) {
-                                    BadgedBox(badge = { Badge { Text(registeredTournamentsCount.toString()) } }) {
+                                val badgeCount = when (tab.route) {
+                                    ChessoraDestinations.REGISTRATIONS -> registeredTournamentsCount
+                                    ChessoraDestinations.MESSAGING -> unreadMessagesCount
+                                    else -> 0
+                                }
+                                if (badgeCount > 0) {
+                                    BadgedBox(badge = { ChessoraCountBadge(badgeCount) }) {
                                         Icon(tab.icon, contentDescription = null)
                                     }
                                 } else {
@@ -339,6 +346,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                         onOpenTournament = { idTournament -> navController.navigate(ChessoraDestinations.tournamentDetail(idTournament)) },
                         isPlatformMode = selectedClub == ClubPreferences.PLATFORM_CLUB_CODE,
                         registeredTournamentsCount = registeredTournamentsCount,
+                        unreadMessagesCount = unreadMessagesCount,
                         desktop = DesktopHomeCallbacks(
                             onOpenEvents = { navController.navigate(ChessoraDestinations.EVENTS) },
                             onOpenCalendar = { navController.navigate(ChessoraDestinations.CALENDAR) },

@@ -6,14 +6,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -64,15 +64,16 @@ fun BoardScreen(club: String, onOpenConversation: (idPlayer: Int, displayName: S
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+/** Scorrimento orizzontale invece di un semplice Row che va a capo (FlowRow, versione
+ * precedente): con 3+ persone in un livello (es. i Consiglieri) l'ultima finiva su una
+ * riga a sé scomoda invece che scorrere in linea con le altre. */
 @Composable
 private fun BoardLevelRow(levelMembers: List<BoardMember>, onOpenConversation: (idPlayer: Int, displayName: String) -> Unit) {
-    FlowRow(
+    LazyRow(
         modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        levelMembers.forEach { member -> BoardMemberCard(member, onOpenConversation) }
+        items(levelMembers, key = { it.idPlayer }) { member -> BoardMemberCard(member, onOpenConversation) }
     }
 }
 
