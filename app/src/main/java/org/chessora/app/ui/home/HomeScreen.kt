@@ -64,11 +64,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -285,16 +287,17 @@ private val DESKTOP_GRID_SPACING = 12.dp
 
 /**
  * Griglia riordinabile trascinando le icone con un dito (tieni premuto e sposta), pensata
- * per sentirsi come la Home di Android: l'icona trascinata si "alza" (leggero zoom +
- * ombra) e segue il dito senza ritardo, le altre scorrono con un'animazione fluida
- * ([Modifier.animateItem]) invece di scattare di colpo, e al rilascio l'offset residuo
- * torna a zero con una piccola molla ([spring]) invece di un salto secco. L'offset di
- * trascinamento accumulato viene convertito in "quante celle" (righe*colonne + colonne)
- * tramite [DESKTOP_GRID_SPACING]/la dimensione di cella misurata a runtime, poi
- * l'elemento trascinato viene spostato in quella posizione nella lista -
- * un'approssimazione a "indice piatto" (non un vero drop-target per posizione XY), che
- * resta comunque naturale per un utente che trascina in una direzione. Il nuovo ordine
- * viene persistito solo al rilascio ([onReorder]), non a ogni micro-spostamento.
+ * per sentirsi come la Home di Android: al tocco prolungato una piccola vibrazione
+ * ([HapticFeedbackType.LongPress]) conferma la presa, l'icona trascinata si "alza"
+ * (zoom + ombra, entrambi animati con la stessa molla vivace) e segue il dito senza
+ * ritardo, le altre scorrono con un'animazione fluida ([Modifier.animateItem]) invece di
+ * scattare di colpo, e al rilascio l'offset residuo torna a zero con una piccola molla
+ * ([spring]) invece di un salto secco. La cella di destinazione è calcolata in riga/
+ * colonna a partire dalla posizione ATTUALE dell'icona (non come indice piatto): questo
+ * evita che un piccolo trascinamento vicino al bordo destro/sinistro della griglia faccia
+ * "saltare" l'icona di riga per effetto del riporto (wrap) della divisione intera. Il
+ * nuovo ordine viene persistito solo al rilascio ([onReorder]), non a ogni
+ * micro-spostamento.
  */
 @Composable
 private fun DesktopHomeGrid(
@@ -327,6 +330,8 @@ private fun DesktopHomeGrid(
     val density = LocalDensity.current
     val spacingPx = with(density) { DESKTOP_GRID_SPACING.toPx() }
     val coroutineScope = rememberCoroutineScope()
+    val haptics = LocalHapticFeedback.current
+    val liftSpec = remember { spring<Float>(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         LazyVerticalGrid(
@@ -348,7 +353,8 @@ private fun DesktopHomeGrid(
                 // scattare - durante il trascinamento attivo si usa invece snapTo, che non
                 // anima: il dito deve essere seguito senza alcun ritardo percepibile.
                 val offset = remember { Animatable(Offset.Zero, Offset.VectorConverter) }
-                val scale by animateFloatAsState(if (isDragging) 1.08f else 1f, label = "desktopIconScale")
+                val scale by animateFloatAsState(if (isDragging) 1.08f else 1f, animationSpec = liftSpec, label = "desktopIconScale")
+                val elevation by animateFloatAsState(if (isDragging) 12f else 0f, animationSpec = liftSpec, label = "desktopIconElevation")
 
                 DesktopIconTile(
                     entry,
@@ -357,7 +363,7 @@ private fun DesktopHomeGrid(
                         .graphicsLayer {
                             scaleX = scale
                             scaleY = scale
-                            shadowElevation = if (isDragging) 12f else 0f
+                            shadowElevation = elevation
                             translationX = offset.value.x
                             translationY = offset.value.y
                         }
@@ -366,6 +372,7 @@ private fun DesktopHomeGrid(
                             detectDragGesturesAfterLongPress(
                                 onDragStart = {
                                     draggingId = entry.id
+                                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                                 },
                                 onDrag = { change, amount ->
                                     change.consume()
@@ -375,21 +382,29 @@ private fun DesktopHomeGrid(
                                     if (step <= 0f) return@detectDragGesturesAfterLongPress
                                     val currentIndex = icons.indexOfFirst { it.id == entry.id }
                                     if (currentIndex == -1) return@detectDragGesturesAfterLongPress
+                                    // Riga/colonna ATTUALI dell'icona trascinata, non un indice piatto: il
+                                    // target è calcolato clampando riga e colonna separatamente ai bordi
+                                    // della griglia, cosi' un trascinamento orizzontale vicino al bordo non
+                                    // "sborda" mai nella riga sopra/sotto per effetto del riporto della
+                                    // divisione intera (bug della versione precedente).
+                                    val currentRow = currentIndex / DESKTOP_GRID_COLUMNS
+                                    val currentCol = currentIndex % DESKTOP_GRID_COLUMNS
                                     val colDelta = (newOffset.x / step).roundToInt()
                                     val rowDelta = (newOffset.y / step).roundToInt()
-                                    val indexDelta = rowDelta * DESKTOP_GRID_COLUMNS + colDelta
-                                    val targetIndex = (currentIndex + indexDelta).coerceIn(0, icons.lastIndex)
+                                    val maxRow = icons.lastIndex / DESKTOP_GRID_COLUMNS
+                                    val targetCol = (currentCol + colDelta).coerceIn(0, DESKTOP_GRID_COLUMNS - 1)
+                                    val targetRow = (currentRow + rowDelta).coerceIn(0, maxRow)
+                                    val targetIndex = (targetRow * DESKTOP_GRID_COLUMNS + targetCol).coerceIn(0, icons.lastIndex)
                                     if (targetIndex != currentIndex) {
                                         icons = icons.toMutableList().apply { add(targetIndex, removeAt(currentIndex)) }
                                         // Compensa l'offset per la porzione di trascinamento già "consumata" dallo
-                                        // spostamento appena applicato - stesso trucco della lista in
-                                        // IconSettingsScreen.kt, qui scomposto in riga/colonna: la divisione/resto
-                                        // intera ricostruisce sempre esattamente lo spostamento applicato
-                                        // (targetIndex - currentIndex), qualunque sia il segno.
-                                        val consumed = targetIndex - currentIndex
+                                        // spostamento appena applicato, usando lo spostamento riga/colonna
+                                        // REALMENTE applicato (targetRow/targetCol dopo il clamp), non più una
+                                        // scomposizione a modulo dell'indice piatto - con il clamp sopra quella
+                                        // scomposizione non ricostruirebbe più lo spostamento corretto.
                                         val compensated = newOffset - Offset(
-                                            x = (consumed % DESKTOP_GRID_COLUMNS) * step,
-                                            y = (consumed / DESKTOP_GRID_COLUMNS) * step,
+                                            x = (targetCol - currentCol) * step,
+                                            y = (targetRow - currentRow) * step,
                                         )
                                         coroutineScope.launch { offset.snapTo(compensated) }
                                     }

@@ -40,6 +40,7 @@ import org.chessora.app.data.remote.dto.ResolveClubResponse
 import org.chessora.app.data.remote.dto.ShopProduct
 import org.chessora.app.data.remote.dto.SiteSettings
 import org.chessora.app.data.remote.dto.TournamentPreRegistrationResult
+import org.chessora.app.data.remote.dto.RegisteredPlayer
 import org.chessora.app.data.remote.dto.TournamentSummary
 import org.chessora.app.data.remote.dto.VideoNewsItem
 import org.chessora.app.data.remote.dto.VideoRow
@@ -292,6 +293,11 @@ interface ChessoraApi {
      * dato che se ne può scegliere uno solo per volta. */
     @DELETE("api/tornei/{id}/preiscrivi")
     suspend fun cancelPreRegistration(@Path("id") id: Int): TournamentPreRegistrationResult
+
+    /** Elenco pubblico dei preiscritti a un torneo (nessuna autenticazione richiesta) -
+     * stesso endpoint usato dalla lista iscritti su tourn.chessora.org. */
+    @GET("api/tornei/{id}/iscritti")
+    suspend fun getRegisteredPlayers(@Path("id") id: Int): List<RegisteredPlayer>
 
     // ---------- Notifiche push ----------
 

@@ -26,6 +26,7 @@ import org.chessora.app.data.remote.dto.PlayerAuthResponseDto
 import org.chessora.app.data.remote.dto.PlayerLoginRequestDto
 import org.chessora.app.data.remote.dto.RegisterResponseDto
 import org.chessora.app.data.remote.dto.RegisterWithFideRequestDto
+import org.chessora.app.data.remote.dto.RegisteredPlayer
 import org.chessora.app.data.remote.dto.ResendConfirmationRequestDto
 import retrofit2.HttpException
 import org.chessora.app.data.remote.dto.NetworkNewsItem
@@ -162,6 +163,9 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun cancelPreRegistration(id: Int): Result<TournamentPreRegistrationResult> =
         safeCall { api.cancelPreRegistration(id) }
+
+    suspend fun getRegisteredPlayers(id: Int): Result<List<RegisteredPlayer>> =
+        safeCall { api.getRegisteredPlayers(id) }
 
     // ---------- Classifica ----------
 

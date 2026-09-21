@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.chessora.app.data.local.ClubPreferences
 import org.chessora.app.data.remote.apiErrorMessage
+import org.chessora.app.data.remote.dto.RegisteredPlayer
 import org.chessora.app.data.remote.dto.TournamentSummary
 import org.chessora.app.data.repository.ChessoraRepository
 import org.chessora.app.ui.common.UiState
@@ -62,6 +63,27 @@ class TournamentDetailViewModel(
 
     private val _registering = MutableStateFlow(false)
     val registering: StateFlow<Boolean> = _registering.asStateFlow()
+
+    /** Elenco preiscritti per torneo (chiave = TournamentSummary.id), caricato pigramente
+     * al primo tocco su "Vedi iscritti" in ognuna delle TournamentEventOption - endpoint
+     * pubblico, nessun login richiesto. null = non ancora caricato, lista vuota = caricato
+     * e nessun iscritto. */
+    private val _registeredPlayers = MutableStateFlow<Map<Int, List<RegisteredPlayer>>>(emptyMap())
+    val registeredPlayers: StateFlow<Map<Int, List<RegisteredPlayer>>> = _registeredPlayers.asStateFlow()
+
+    private val _loadingRegisteredPlayers = MutableStateFlow<Set<Int>>(emptySet())
+    val loadingRegisteredPlayers: StateFlow<Set<Int>> = _loadingRegisteredPlayers.asStateFlow()
+
+    fun loadRegisteredPlayersIfNeeded(idTournament: Int) {
+        if (_registeredPlayers.value.containsKey(idTournament) || idTournament in _loadingRegisteredPlayers.value) return
+        viewModelScope.launch {
+            _loadingRegisteredPlayers.value = _loadingRegisteredPlayers.value + idTournament
+            repository.getRegisteredPlayers(idTournament).onSuccess { players ->
+                _registeredPlayers.value = _registeredPlayers.value + (idTournament to players)
+            }
+            _loadingRegisteredPlayers.value = _loadingRegisteredPlayers.value - idTournament
+        }
+    }
 
     fun load(idTournament: Int) {
         viewModelScope.launch {

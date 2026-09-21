@@ -111,6 +111,11 @@
     <string name="tournament_section_title">Preiscrizione</string>
     <string name="tournament_registered_other_option">Preiscritto a un altro torneo di questo evento</string>
     <string name="tournament_cancel_registration">Ritira</string>
+    <string name="tournament_show_registrants">Vedi iscritti</string>
+    <string name="tournament_loading_registrants">Caricamento in corso…</string>
+    <string name="tournament_hide_registrants">Nascondi iscritti</string>
+    <string name="tournament_no_registrants">Nessun iscritto per ora.</string>
+    <string name="tournament_registrant_no_idfide">Senza ID FIDE</string>
 
     <!-- Errori generici -->
     <string name="error_generic">Qualcosa è andato storto. Riprova.</string>

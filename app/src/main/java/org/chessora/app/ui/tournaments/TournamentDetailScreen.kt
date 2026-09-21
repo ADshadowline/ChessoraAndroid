@@ -3,11 +3,13 @@ package org.chessora.app.ui.tournaments
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -15,14 +17,20 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -34,6 +42,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import org.chessora.app.R
 import org.chessora.app.data.remote.NetworkModule
+import org.chessora.app.data.remote.dto.RegisteredPlayer
 import org.chessora.app.data.remote.dto.TournamentSummary
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
@@ -52,6 +61,8 @@ fun TournamentDetailScreen(idTournament: Int, onLogin: () -> Unit) {
     val viewModel = chessoraViewModel { app -> TournamentDetailViewModel(app.repository, app.clubPreferences) }
     val state by viewModel.state.collectAsState()
     val registering by viewModel.registering.collectAsState()
+    val registeredPlayers by viewModel.registeredPlayers.collectAsState()
+    val loadingRegisteredPlayers by viewModel.loadingRegisteredPlayers.collectAsState()
     val context = LocalContext.current
 
     LaunchedEffect(idTournament) { viewModel.load(idTournament) }
@@ -80,6 +91,9 @@ fun TournamentDetailScreen(idTournament: Int, onLogin: () -> Unit) {
                     registering = registering,
                     isAuthenticated = data.isLoggedIn,
                     disabledByOther = data.hasAnyRegistration && !option.isRegistered,
+                    registrants = registeredPlayers[option.tournament.id],
+                    loadingRegistrants = option.tournament.id in loadingRegisteredPlayers,
+                    onShowRegistrants = { viewModel.loadRegisteredPlayersIfNeeded(option.tournament.id) },
                     onRegister = {
                         viewModel.register(
                             option.tournament.id,
@@ -178,6 +192,9 @@ private fun TournamentOptionCard(
     registering: Boolean,
     isAuthenticated: Boolean,
     disabledByOther: Boolean,
+    registrants: List<RegisteredPlayer>?,
+    loadingRegistrants: Boolean,
+    onShowRegistrants: () -> Unit,
     onRegister: () -> Unit,
     onCancel: () -> Unit,
 ) {
@@ -185,6 +202,7 @@ private fun TournamentOptionCard(
     val count = tournament.nPreRegisteredPlayers ?: 0
     val unlimited = tournament.limiteIscrizioni <= 0
     val full = !unlimited && count >= tournament.limiteIscrizioni
+    var registrantsExpanded by remember(tournament.id) { mutableStateOf(false) }
 
     Card(modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp)) {
         Column(modifier = Modifier.padding(14.dp)) {
@@ -233,6 +251,52 @@ private fun TournamentOptionCard(
                     ) {
                         Text(if (registering) stringResource(R.string.tournament_registering) else stringResource(R.string.tournament_register))
                     }
+                }
+            }
+
+            TextButton(
+                onClick = {
+                    registrantsExpanded = !registrantsExpanded
+                    if (registrantsExpanded) onShowRegistrants()
+                },
+                modifier = Modifier.padding(top = 4.dp),
+            ) {
+                Text(
+                    if (registrantsExpanded) stringResource(R.string.tournament_hide_registrants)
+                    else stringResource(R.string.tournament_show_registrants),
+                )
+            }
+            AnimatedVisibility(visible = registrantsExpanded) {
+                RegistrantsList(registrants = registrants, loading = loadingRegistrants)
+            }
+        }
+    }
+}
+
+@Composable
+private fun RegistrantsList(registrants: List<RegisteredPlayer>?, loading: Boolean) {
+    Column(modifier = Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 6.dp)) {
+        when {
+            loading || registrants == null -> Row(verticalAlignment = Alignment.CenterVertically) {
+                CircularProgressIndicator(modifier = Modifier.padding(end = 10.dp).size(16.dp), strokeWidth = 2.dp)
+                Text(stringResource(R.string.tournament_loading_registrants))
+            }
+            registrants.isEmpty() -> Text(stringResource(R.string.tournament_no_registrants), style = MaterialTheme.typography.bodySmall)
+            else -> registrants.forEachIndexed { index, player ->
+                if (index > 0) HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column {
+                        Text(player.name, style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            player.idFide ?: stringResource(R.string.tournament_registrant_no_idfide),
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+                    Text("${player.rating}", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }

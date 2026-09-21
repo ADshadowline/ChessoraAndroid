@@ -61,3 +61,14 @@ data class TournamentPreRegistrationResult(
     val nPreRegisteredPlayers: Int,
     val limiteIscrizioni: Int,
 )
+
+/** Specchio di Chessora.Contracts.Tournaments.PublicRegisteredPlayerDto (GET
+ * /api/tornei/{id}/iscritti) - elenco pubblico dei preiscritti a un torneo, nessuna
+ * autenticazione richiesta. rating è sempre valorizzato (1440 di default per chi non
+ * ha un Elo FIDE reale, risolto lato server). */
+@Serializable
+data class RegisteredPlayer(
+    val name: String,
+    val idFide: String? = null,
+    val rating: Int,
+)
