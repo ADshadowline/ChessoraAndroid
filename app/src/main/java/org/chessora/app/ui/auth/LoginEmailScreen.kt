@@ -21,8 +21,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import org.chessora.app.R
 import org.chessora.app.ui.common.chessoraViewModel
@@ -49,21 +47,21 @@ fun LoginEmailScreen(onLoggedIn: () -> Unit, onForgotPassword: () -> Unit) {
             singleLine = true,
             modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
         )
-        OutlinedTextField(
+        PasswordField(
             value = password,
             onValueChange = { password = it },
-            label = { Text(stringResource(R.string.login_password_label)) },
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = KeyboardType.Password),
+            label = stringResource(R.string.login_password_label),
             modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
         )
 
         when (val current = step) {
             is LoginEmailStep.Loading -> CircularProgressIndicator(modifier = Modifier.padding(top = 24.dp))
             is LoginEmailStep.Error -> {
+                // Niente reset automatico qui: farlo subito (come prima) cancellava il
+                // messaggio nello stesso frame in cui appariva, prima che l'utente potesse
+                // leggerlo - resta a schermo finché non si ritenta il login (che lo
+                // sovrascrive comunque con Loading).
                 Text(current.message, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 16.dp))
-                LaunchedEffect(current) { viewModel.resetError() }
             }
             is LoginEmailStep.EmailNotConfirmed -> {
                 Text(stringResource(R.string.login_email_not_confirmed), color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 16.dp))

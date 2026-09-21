@@ -165,7 +165,7 @@
     <string name="login_fide">Accedi con ID FIDE</string>
     <string name="login_email">Accedi con email e password</string>
     <string name="login_email_title">Accedi</string>
-    <string name="login_email_field_label">Email o ID FIDE</string>
+    <string name="login_email_field_label">Email</string>
     <string name="login_password_label">Password</string>
     <string name="login_submit">Accedi</string>
     <string name="login_forgot_password">Password dimenticata?</string>

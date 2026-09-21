@@ -28,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import org.chessora.app.R
 import org.chessora.app.ui.common.chessoraViewModel
@@ -200,22 +199,16 @@ fun CompleteProfileScreen(onDone: () -> Unit) {
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
                 )
-                OutlinedTextField(
+                PasswordField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text(stringResource(R.string.login_password_label)) },
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = KeyboardType.Password),
+                    label = stringResource(R.string.login_password_label),
                     modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
                 )
-                OutlinedTextField(
+                PasswordField(
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it },
-                    label = { Text(stringResource(R.string.register_confirm_password_label)) },
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = KeyboardType.Password),
+                    label = stringResource(R.string.register_confirm_password_label),
                     modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
                 )
                 Button(

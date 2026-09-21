@@ -28,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import org.chessora.app.R
 import org.chessora.app.data.remote.dto.ClubDirectoryItem
@@ -110,13 +109,10 @@ fun LoginFideScreen(onLoggedIn: () -> Unit, onRegistered: (email: String) -> Uni
 
             is FideUiPhase.EnterPassword -> {
                 Text(stringResource(R.string.login_fide_found, viewModel.resolvedName), style = MaterialTheme.typography.titleMedium)
-                OutlinedTextField(
+                PasswordField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text(stringResource(R.string.login_password_label)) },
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = KeyboardType.Password),
+                    label = stringResource(R.string.login_password_label),
                     modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
                 )
                 Button(onClick = { viewModel.loginWithPassword(password) }, modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
@@ -172,22 +168,16 @@ fun LoginFideScreen(onLoggedIn: () -> Unit, onRegistered: (email: String) -> Uni
                     keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = KeyboardType.Email),
                     modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
                 )
-                OutlinedTextField(
+                PasswordField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text(stringResource(R.string.login_password_label)) },
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = KeyboardType.Password),
+                    label = stringResource(R.string.login_password_label),
                     modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
                 )
-                OutlinedTextField(
+                PasswordField(
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it },
-                    label = { Text(stringResource(R.string.register_confirm_password_label)) },
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = KeyboardType.Password),
+                    label = stringResource(R.string.register_confirm_password_label),
                     modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
                 )
                 Button(

@@ -58,8 +58,4 @@ class LoginEmailViewModel(
         viewModelScope.launch { repository.resendConfirmation(email) }
         _step.value = LoginEmailStep.Error("Ti abbiamo inviato una nuova email di conferma.")
     }
-
-    fun resetError() {
-        _step.value = LoginEmailStep.Idle
-    }
 }
