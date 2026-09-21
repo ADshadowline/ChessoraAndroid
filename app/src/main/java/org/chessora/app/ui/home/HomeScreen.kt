@@ -69,6 +69,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -124,7 +125,14 @@ fun HomeScreen(
 
     if (displayMode == ClubPreferences.DISPLAY_MODE_DESKTOP) {
         Box(modifier = Modifier.fillMaxSize()) {
-            desktopBackgroundUri?.let { BackgroundImageWithScrim(uri = it) }
+            // Come SplashScreen: se l'utente non ha scelto un proprio sfondo da
+            // Impostazioni, mostra quello incluso nell'app invece di lasciare la griglia
+            // su sfondo vuoto.
+            if (desktopBackgroundUri != null) {
+                BackgroundImageWithScrim(uri = desktopBackgroundUri!!)
+            } else {
+                BackgroundImageWithScrim(painter = painterResource(R.drawable.desktop_background_default))
+            }
             DesktopHomeGrid(
                 desktop = desktop,
                 isPlatformMode = isPlatformMode,
