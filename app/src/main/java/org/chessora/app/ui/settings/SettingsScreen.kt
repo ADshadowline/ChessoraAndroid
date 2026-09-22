@@ -25,6 +25,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,8 +65,11 @@ fun SettingsScreen(
     val displayMode by viewModel.displayMode.collectAsState()
     val splashBackgroundUri by viewModel.splashBackgroundUri.collectAsState()
     val desktopBackgroundUri by viewModel.desktopBackgroundUri.collectAsState()
+    val hideReadReceipts by viewModel.hideReadReceipts.collectAsState()
     val context = LocalContext.current
     var showResetConfirmation by remember { mutableStateOf(false) }
+
+    LaunchedEffect(identifiedPlayerName) { viewModel.loadHideReadReceipts() }
 
     val splashPickerLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia(),
@@ -114,6 +118,25 @@ fun SettingsScreen(
             Switch(
                 checked = notificationsEnabled,
                 onCheckedChange = { viewModel.setNotificationsEnabled(it, club) },
+            )
+        }
+
+        if (identifiedPlayerName != null) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(stringResource(R.string.settings_hide_read_receipts), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                Switch(
+                    checked = hideReadReceipts,
+                    onCheckedChange = { viewModel.setHideReadReceipts(it) },
+                )
+            }
+            Text(
+                stringResource(R.string.settings_hide_read_receipts_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
 

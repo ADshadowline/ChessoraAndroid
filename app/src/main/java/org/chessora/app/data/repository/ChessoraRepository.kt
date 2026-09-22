@@ -22,6 +22,7 @@ import org.chessora.app.data.remote.dto.GoogleLoginRequestDto
 import org.chessora.app.data.remote.dto.GoogleLoginResponseDto
 import org.chessora.app.data.remote.dto.GoogleReviewsResponse
 import org.chessora.app.data.remote.dto.MarkReadRequest
+import org.chessora.app.data.remote.dto.MessagingPlayerSettings
 import org.chessora.app.data.remote.dto.PlayerAuthResponseDto
 import org.chessora.app.data.remote.dto.PlayerLoginRequestDto
 import org.chessora.app.data.remote.dto.RegisterResponseDto
@@ -38,6 +39,7 @@ import org.chessora.app.data.remote.dto.RankingResponse
 import org.chessora.app.data.remote.dto.RegisterDeviceRequest
 import org.chessora.app.data.remote.dto.ReportDeliveryRequest
 import org.chessora.app.data.remote.dto.SendMessageRequest
+import org.chessora.app.data.remote.dto.SetMessagingPlayerSettingsRequest
 import org.chessora.app.data.remote.dto.ShopProduct
 import org.chessora.app.data.remote.dto.StartClubConversationRequest
 import org.chessora.app.data.remote.dto.StartDirectConversationRequest
@@ -239,6 +241,12 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun searchMessagingClubs(query: String): Result<List<ClubSearchResult>> =
         safeCall { api.searchMessagingClubs(query) }
+
+    suspend fun getMessagingSettings(idPlayer: Int): Result<MessagingPlayerSettings> =
+        safeCall { api.getMessagingSettings(idPlayer) }
+
+    suspend fun setMessagingSettings(idPlayer: Int, hideDeliveryAndReadStatus: Boolean): Result<Unit> =
+        safeCall { api.setMessagingSettings(SetMessagingPlayerSettingsRequest(idPlayer, hideDeliveryAndReadStatus)) }
 
     // ---------- Notifiche push ----------
 

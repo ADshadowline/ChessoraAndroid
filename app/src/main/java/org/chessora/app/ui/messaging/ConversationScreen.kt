@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,6 +17,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Icon
@@ -144,12 +147,32 @@ private fun MessageBubble(message: ChatMessage) {
                 )
             }
             Text(message.body, style = MaterialTheme.typography.bodyMedium)
-            Text(
-                formatTime(message.sentAtUtc),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 2.dp),
-            )
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 2.dp)) {
+                Text(
+                    formatTime(message.sentAtUtc),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                // Doppia spunta stile WhatsApp, solo sui MIEI messaggi: grigia (Done/
+                // DoneAll) se non ancora letta, colorata (oro, per contrasto sullo sfondo
+                // azzurro della bolla) se il destinatario l'ha letta - vedi
+                // ChatMessage.isDelivered/isRead (null/false se il destinatario ha
+                // disattivato le conferme in Impostazioni, vedi backend).
+                if (isMine) {
+                    Icon(
+                        if (message.isDelivered) Icons.Default.DoneAll else Icons.Default.Done,
+                        contentDescription = if (message.isRead) {
+                            stringResource(R.string.messaging_status_read)
+                        } else if (message.isDelivered) {
+                            stringResource(R.string.messaging_status_delivered)
+                        } else {
+                            stringResource(R.string.messaging_status_sent)
+                        },
+                        tint = if (message.isRead) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(start = 4.dp).size(14.dp),
+                    )
+                }
+            }
         }
     }
 }

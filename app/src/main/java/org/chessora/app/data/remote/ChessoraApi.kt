@@ -19,6 +19,7 @@ import org.chessora.app.data.remote.dto.GoogleLoginRequestDto
 import org.chessora.app.data.remote.dto.GoogleLoginResponseDto
 import org.chessora.app.data.remote.dto.GoogleReviewsResponse
 import org.chessora.app.data.remote.dto.MarkReadRequest
+import org.chessora.app.data.remote.dto.MessagingPlayerSettings
 import org.chessora.app.data.remote.dto.PlayerAuthResponseDto
 import org.chessora.app.data.remote.dto.PlayerLoginRequestDto
 import org.chessora.app.data.remote.dto.RegisterResponseDto
@@ -32,6 +33,7 @@ import org.chessora.app.data.remote.dto.PlayerSearchResult
 import org.chessora.app.data.remote.dto.RankingResponse
 import org.chessora.app.data.remote.dto.SendMessageRequest
 import org.chessora.app.data.remote.dto.StartClubConversationRequest
+import org.chessora.app.data.remote.dto.SetMessagingPlayerSettingsRequest
 import org.chessora.app.data.remote.dto.StartConversationResult
 import org.chessora.app.data.remote.dto.StartDirectConversationRequest
 import org.chessora.app.data.remote.dto.RegisterDeviceRequest
@@ -51,6 +53,7 @@ import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -267,6 +270,12 @@ interface ChessoraApi {
 
     @GET("api/messaging/search-clubs")
     suspend fun searchMessagingClubs(@Query("query") query: String): List<ClubSearchResult>
+
+    @GET("api/messaging/settings")
+    suspend fun getMessagingSettings(@Query("idPlayer") idPlayer: Int): MessagingPlayerSettings
+
+    @PUT("api/messaging/settings")
+    suspend fun setMessagingSettings(@Body request: SetMessagingPlayerSettingsRequest)
 
     // ---------- Tornei (dettaglio/iscrizione dalla Home, ui/tournaments/) ----------
     // Pubblici come tutto il resto: orga.TournamentRegistrations non ha una colonna

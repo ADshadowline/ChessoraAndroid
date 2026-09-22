@@ -57,6 +57,11 @@
     <string name="messaging_tab_clubs">Circoli</string>
     <string name="messaging_search_hint">Cerca per nome…</string>
     <string name="messaging_club_no_referente">Nessun referente della messaggistica assegnato</string>
+    <string name="messaging_status_sent">Inviato</string>
+    <string name="messaging_status_delivered">Ricevuto</string>
+    <string name="messaging_status_read">Letto</string>
+    <string name="settings_hide_read_receipts">Nascondi conferme di ricezione e lettura</string>
+    <string name="settings_hide_read_receipts_hint">Gli altri non vedranno più se e quando hai ricevuto o letto i loro messaggi.</string>
 
     <!-- Menu Altro -->
     <string name="more_calendar">Calendario</string>

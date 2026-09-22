@@ -17,6 +17,8 @@ data class ConversationSummary(
     val unreadCount: Int = 0,
 )
 
+/** isDelivered/isRead (doppia spunta) sono significativi solo quando isMine è true -
+ * vedi Chessora.Contracts.Messaging.MessageDto. */
 @Serializable
 data class ChatMessage(
     val id: Int,
@@ -24,6 +26,8 @@ data class ChatMessage(
     val isMine: Boolean,
     val body: String,
     val sentAtUtc: String,
+    val isDelivered: Boolean = false,
+    val isRead: Boolean = false,
 )
 
 @Serializable
@@ -56,3 +60,11 @@ data class MarkReadRequest(val idPlayer: Int)
 
 @Serializable
 data class StartConversationResult(val idConversation: Int? = null)
+
+/** Specchio di Chessora.Contracts.Messaging.MessagingPlayerSettingsDto (GET
+ * /api/messaging/settings) - privacy delle conferme di consegna/lettura. */
+@Serializable
+data class MessagingPlayerSettings(val hideDeliveryAndReadStatus: Boolean = false)
+
+@Serializable
+data class SetMessagingPlayerSettingsRequest(val idPlayer: Int, val hideDeliveryAndReadStatus: Boolean)
