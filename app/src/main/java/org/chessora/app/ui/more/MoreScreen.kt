@@ -10,6 +10,7 @@ import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Icon
@@ -36,6 +37,7 @@ fun MoreScreen(
     onPerformanceClick: () -> Unit,
     onBoardClick: () -> Unit,
     onShopClick: () -> Unit,
+    onVideoClick: () -> Unit,
     onSettingsClick: () -> Unit,
     isPlatformMode: Boolean = false,
 ) {
@@ -75,6 +77,12 @@ fun MoreScreen(
                 leadingContent = { Icon(Icons.Default.ShoppingCart, contentDescription = null) },
                 trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
                 modifier = Modifier.clickable(onClick = onShopClick),
+            )
+            ListItem(
+                headlineContent = { Text("Video") },
+                leadingContent = { Icon(Icons.Default.PlayCircle, contentDescription = null) },
+                trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
+                modifier = Modifier.clickable(onClick = onVideoClick),
             )
         }
         ListItem(

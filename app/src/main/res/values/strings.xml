@@ -160,6 +160,8 @@
          ui/settings/IconSettingsScreen.kt) -->
     <string name="desktop_icon_board">Direttivo</string>
     <string name="desktop_icon_shop">Negozio</string>
+    <string name="desktop_icon_video">Video</string>
+    <string name="video_empty">Nessun video disponibile.</string>
     <string name="icon_settings_title">Icone della Home</string>
     <string name="icon_settings_subtitle">Tieni premuta la maniglia e trascina per cambiare l\'ordine. Usa l\'interruttore per nascondere un\'icona dalla Home.</string>
     <string name="icon_settings_drag_handle">Trascina per riordinare</string>

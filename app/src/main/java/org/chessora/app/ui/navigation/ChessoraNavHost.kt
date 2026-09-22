@@ -87,6 +87,7 @@ import org.chessora.app.ui.shop.ShopScreen
 import org.chessora.app.ui.splash.SplashScreen
 import org.chessora.app.ui.theme.ChessoraGold
 import org.chessora.app.ui.tournaments.TournamentDetailScreen
+import org.chessora.app.ui.video.VideoScreen
 
 private data class BottomTab(val route: String, val labelRes: Int, val icon: androidx.compose.ui.graphics.vector.ImageVector)
 
@@ -359,6 +360,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                             onOpenPerformance = { navController.navigate(ChessoraDestinations.performance()) },
                             onOpenBoard = { navController.navigate(ChessoraDestinations.BOARD) },
                             onOpenShop = { navController.navigate(ChessoraDestinations.SHOP) },
+                            onOpenVideo = { navController.navigate(ChessoraDestinations.VIDEO) },
                             onOpenSettings = { navController.navigate(ChessoraDestinations.SETTINGS) },
                         ),
                     )
@@ -484,6 +486,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                     onPerformanceClick = { navController.navigate(ChessoraDestinations.performance()) },
                     onBoardClick = { navController.navigate(ChessoraDestinations.BOARD) },
                     onShopClick = { navController.navigate(ChessoraDestinations.SHOP) },
+                    onVideoClick = { navController.navigate(ChessoraDestinations.VIDEO) },
                     onSettingsClick = { navController.navigate(ChessoraDestinations.SETTINGS) },
                     isPlatformMode = selectedClub == ClubPreferences.PLATFORM_CLUB_CODE,
                 )
@@ -500,6 +503,9 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
             }
             composable(ChessoraDestinations.SHOP) {
                 RequireClub(selectedClub) { club -> ShopScreen(club = club) }
+            }
+            composable(ChessoraDestinations.VIDEO) {
+                RequireClub(selectedClub) { club -> VideoScreen(club = club) }
             }
             composable(ChessoraDestinations.SETTINGS) {
                 SettingsScreen(

@@ -50,6 +50,7 @@ object ChessoraDestinations {
     // come Direttivo/Negozio.
     const val CALENDAR = "calendar"
     const val RANKING = "ranking"
+    const val VIDEO = "video"
     // [focus] facoltativo ("standard"/"rapid"/"blitz") pre-seleziona quella cadenza -
     // vedi il click sui punteggi Elo in ChessoraNavHost.ClubBrandingTopBar. Stringa
     // vuota di default (non null: NavType.StringType non ammette argomenti opzionali

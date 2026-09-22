@@ -39,6 +39,7 @@ import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Newspaper
 import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -110,6 +111,7 @@ data class DesktopHomeCallbacks(
     val onOpenPerformance: () -> Unit,
     val onOpenBoard: () -> Unit,
     val onOpenShop: () -> Unit,
+    val onOpenVideo: () -> Unit,
     val onOpenSettings: () -> Unit,
 )
 
@@ -275,6 +277,7 @@ val DESKTOP_ICON_DESCRIPTORS = listOf(
     DesktopIconDescriptor("performance", R.string.more_performance, Icons.AutoMirrored.Filled.ShowChart),
     DesktopIconDescriptor("board", R.string.desktop_icon_board, Icons.Default.People, hiddenInPlatformMode = true),
     DesktopIconDescriptor("shop", R.string.desktop_icon_shop, Icons.Default.ShoppingCart, hiddenInPlatformMode = true),
+    DesktopIconDescriptor("video", R.string.desktop_icon_video, Icons.Default.PlayCircle, hiddenInPlatformMode = true),
 )
 
 /** Applica ordine personalizzato e icone nascoste (vedi ClubPreferences) all'elenco di
@@ -300,6 +303,7 @@ private fun callbackFor(id: String, desktop: DesktopHomeCallbacks): (() -> Unit)
     "performance" -> desktop.onOpenPerformance
     "board" -> desktop.onOpenBoard
     "shop" -> desktop.onOpenShop
+    "video" -> desktop.onOpenVideo
     else -> null
 }
 

@@ -15,10 +15,11 @@ val ChessoraInk = Color(0xFF1F1A17)
 val ChessoraInk2 = Color(0xFF2A231E)
 val ChessoraCream = Color(0xFFF7F3EC)
 val ChessoraError = Color(0xFFB3261E)
-// Sfondo bolla "miei messaggi" in Messaggistica (chiaro, testo scuro sopra leggibile
-// come col precedente ChessoraGold) e sfondo dei badge numerici (Messaggi non letti,
-// Iscrizioni ai tornei) - più saturo, pensato per il testo bianco del badge.
-val ChessoraSkyBlue = Color(0xFF90CAF9)
+// Sfondo bolla "miei messaggi" in Messaggistica - blu pieno (non più chiaro: sull'unico
+// tema scuro dell'app il testo di default è chiaro, e su un azzurro troppo tenue il
+// contrasto era scarso) e sfondo dei badge numerici (Messaggi non letti, Iscrizioni ai
+// tornei), leggermente più saturo, pensato per il testo bianco del badge.
+val ChessoraSkyBlue = Color(0xFF1976D2)
 val ChessoraSkyBlueBadge = Color(0xFF42A5F5)
 // Freccia delta Elo in miglioramento (ui/performance/PerformanceScreen.kt) - il
 // peggioramento riusa invece ChessoraError, già esistente.
