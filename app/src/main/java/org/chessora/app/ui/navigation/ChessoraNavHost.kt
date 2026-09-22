@@ -176,6 +176,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
     val membersCount by sessionViewModel.membersCount.collectAsState()
     val isTournamentManager by sessionViewModel.isTournamentManager.collectAsState()
     val registeredTournamentsCount by sessionViewModel.registeredTournamentsCount.collectAsState()
+    val registeredTournamentStartingSoon by sessionViewModel.registeredTournamentStartingSoon.collectAsState()
     val unreadMessagesCount by sessionViewModel.unreadMessagesCount.collectAsState()
     val context = LocalContext.current
 
@@ -347,6 +348,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                         isPlatformMode = selectedClub == ClubPreferences.PLATFORM_CLUB_CODE,
                         registeredTournamentsCount = registeredTournamentsCount,
                         unreadMessagesCount = unreadMessagesCount,
+                        registeredTournamentStartingSoon = registeredTournamentStartingSoon,
                         desktop = DesktopHomeCallbacks(
                             onOpenEvents = { navController.navigate(ChessoraDestinations.EVENTS) },
                             onOpenCalendar = { navController.navigate(ChessoraDestinations.CALENDAR) },

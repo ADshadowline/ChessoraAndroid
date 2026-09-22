@@ -90,6 +90,7 @@ import org.chessora.app.data.remote.NetworkModule
 import org.chessora.app.data.remote.dto.NewsArticle
 import org.chessora.app.ui.common.BackgroundImageWithScrim
 import org.chessora.app.ui.common.ChessoraCountBadge
+import org.chessora.app.ui.common.UiState
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
 
@@ -120,6 +121,7 @@ fun HomeScreen(
     isPlatformMode: Boolean = false,
     registeredTournamentsCount: Int = 0,
     unreadMessagesCount: Int = 0,
+    registeredTournamentStartingSoon: LocalDateTime? = null,
 ) {
     val viewModel = chessoraViewModel { app -> HomeViewModel(app.repository, app.clubPreferences) }
     val displayMode by viewModel.displayMode.collectAsState()
@@ -128,6 +130,15 @@ fun HomeScreen(
     val desktopHiddenIcons by viewModel.desktopHiddenIcons.collectAsState()
 
     if (displayMode == ClubPreferences.DISPLAY_MODE_DESKTOP) {
+        // Serve solo qui (non in modalità classica, dove EventsListScreen carica già gli
+        // stessi dati con un ViewModel/istanza separata) - solo per sapere se l'evento
+        // più vicino comincia a breve, per il conto alla rovescia sull'icona "Eventi"
+        // (vedi DesktopHomeGrid/DesktopIconTile).
+        val state by viewModel.state.collectAsState()
+        LaunchedEffect(club) { viewModel.load(club) }
+        val nextEventStart = (state as? UiState.Success)?.data?.upcoming?.firstOrNull()
+            ?.let { runCatching { LocalDateTime.parse(it.startDateTime) }.getOrNull() }
+
         Box(modifier = Modifier.fillMaxSize()) {
             // Come SplashScreen: se l'utente non ha scelto un proprio sfondo da
             // Impostazioni, mostra quello incluso nell'app invece di lasciare la griglia
@@ -145,6 +156,8 @@ fun HomeScreen(
                 onReorder = viewModel::setDesktopIconOrder,
                 registeredTournamentsCount = registeredTournamentsCount,
                 unreadMessagesCount = unreadMessagesCount,
+                registeredTournamentStartingSoon = registeredTournamentStartingSoon,
+                nextEventStart = nextEventStart,
             )
         }
     } else {
@@ -229,6 +242,11 @@ private data class DesktopIcon(
     /** Numero mostrato come badge sull'icona (0 = nessun badge) - solo "Iscrizioni ai
      * tornei" ne ha uno per ora, vedi DesktopHomeGrid. */
     val badgeCount: Int = 0,
+    /** Orario del torneo preiscritto/evento più vicino, se esiste - il conto alla
+     * rovescia (mm:ss) sull'icona compare da solo quando si entra nell'ultima ora prima
+     * dell'inizio (vedi [rememberIconCountdownText] su DesktopIconTile), non subito al
+     * passaggio di questo valore da null a non-null. */
+    val countdownTarget: LocalDateTime? = null,
 )
 
 /**
@@ -312,16 +330,29 @@ private fun DesktopHomeGrid(
     onReorder: (List<String>) -> Unit,
     registeredTournamentsCount: Int = 0,
     unreadMessagesCount: Int = 0,
+    /** Orario del torneo preiscritto più vicino se è OGGI (il conto alla rovescia vero e
+     * proprio scatta solo nell'ultima ora, vedi DesktopIcon.countdownTarget) - vedi
+     * SessionViewModel.registeredTournamentStartingSoon. */
+    registeredTournamentStartingSoon: LocalDateTime? = null,
+    /** Orario dell'evento più vicino in calendario, qualunque esso sia - vedi
+     * HomeScreen (che lo risolve solo in modalità desktop, dove EventsListScreen non è
+     * montata e non lo caricherebbe altrimenti). */
+    nextEventStart: LocalDateTime? = null,
 ) {
     // Messaggi e Impostazioni sono ancorate agli angoli in basso (sinistra/destra), non
     // parte della griglia scorrevole - posizione fissa richiesta esplicitamente, non
     // riordinabili/nascondibili da Impostazioni > Icone Home.
-    val baseIcons = remember(desktop, isPlatformMode, iconOrder, hiddenIcons, registeredTournamentsCount) {
+    val baseIcons = remember(desktop, isPlatformMode, iconOrder, hiddenIcons, registeredTournamentsCount, registeredTournamentStartingSoon, nextEventStart) {
         val defaults = DESKTOP_ICON_DESCRIPTORS.filter { !(isPlatformMode && it.hiddenInPlatformMode) }
         applyIconPreferences(defaults, iconOrder, hiddenIcons).mapNotNull { descriptor ->
             callbackFor(descriptor.id, desktop)?.let { onClick ->
                 val badgeCount = if (descriptor.id == "registrations") registeredTournamentsCount else 0
-                DesktopIcon(descriptor.id, descriptor.labelRes, descriptor.icon, onClick, badgeCount)
+                val countdownTarget = when (descriptor.id) {
+                    "registrations" -> registeredTournamentStartingSoon
+                    "events" -> nextEventStart
+                    else -> null
+                }
+                DesktopIcon(descriptor.id, descriptor.labelRes, descriptor.icon, onClick, badgeCount, countdownTarget)
             }
         }
     }
@@ -435,20 +466,26 @@ private fun DesktopHomeGrid(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
+            // Più piccole delle icone della griglia sopra - restano comunque ancorate
+            // agli angoli, solo più discrete.
             DesktopIconTile(
                 DesktopIcon("messaging", R.string.nav_messaging, Icons.AutoMirrored.Filled.Chat, desktop.onOpenMessaging, unreadMessagesCount),
-                modifier = Modifier.weight(1f, fill = false).widthIn(max = 120.dp),
+                modifier = Modifier.weight(1f, fill = false).widthIn(max = 84.dp),
+                compact = true,
             )
             DesktopIconTile(
                 DesktopIcon("settings", R.string.settings_title, Icons.Default.Settings, desktop.onOpenSettings),
-                modifier = Modifier.weight(1f, fill = false).widthIn(max = 120.dp),
+                modifier = Modifier.weight(1f, fill = false).widthIn(max = 84.dp),
+                compact = true,
             )
         }
     }
 }
 
 @Composable
-private fun DesktopIconTile(entry: DesktopIcon, modifier: Modifier = Modifier) {
+private fun DesktopIconTile(entry: DesktopIcon, modifier: Modifier = Modifier, compact: Boolean = false) {
+    val iconSize = if (compact) 24.dp else 36.dp
+    val labelStyle = if (compact) MaterialTheme.typography.labelSmall else MaterialTheme.typography.labelMedium
     Card(onClick = entry.onClick, modifier = modifier.aspectRatio(1f)) {
         Column(
             modifier = Modifier.fillMaxSize().padding(8.dp),
@@ -457,18 +494,53 @@ private fun DesktopIconTile(entry: DesktopIcon, modifier: Modifier = Modifier) {
         ) {
             if (entry.badgeCount > 0) {
                 BadgedBox(badge = { ChessoraCountBadge(entry.badgeCount) }) {
-                    Icon(entry.icon, contentDescription = null, modifier = Modifier.size(36.dp))
+                    Icon(entry.icon, contentDescription = null, modifier = Modifier.size(iconSize))
                 }
             } else {
-                Icon(entry.icon, contentDescription = null, modifier = Modifier.size(36.dp))
+                Icon(entry.icon, contentDescription = null, modifier = Modifier.size(iconSize))
+            }
+            entry.countdownTarget?.let { target ->
+                val countdownText = rememberIconCountdownText(target)
+                if (countdownText != null) {
+                    Text(
+                        countdownText,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 2.dp),
+                    )
+                }
             }
             Text(
                 stringResource(entry.labelRes),
-                style = MaterialTheme.typography.labelMedium,
+                style = labelStyle,
                 modifier = Modifier.padding(top = 8.dp),
             )
         }
     }
+}
+
+/** Conto alla rovescia mm:ss verso [target], visibile SOLO nell'ultima ora prima
+ * dell'orario (null altrimenti - né troppo presto né a evento già iniziato, vedi
+ * DesktopIconTile). Ricalcolato ogni secondo mentre l'icona è a schermo, cosi' compare
+ * da solo appena si entra nella finestra di un'ora senza bisogno di ricomporre la
+ * schermata da un'altra causa. */
+@Composable
+private fun rememberIconCountdownText(target: LocalDateTime): String? {
+    var text by remember(target) { mutableStateOf<String?>(null) }
+    LaunchedEffect(target) {
+        while (true) {
+            val remaining = Duration.between(LocalDateTime.now(), target)
+            text = if (!remaining.isNegative && remaining.seconds <= 3600) {
+                "%02d:%02d".format(remaining.seconds / 60, remaining.seconds % 60)
+            } else {
+                null
+            }
+            if (remaining.isNegative) break
+            delay(1000)
+        }
+    }
+    return text
 }
 
 @Composable

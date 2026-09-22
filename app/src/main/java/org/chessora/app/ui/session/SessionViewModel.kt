@@ -2,6 +2,8 @@ package org.chessora.app.ui.session
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import java.time.LocalDate
+import java.time.LocalDateTime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -71,6 +73,7 @@ class SessionViewModel(
         _identifiedPlayerName.value = null
         _isTournamentManager.value = false
         _registeredTournamentsCount.value = 0
+        _registeredTournamentStartingSoon.value = null
         _unreadMessagesCount.value = 0
         viewModelScope.launch {
             AuthSessionPersister.clear(authPreferences, clubPreferences)
@@ -91,6 +94,7 @@ class SessionViewModel(
         _identifiedPlayerName.value = null
         _isTournamentManager.value = false
         _registeredTournamentsCount.value = 0
+        _registeredTournamentStartingSoon.value = null
         _unreadMessagesCount.value = 0
         viewModelScope.launch {
             authPreferences.clearSession()
@@ -141,13 +145,26 @@ class SessionViewModel(
     private val _registeredTournamentsCount = MutableStateFlow(0)
     val registeredTournamentsCount: StateFlow<Int> = _registeredTournamentsCount
 
+    /** Orario del torneo preiscritto più vicino se cade OGGI, altrimenti null - usato per
+     * il conto alla rovescia sull'icona "Iscrizioni ai tornei" in Home desktop (mostrato
+     * solo nell'ultima ora prima dell'inizio, vedi HomeScreen.DesktopIconTile). */
+    private val _registeredTournamentStartingSoon = MutableStateFlow<LocalDateTime?>(null)
+    val registeredTournamentStartingSoon: StateFlow<LocalDateTime?> = _registeredTournamentStartingSoon
+
     fun refreshRegisteredTournamentsCount() {
         if (!_isLoggedIn.value) {
             _registeredTournamentsCount.value = 0
+            _registeredTournamentStartingSoon.value = null
             return
         }
         viewModelScope.launch {
-            _registeredTournamentsCount.value = repository.getMyPreRegistrations().getOrNull()?.size ?: 0
+            val tournaments = repository.getMyPreRegistrations().getOrNull() ?: emptyList()
+            _registeredTournamentsCount.value = tournaments.size
+            val today = LocalDate.now()
+            _registeredTournamentStartingSoon.value = tournaments
+                .mapNotNull { runCatching { LocalDateTime.parse(it.inizio) }.getOrNull() }
+                .filter { it.toLocalDate() == today }
+                .minOrNull()
         }
     }
 
