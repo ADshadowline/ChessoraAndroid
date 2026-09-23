@@ -1,7 +1,5 @@
 package org.chessora.app.ui.settings
 
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -76,17 +74,5 @@ class SettingsViewModel(
             val idPlayer = clubPreferences.identifiedPlayerId.first() ?: return@launch
             repository.setMessagingSettings(idPlayer, hide)
         }
-    }
-
-    /** "it"/"en" - la scelta è persistita e riapplicata ad ogni avvio direttamente da
-     * AppCompatDelegate (nessuna chiave DataStore nostra, a differenza delle altre
-     * preferenze qui sopra): "vuoto" (nessuna lingua forzata) segue la lingua di sistema,
-     * qui reso come "it" per mostrare sempre un'opzione selezionata nel picker dato che
-     * l'unica lingua di sistema realisticamente prevista per questi utenti è l'italiano. */
-    fun currentLanguageTag(): String =
-        AppCompatDelegate.getApplicationLocales().get(0)?.language ?: "it"
-
-    fun setLanguage(languageTag: String) {
-        AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(languageTag))
     }
 }

@@ -2,8 +2,12 @@
     <!-- Tema XML "ponte" richiesto dal sistema Android per la schermata di
          avvio/splash prima che Compose prenda il controllo (MainActivity usa
          Jetpack Compose per tutta l'interfaccia - vedi ui/theme/Theme.kt per il
-         tema Material3 "vero", applicato dentro ChessoraApp()). -->
-    <style name="Theme.Chessora" parent="android:Theme.Material.Light.NoActionBar">
+         tema Material3 "vero", applicato dentro ChessoraApp()). Genitore
+         Theme.AppCompat.* (non più il puro tema piattaforma) perché MainActivity è
+         ora un AppCompatActivity, richiesto per il cambio lingua per-app in
+         Impostazioni (vedi MainActivity.kt) - AppCompatActivity lancia
+         un'eccezione a runtime se il tema non discende da Theme.AppCompat. -->
+    <style name="Theme.Chessora" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:statusBarColor">@color/chessora_ink</item>
         <item name="android:windowBackground">@color/chessora_cream</item>
     </style>

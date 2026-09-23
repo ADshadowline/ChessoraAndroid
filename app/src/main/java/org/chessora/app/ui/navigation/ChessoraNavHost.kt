@@ -72,6 +72,9 @@ import org.chessora.app.ui.home.HomeScreen
 import org.chessora.app.ui.messaging.ConversationScreen
 import org.chessora.app.ui.messaging.MessagingListScreen
 import org.chessora.app.ui.messaging.NewMessageScreen
+import org.chessora.app.ui.language.LanguagePickerScreen
+import org.chessora.app.ui.language.hasChosenLanguage
+import org.chessora.app.ui.language.setAppLanguage
 import org.chessora.app.ui.more.MoreScreen
 import org.chessora.app.ui.news.NewsDetailScreen
 import org.chessora.app.ui.news.NewsListScreen
@@ -258,18 +261,29 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                 val clubLogoUrl = NetworkModule.resolveAssetUrl(branding?.logoImage)
                 val splashBackgroundUri by sessionViewModel.splashBackgroundUri.collectAsState()
                 SplashScreen(clubLogoUrl = clubLogoUrl, backgroundUri = splashBackgroundUri, onFinished = {
-                    // Accesso obbligatorio (vedi ui/auth/): AUTH_LOGIN prima di tutto se non
-                    // già loggati. selectedClub viene già valorizzato da AuthSessionPersister
-                    // quando il login risolve un circolo (socio riconosciuto) - se resta null
-                    // dopo un login riuscito, l'utente non è socio di alcun circolo e sceglie
-                    // solo quale contenuto sfogliare (MembershipQuestionScreen).
-                    val target = when {
-                        !isLoggedIn -> ChessoraDestinations.AUTH_LOGIN
-                        selectedClub == null -> ChessoraDestinations.MEMBERSHIP_QUESTION
-                        else -> ChessoraDestinations.HOME
+                    // Al primissimo avvio in assoluto (nessuna lingua mai scelta) si passa
+                    // PRIMA dal selettore lingua, ancora prima del login - vedi
+                    // ui/language/AppLanguage.hasChosenLanguage e postLoginDestination sotto
+                    // per il resto della logica di instradamento (invariata).
+                    val target = if (!hasChosenLanguage()) {
+                        ChessoraDestinations.LANGUAGE_PICKER
+                    } else {
+                        postLoginDestination(isLoggedIn, selectedClub)
                     }
                     navController.navigate(target) {
                         popUpTo(ChessoraDestinations.SPLASH) { inclusive = true }
+                    }
+                })
+            }
+            composable(ChessoraDestinations.LANGUAGE_PICKER) {
+                LanguagePickerScreen(onSelected = { tag ->
+                    setAppLanguage(tag)
+                    // setAppLanguage ricrea MainActivity da sé (vedi il commento lì) prima
+                    // ancora che questa navigate() abbia effetto - innocuo, la nuova
+                    // istanza riparte da SPLASH e rientra qui sotto con hasChosenLanguage()
+                    // ormai true, saltando dritto alla destinazione giusta.
+                    navController.navigate(postLoginDestination(isLoggedIn, selectedClub)) {
+                        popUpTo(ChessoraDestinations.LANGUAGE_PICKER) { inclusive = true }
                     }
                 })
             }
@@ -541,6 +555,18 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
             }
         }
     }
+}
+
+/** Dove andare dopo SPLASH (o dopo aver scelto la lingua al primo avvio): accesso
+ * obbligatorio (vedi ui/auth/), AUTH_LOGIN prima di tutto se non già loggati.
+ * selectedClub viene già valorizzato da AuthSessionPersister quando il login risolve un
+ * circolo (socio riconosciuto) - se resta null dopo un login riuscito, l'utente non è
+ * socio di alcun circolo e sceglie solo quale contenuto sfogliare
+ * (MembershipQuestionScreen). */
+private fun postLoginDestination(isLoggedIn: Boolean, selectedClub: String?): String = when {
+    !isLoggedIn -> ChessoraDestinations.AUTH_LOGIN
+    selectedClub == null -> ChessoraDestinations.MEMBERSHIP_QUESTION
+    else -> ChessoraDestinations.HOME
 }
 
 /** Apre la messaggistica con [idPlayer]: se esiste già una conversazione diretta la apre

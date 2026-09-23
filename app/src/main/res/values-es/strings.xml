@@ -1,0 +1,250 @@
+<resources>
+    <string name="app_name">Chessora</string>
+
+    <!-- News (ui/news/) -->
+    <string name="news_search_hint">Buscar una noticia…</string>
+    <string name="news_scope_circolo">Club</string>
+    <string name="news_scope_mondo">En línea</string>
+    <string name="news_comments">Comentarios</string>
+
+    <!-- Bando in-app (ui/calendar/BandoViewerScreen.kt) -->
+    <string name="bando_viewer_error">No se puede mostrar el folleto. Inténtalo de nuevo más tarde.</string>
+    <string name="bando_viewer_unsupported">Este folleto no está en formato PDF: no se puede mostrar directamente en la app.</string>
+    <string name="bando_viewer_open_external">Abrir con otra app</string>
+
+    <string name="default_notification_channel_id">chessora_general</string>
+    <string name="default_notification_channel_name">Notificaciones de Chessora</string>
+    <string name="default_notification_channel_description">Comunicaciones de tu club y de la plataforma Chessora</string>
+
+    <string name="urgent_notification_channel_id">chessora_urgent</string>
+    <string name="urgent_notification_channel_name">Notificaciones urgentes de Chessora</string>
+    <string name="urgent_notification_channel_description">Comunicaciones urgentes de tu club o de la plataforma Chessora, mostradas de forma destacada</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">Elige tu club</string>
+    <string name="onboarding_search_hint">Busca por nombre o ciudad…</string>
+    <string name="onboarding_code_hint">…o introduce un código de club</string>
+    <string name="onboarding_code_button">Buscar por código</string>
+    <string name="onboarding_empty">No se encontraron clubes.</string>
+
+    <!-- Bottom bar navigation -->
+    <string name="nav_home">Eventos</string>
+    <string name="nav_news">Noticias</string>
+    <string name="nav_ranking">Clasificación</string>
+    <string name="nav_more">Más</string>
+    <string name="nav_registrations">Inscripciones a torneos</string>
+    <string name="nav_messaging">Mensajes</string>
+
+    <!-- Tournament registrations -->
+    <string name="registrations_empty">No estás inscrito en ningún torneo.</string>
+    <string name="registrations_not_identified">Inicia sesión para ver los torneos en los que estás inscrito.</string>
+
+    <!-- Messaging (ui/messaging/) -->
+    <string name="messaging_new">Nuevo mensaje</string>
+    <string name="messaging_not_identified">Inicia sesión para usar la mensajería.</string>
+    <string name="messaging_empty">No hay conversaciones. Toca + para iniciar una.</string>
+    <string name="messaging_chessora_empty">No se han recibido notificaciones todavía.</string>
+    <string name="messaging_conversation_empty">No hay mensajes. ¡Escribe el primero!</string>
+    <string name="messaging_type_hint">Escribe un mensaje…</string>
+    <string name="messaging_send">Enviar</string>
+    <string name="messaging_tab_players">Jugadores</string>
+    <string name="messaging_tab_clubs">Clubes</string>
+    <string name="messaging_search_hint">Buscar por nombre…</string>
+    <string name="messaging_club_no_referente">No hay ningún responsable de mensajería asignado</string>
+    <string name="messaging_status_sent">Enviado</string>
+    <string name="messaging_status_delivered">Recibido</string>
+    <string name="messaging_status_read">Leído</string>
+    <string name="settings_hide_read_receipts">Ocultar confirmaciones de recepción y lectura</string>
+    <string name="settings_hide_read_receipts_hint">Los demás ya no verán si ni cuándo has recibido o leído sus mensajes.</string>
+
+    <!-- More menu -->
+    <string name="more_calendar">Calendario</string>
+    <string name="more_performance">Mi rendimiento</string>
+    <string name="ranking_no_data">No hay datos disponibles.</string>
+    <string name="fide_id_label">ID FIDE %1$s</string>
+    <string name="update_available_title">Nueva versión disponible</string>
+    <string name="update_available_body">Chessora %1$s está disponible.</string>
+    <string name="update_available_question">¿Quieres descargarla ahora?</string>
+    <string name="update_available_confirm">Actualizar</string>
+    <string name="update_available_dismiss">Más tarde</string>
+
+    <!-- My performance (Elo history) -->
+    <string name="performance_title">Evolución del Elo</string>
+    <string name="performance_standard">Estándar</string>
+    <string name="performance_rapid">Rápidas</string>
+    <string name="performance_blitz">Blitz</string>
+    <string name="performance_not_identified">Inicia sesión para ver tu rendimiento.</string>
+    <string name="performance_no_fide">No tienes un ID FIDE asociado: esta función requiere una ficha con rating FIDE.</string>
+    <string name="performance_empty">No hay historial de rating disponible para tu perfil FIDE.</string>
+    <string name="performance_zoom_hint">Pellizca para ampliar, arrastra para desplazarte, toca un punto para ver el valor exacto.</string>
+    <string name="performance_reset_zoom">Restablecer zoom</string>
+    <string name="performance_period_6m">6 meses</string>
+    <string name="performance_period_1y">1 año</string>
+    <string name="performance_period_5y">5 años</string>
+    <string name="performance_period_all">Todo</string>
+    <string name="performance_delta_up">Mejorando</string>
+    <string name="performance_delta_down">Empeorando</string>
+
+    <!-- Home -->
+    <string name="home_upcoming_appointments">Próximos eventos</string>
+    <string name="home_no_upcoming">No hay eventos programados.</string>
+    <string name="home_no_results">No se encontraron eventos.</string>
+    <string name="home_search_hint">Buscar un evento por nombre…</string>
+    <string name="home_generic_event">Evento</string>
+    <string name="home_no_bando">No hay ningún folleto disponible para este evento.</string>
+    <string name="home_countdown_days">DÍAS</string>
+    <string name="home_countdown_hours">H</string>
+    <string name="home_countdown_minutes">MIN</string>
+    <string name="home_countdown_seconds">SEG</string>
+    <string name="home_registered_check">Estás inscrito en este torneo</string>
+    <string name="home_registrations_locked">Las inscripciones aún no están abiertas o ya han cerrado</string>
+    <string name="home_organizer">Organizado por %1$s</string>
+    <string name="home_registered_players_count">%1$d inscritos</string>
+
+    <!-- Tournament detail (ui/tournaments/) -->
+    <string name="tournament_website">Sitio web</string>
+    <string name="tournament_download_bando">Descargar el folleto</string>
+    <string name="tournament_register">Inscribirse</string>
+    <string name="tournament_registering">Inscribiendo…</string>
+    <string name="tournament_registered">Inscripción registrada: la confirmación de participación se hará en el torneo.</string>
+    <string name="tournament_register_error">No se pudo completar la inscripción. Inténtalo de nuevo.</string>
+    <string name="tournament_seats_unlimited">Plazas ilimitadas</string>
+    <string name="tournament_seats_available">Plazas disponibles</string>
+    <string name="tournament_seats_full">Plazas completas</string>
+    <string name="tournament_registered_count">%1$d inscritos</string>
+    <string name="tournament_registered_count_limit">%1$d / %2$d inscritos</string>
+    <string name="tournament_other_tornei">Otros torneos del mismo evento</string>
+    <string name="tournament_not_found">Torneo no encontrado.</string>
+    <string name="tournament_already_registered">Estás inscrito</string>
+    <string name="tournament_identify_to_register">Inicia sesión para inscribirte en este evento.</string>
+    <string name="tournament_manual_identity_title">Completa tu inscripción</string>
+    <string name="tournament_manual_identity_body">No pareces ser socio de un club reconocido: introduce tu ID FIDE o tu nombre y apellidos para continuar (al menos uno de los dos).</string>
+    <string name="tournament_manual_identity_idfide_label">ID FIDE (opcional)</string>
+    <string name="tournament_manual_identity_name_label">Nombre y apellidos</string>
+    <string name="tournament_manual_identity_cancel">Cancelar</string>
+    <string name="tournament_choose_one">Elige el torneo en el que inscribirte</string>
+    <string name="tournament_section_title">Inscripción</string>
+    <string name="tournament_registered_other_option">Inscrito en otro torneo de este evento</string>
+    <string name="tournament_cancel_registration">Retirar</string>
+    <string name="tournament_show_registrants">Ver inscritos</string>
+    <string name="tournament_loading_registrants">Cargando…</string>
+    <string name="tournament_hide_registrants">Ocultar inscritos</string>
+    <string name="tournament_no_registrants">Todavía no hay inscritos.</string>
+    <string name="tournament_registrant_no_idfide">Sin ID FIDE</string>
+    <string name="tournament_message_player">Enviar un mensaje</string>
+
+    <!-- Generic errors -->
+    <string name="error_generic">Algo salió mal. Inténtalo de nuevo.</string>
+    <string name="error_retry">Reintentar</string>
+    <string name="loading">Cargando…</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_change_club">Cambiar de club</string>
+    <string name="settings_notifications">Notificaciones push</string>
+    <string name="settings_about">Acerca de la app</string>
+    <string name="settings_identity_none">No identificado</string>
+    <string name="settings_identity_as">Identificado como %1$s</string>
+    <string name="settings_identity_button">Iniciar sesión</string>
+    <string name="settings_my_photo">Mi foto</string>
+    <string name="settings_display_mode">Tipo de visualización</string>
+    <string name="settings_display_mode_classic">Visualización actual</string>
+    <string name="settings_display_mode_desktop">Visualización de escritorio</string>
+    <string name="settings_splash_background">Imagen de apertura de la app</string>
+    <string name="settings_desktop_background">Imagen de fondo del escritorio</string>
+    <string name="settings_choose_image">Elegir imagen</string>
+    <string name="settings_remove_image">Quitar</string>
+    <string name="settings_icon_settings_button">Personalizar iconos de Inicio</string>
+    <string name="topbar_members_count">%1$d socios</string>
+    <string name="manage_tournaments">Gestión de torneos</string>
+
+    <!-- Desktop Home icons (ui/home/HomeScreen.kt DesktopHomeGrid,
+         ui/settings/IconSettingsScreen.kt) -->
+    <string name="desktop_icon_board">Directiva</string>
+    <string name="desktop_icon_shop">Tienda</string>
+    <string name="desktop_icon_video">Vídeo</string>
+    <string name="video_empty">No hay vídeos disponibles.</string>
+    <string name="language_tile_label">Idioma</string>
+    <string name="icon_settings_title">Iconos de Inicio</string>
+    <string name="icon_settings_subtitle">Mantén pulsado el asa y arrastra para cambiar el orden. Usa el interruptor para ocultar un icono de Inicio.</string>
+    <string name="icon_settings_drag_handle">Arrastra para reordenar</string>
+
+    <!-- Initial club membership question (ui/onboarding/MembershipQuestionScreen) -->
+    <string name="membership_question_title">¿Eres socio de un club?</string>
+    <string name="membership_question_subtitle">Si eres socio de un club de ajedrez, elige tu club. De lo contrario, igualmente puedes usar la app: verás torneos y noticias de todos los clubes.</string>
+    <string name="membership_question_yes">Sí, soy socio de un club</string>
+    <string name="membership_question_no">No, no soy socio de ningún club</string>
+    <string name="platform_branding_name">Chessora Platform</string>
+
+    <!-- Authentication (ui/auth/) - mandatory sign-in -->
+    <string name="identity_error_retry">Reintentar</string>
+    <string name="common_yes">Sí</string>
+    <string name="common_no">No</string>
+    <string name="common_confirm">Confirmar</string>
+    <string name="common_loading">Cargando…</string>
+
+    <string name="login_title">Iniciar sesión en Chessora</string>
+    <string name="login_subtitle">Debes iniciar sesión antes de usar la app.</string>
+    <string name="login_google">Iniciar sesión con Google</string>
+    <string name="login_fide">Iniciar sesión con ID FIDE</string>
+    <string name="login_email">Iniciar sesión con email y contraseña</string>
+    <string name="login_email_title">Iniciar sesión</string>
+    <string name="login_email_field_label">Email</string>
+    <string name="login_password_label">Contraseña</string>
+    <string name="login_submit">Iniciar sesión</string>
+    <string name="login_forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="login_email_not_confirmed">Primero debes confirmar tu email.</string>
+    <string name="login_resend_confirmation">Reenviar el email</string>
+    <string name="login_confirmation_resent">Te hemos enviado un nuevo email de confirmación.</string>
+
+    <string name="forgot_password_title">Contraseña olvidada</string>
+    <string name="forgot_password_subtitle">Introduce tu email: si coincide con una cuenta, recibirás instrucciones para restablecer tu contraseña.</string>
+    <string name="forgot_password_submit">Enviar</string>
+    <string name="forgot_password_sent">Si la dirección existe, recibirás un email con las instrucciones.</string>
+    <string name="forgot_password_network_error">Fallo de conexión. Inténtalo de nuevo.</string>
+
+    <string name="login_fide_title">Iniciar sesión con ID FIDE</string>
+    <string name="login_fide_field_label">ID FIDE</string>
+    <string name="login_fide_submit">Continuar</string>
+    <string name="login_fide_dont_know">No conozco mi ID FIDE</string>
+    <string name="login_fide_search_label">Buscar por nombre y apellidos</string>
+    <string name="login_fide_found">Hola, %1$s</string>
+    <string name="login_fide_ask_club_membership">¿Eres socio de un club?</string>
+    <string name="pick_club_title">Elige tu club</string>
+    <string name="pick_roster_title">Elige tu nombre</string>
+    <string name="pick_roster_search_hint">Buscar por nombre…</string>
+    <string name="register_confirm_password_label">Confirmar contraseña</string>
+    <string name="register_first_name_label">Nombre</string>
+    <string name="register_last_name_label">Apellidos</string>
+    <string name="register_submit">Registrarse</string>
+
+    <string name="complete_profile_title">Un paso más</string>
+    <string name="complete_profile_ask_fide">¿Tienes un ID FIDE o eres socio de un club?</string>
+    <string name="complete_profile_amateur_title">Completa tu perfil</string>
+
+    <string name="email_pending_title">Revisa tu correo</string>
+    <string name="email_pending_body">Te hemos enviado un email a %1$s: abre el enlace para confirmar tu dirección antes de poder iniciar sesión.</string>
+    <string name="email_pending_back_to_login">Volver al inicio de sesión</string>
+
+    <string name="settings_logout">Cerrar sesión</string>
+    <string name="settings_reset_button">Restablecer ajustes</string>
+    <string name="settings_reset_title">Restablecer ajustes</string>
+    <string name="settings_reset_body">Se borrarán todas las preferencias locales (club elegido, fondos, orden y visibilidad de los iconos de Inicio, notificaciones) y tendrás que iniciar sesión de nuevo. Esta acción no se puede deshacer.</string>
+    <string name="settings_reset_confirm">Restablecer</string>
+    <string name="settings_reset_cancel">Cancelar</string>
+
+    <!-- "My photo" (ui/profile/) -->
+    <string name="more_profile_photo">Mi foto</string>
+    <string name="profile_photo_title">Mi foto</string>
+    <string name="profile_photo_subtitle">Se muestra junto a tu nombre en la Clasificación.</string>
+    <string name="profile_photo_camera">Hacer una foto</string>
+    <string name="profile_photo_gallery">Elegir de la galería</string>
+    <string name="profile_photo_remove">Quitar foto</string>
+    <string name="profile_photo_not_identified">Primero debes iniciar sesión para establecer una foto.</string>
+
+    <!-- Language picker (ui/language/) -->
+    <string name="language_picker_title">Elige tu idioma</string>
+    <string name="language_name_italian">Italiano</string>
+    <string name="language_name_english">English</string>
+    <string name="language_name_spanish">Español</string>
+</resources>

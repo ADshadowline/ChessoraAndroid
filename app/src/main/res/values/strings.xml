@@ -157,9 +157,6 @@
     <string name="settings_display_mode">Tipo di visualizzazione</string>
     <string name="settings_display_mode_classic">Visualizzazione attuale</string>
     <string name="settings_display_mode_desktop">Visualizzazione desktop</string>
-    <string name="settings_language">Lingua</string>
-    <string name="settings_language_italian">Italiano</string>
-    <string name="settings_language_english">English</string>
     <string name="settings_splash_background">Immagine di apertura dell\'app</string>
     <string name="settings_desktop_background">Immagine di sfondo del desktop</string>
     <string name="settings_choose_image">Scegli immagine</string>
@@ -174,6 +171,7 @@
     <string name="desktop_icon_shop">Negozio</string>
     <string name="desktop_icon_video">Video</string>
     <string name="video_empty">Nessun video disponibile.</string>
+    <string name="language_tile_label">Lingua</string>
     <string name="icon_settings_title">Icone della Home</string>
     <string name="icon_settings_subtitle">Tieni premuta la maniglia e trascina per cambiare l\'ordine. Usa l\'interruttore per nascondere un\'icona dalla Home.</string>
     <string name="icon_settings_drag_handle">Trascina per riordinare</string>
@@ -257,4 +255,11 @@
          Google nella schermata di identificazione non farà nulla (vedi
          ui/identity/GoogleSignInHelper.kt). -->
     <string name="google_signin_web_client_id" translatable="false">669405496305-89m2l2obvij2ovapuc6v534sq7thgam6.apps.googleusercontent.com</string>
+
+    <!-- Selettore lingua (ui/language/) - bandierina tra Messaggi e Impostazioni nella
+         griglia Home desktop, e a tutto schermo al primissimo avvio prima del login. -->
+    <string name="language_picker_title">Scegli la lingua</string>
+    <string name="language_name_italian">Italiano</string>
+    <string name="language_name_english">English</string>
+    <string name="language_name_spanish">Español</string>
 </resources>

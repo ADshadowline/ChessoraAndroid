@@ -150,9 +150,6 @@
     <string name="settings_display_mode">Display type</string>
     <string name="settings_display_mode_classic">Current display</string>
     <string name="settings_display_mode_desktop">Desktop display</string>
-    <string name="settings_language">Language</string>
-    <string name="settings_language_italian">Italiano</string>
-    <string name="settings_language_english">English</string>
     <string name="settings_splash_background">App opening image</string>
     <string name="settings_desktop_background">Desktop background image</string>
     <string name="settings_choose_image">Choose image</string>
@@ -167,6 +164,7 @@
     <string name="desktop_icon_shop">Shop</string>
     <string name="desktop_icon_video">Video</string>
     <string name="video_empty">No videos available.</string>
+    <string name="language_tile_label">Language</string>
     <string name="icon_settings_title">Home icons</string>
     <string name="icon_settings_subtitle">Press and hold the handle and drag to change the order. Use the switch to hide an icon from Home.</string>
     <string name="icon_settings_drag_handle">Drag to reorder</string>
@@ -243,4 +241,10 @@
     <string name="profile_photo_gallery">Choose from gallery</string>
     <string name="profile_photo_remove">Remove photo</string>
     <string name="profile_photo_not_identified">You need to sign in first to set a photo.</string>
+
+    <!-- Language picker (ui/language/) -->
+    <string name="language_picker_title">Choose your language</string>
+    <string name="language_name_italian">Italiano</string>
+    <string name="language_name_english">English</string>
+    <string name="language_name_spanish">Español</string>
 </resources>

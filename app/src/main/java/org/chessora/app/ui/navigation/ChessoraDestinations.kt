@@ -14,6 +14,9 @@ package org.chessora.app.ui.navigation
  */
 object ChessoraDestinations {
     const val SPLASH = "splash"
+    /** Solo al primissimo avvio (vedi hasChosenLanguage in ui/language/AppLanguage.kt),
+     * prima ancora del login - senza questo l'utente non capirebbe come cambiare lingua. */
+    const val LANGUAGE_PICKER = "language-picker"
     const val MEMBERSHIP_QUESTION = "membership-question"
     const val ONBOARDING = "onboarding"
 

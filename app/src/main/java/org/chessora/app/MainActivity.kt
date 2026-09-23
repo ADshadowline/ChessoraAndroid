@@ -4,9 +4,9 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.messaging.FirebaseMessaging
@@ -22,8 +22,17 @@ import org.chessora.app.ui.update.UpdateAvailableDialog
  * ChessoraNavHost - vedi ui/navigation/ChessoraNavHost.kt): coerente con
  * un'app "di sola consultazione" senza flussi che richiedano più task/Activity
  * separate (docs/android-app-spec.md §1).
+ *
+ * AppCompatActivity (non un semplice ComponentActivity) SOLO per il cambio lingua
+ * per-app (ui/settings/, AppCompatDelegate.setApplicationLocales): è l'unico modo
+ * documentato per far ricreare automaticamente l'Activity con la nuova lingua su
+ * ogni versione di Android supportata (su un ComponentActivity puro la preferenza
+ * verrebbe salvata ma mai applicata alla sessione corrente sotto Android 13). Non
+ * introduce nessun widget/tema AppCompat "vero": tutta la UI resta Compose, vedi
+ * il tema "ponte" Theme.Chessora in res/values/themes.xml (ora Theme.AppCompat.*,
+ * richiesto da AppCompatActivity, invariato nella sostanza per Compose).
  */
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val requestNotificationPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),

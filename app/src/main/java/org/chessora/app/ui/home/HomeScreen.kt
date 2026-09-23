@@ -76,6 +76,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
 import java.time.Duration
@@ -94,6 +95,10 @@ import org.chessora.app.ui.common.ChessoraCountBadge
 import org.chessora.app.ui.common.UiState
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
+import org.chessora.app.ui.language.AppLanguage
+import org.chessora.app.ui.language.LanguagePickerDialog
+import org.chessora.app.ui.language.currentAppLanguageTag
+import org.chessora.app.ui.language.setAppLanguage
 
 /**
  * Voci di navigazione mostrate come icone quando l'utente ha scelto la
@@ -466,6 +471,7 @@ private fun DesktopHomeGrid(
                 )
             }
         }
+        var showLanguageDialog by remember { mutableStateOf(false) }
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -477,10 +483,41 @@ private fun DesktopHomeGrid(
                 modifier = Modifier.weight(1f, fill = false).widthIn(max = 104.dp),
                 compact = true,
             )
+            // Bandierina della lingua attuale, tra Messaggi e Impostazioni - tocco apre il
+            // selettore (vedi ui/language/LanguagePicker.kt), stesso usato al primo avvio.
+            LanguageFlagTile(
+                onClick = { showLanguageDialog = true },
+                modifier = Modifier.weight(1f, fill = false).widthIn(max = 104.dp),
+            )
             DesktopIconTile(
                 DesktopIcon("settings", R.string.settings_title, Icons.Default.Settings, desktop.onOpenSettings),
                 modifier = Modifier.weight(1f, fill = false).widthIn(max = 104.dp),
                 compact = true,
+            )
+        }
+        if (showLanguageDialog) {
+            LanguagePickerDialog(
+                onSelect = { tag -> setAppLanguage(tag); showLanguageDialog = false },
+                onDismiss = { showLanguageDialog = false },
+            )
+        }
+    }
+}
+
+@Composable
+private fun LanguageFlagTile(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    var currentFlag by remember { mutableStateOf(AppLanguage.entries.firstOrNull { it.tag == currentAppLanguageTag() }?.flag ?: "🏳") }
+    Card(onClick = onClick, modifier = modifier.aspectRatio(1f)) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Text(currentFlag, fontSize = 24.sp)
+            Text(
+                stringResource(R.string.language_tile_label),
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(top = 8.dp),
             )
         }
     }
