@@ -474,12 +474,12 @@ private fun DesktopHomeGrid(
             // agli angoli, solo più discrete.
             DesktopIconTile(
                 DesktopIcon("messaging", R.string.nav_messaging, Icons.AutoMirrored.Filled.Chat, desktop.onOpenMessaging, unreadMessagesCount),
-                modifier = Modifier.weight(1f, fill = false).widthIn(max = 84.dp),
+                modifier = Modifier.weight(1f, fill = false).widthIn(max = 104.dp),
                 compact = true,
             )
             DesktopIconTile(
                 DesktopIcon("settings", R.string.settings_title, Icons.Default.Settings, desktop.onOpenSettings),
-                modifier = Modifier.weight(1f, fill = false).widthIn(max = 84.dp),
+                modifier = Modifier.weight(1f, fill = false).widthIn(max = 104.dp),
                 compact = true,
             )
         }

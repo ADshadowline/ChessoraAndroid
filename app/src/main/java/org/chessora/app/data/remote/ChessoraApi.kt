@@ -256,6 +256,11 @@ interface ChessoraApi {
     @POST("api/messaging/conversations/direct")
     suspend fun startDirectConversation(@Body request: StartDirectConversationRequest): StartConversationResult
 
+    /** Sola lettura (nessuna creazione) - idConversation è null se non esiste ancora
+     * nessuna conversazione diretta tra i due soci. */
+    @GET("api/messaging/conversations/direct")
+    suspend fun findDirectConversation(@Query("fromIdPlayer") fromIdPlayer: Int, @Query("toIdPlayer") toIdPlayer: Int): StartConversationResult
+
     @POST("api/messaging/conversations/club")
     suspend fun startClubConversation(@Body request: StartClubConversationRequest): StartConversationResult
 

@@ -205,7 +205,7 @@ private fun FideSearchResultsList(results: List<FidePlayerSearchResultDto>, onSe
             Card(onClick = { onSelect(result) }, modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                 Column(modifier = Modifier.padding(12.dp)) {
                     Text(result.name, style = MaterialTheme.typography.titleSmall)
-                    Text("ID FIDE ${result.idFide}", style = MaterialTheme.typography.bodySmall)
+                    Text(stringResource(R.string.fide_id_label, result.idFide), style = MaterialTheme.typography.bodySmall)
                 }
             }
         }

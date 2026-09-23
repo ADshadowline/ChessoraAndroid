@@ -115,7 +115,7 @@ fun CompleteProfileScreen(onDone: () -> Unit) {
                                 Card(onClick = { viewModel.selectFromSearch(result) }, modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                                     Column(modifier = Modifier.padding(12.dp)) {
                                         Text(result.name, style = MaterialTheme.typography.titleSmall)
-                                        Text("ID FIDE ${result.idFide}", style = MaterialTheme.typography.bodySmall)
+                                        Text(stringResource(R.string.fide_id_label, result.idFide), style = MaterialTheme.typography.bodySmall)
                                     }
                                 }
                             }

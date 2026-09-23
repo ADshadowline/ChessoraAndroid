@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.chessora.app.R
 import org.chessora.app.data.remote.dto.ChatMessage
@@ -61,6 +62,16 @@ fun ConversationScreen(idConversation: Int, isClubConversation: Boolean, recipie
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) { viewModel.load() }
+    // Aggiorna in silenzio (nessun flash di caricamento) lo stato consegnato/letto dei
+    // MIEI messaggi mentre si resta dentro la conversazione - senza questo, la spunta
+    // resterebbe quella del momento dell'invio finché non si esce e si rientra
+    // (viewModel.load() gira solo una volta, al primo ingresso).
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(5_000)
+            viewModel.refreshSilently()
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text(

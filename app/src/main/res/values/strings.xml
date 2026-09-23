@@ -5,6 +5,7 @@
     <string name="news_search_hint">Cerca una notizia…</string>
     <string name="news_scope_circolo">Circolo</string>
     <string name="news_scope_mondo">In rete</string>
+    <string name="news_comments">Commenti</string>
 
     <!-- Bando in-app (ui/calendar/BandoViewerScreen.kt) -->
     <string name="bando_viewer_error">Impossibile visualizzare il bando. Riprova più tardi.</string>
@@ -66,6 +67,13 @@
     <!-- Menu Altro -->
     <string name="more_calendar">Calendario</string>
     <string name="more_performance">Le mie performance</string>
+    <string name="ranking_no_data">Nessun dato disponibile.</string>
+    <string name="fide_id_label">ID FIDE %1$s</string>
+    <string name="update_available_title">Nuova versione disponibile</string>
+    <string name="update_available_body">È disponibile Chessora %1$s.</string>
+    <string name="update_available_question">Vuoi scaricarla ora?</string>
+    <string name="update_available_confirm">Aggiorna</string>
+    <string name="update_available_dismiss">Più tardi</string>
 
     <!-- Le mie performance (storico Elo) -->
     <string name="performance_title">Andamento Elo</string>
@@ -130,6 +138,7 @@
     <string name="tournament_hide_registrants">Nascondi iscritti</string>
     <string name="tournament_no_registrants">Nessun iscritto per ora.</string>
     <string name="tournament_registrant_no_idfide">Senza ID FIDE</string>
+    <string name="tournament_message_player">Scrivi un messaggio</string>
 
     <!-- Errori generici -->
     <string name="error_generic">Qualcosa è andato storto. Riprova.</string>
@@ -148,6 +157,9 @@
     <string name="settings_display_mode">Tipo di visualizzazione</string>
     <string name="settings_display_mode_classic">Visualizzazione attuale</string>
     <string name="settings_display_mode_desktop">Visualizzazione desktop</string>
+    <string name="settings_language">Lingua</string>
+    <string name="settings_language_italian">Italiano</string>
+    <string name="settings_language_english">English</string>
     <string name="settings_splash_background">Immagine di apertura dell\'app</string>
     <string name="settings_desktop_background">Immagine di sfondo del desktop</string>
     <string name="settings_choose_image">Scegli immagine</string>

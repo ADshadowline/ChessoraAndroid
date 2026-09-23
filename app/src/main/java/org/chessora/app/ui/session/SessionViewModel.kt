@@ -279,6 +279,16 @@ class SessionViewModel(
         }
     }
 
+    /** Id della conversazione diretta già esistente con [otherIdPlayer], se c'è - null se
+     * non identificato o se non esiste ancora nessuna chat tra i due (in quel caso il
+     * chiamante apre il flusso "nuovo messaggio", vedi ChessoraNavHost). Usato da elenco
+     * iscritti a un torneo e Direttivo prima di aprire la messaggistica, per non offrire
+     * sempre "nuovo messaggio" quando in realtà una chat con quella persona esiste già. */
+    suspend fun resolveDirectConversationId(otherIdPlayer: Int): Int? {
+        val myIdPlayer = clubPreferences.identifiedPlayerId.first() ?: return null
+        return repository.findDirectConversation(myIdPlayer, otherIdPlayer).getOrNull()
+    }
+
     private suspend fun loadTournamentManagerStatus(idPlayer: Int, club: String) {
         if (club == ClubPreferences.PLATFORM_CLUB_CODE) return
         repository.getPlayerRoles(idPlayer, club).onSuccess { roles ->

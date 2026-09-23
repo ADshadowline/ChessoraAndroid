@@ -1,0 +1,246 @@
+<resources>
+    <string name="app_name">Chessora</string>
+
+    <!-- News (ui/news/) -->
+    <string name="news_search_hint">Search for a news item…</string>
+    <string name="news_scope_circolo">Club</string>
+    <string name="news_scope_mondo">Online</string>
+    <string name="news_comments">Comments</string>
+
+    <!-- Bando in-app (ui/calendar/BandoViewerScreen.kt) -->
+    <string name="bando_viewer_error">Unable to display the flyer. Please try again later.</string>
+    <string name="bando_viewer_unsupported">This flyer isn\'t in PDF format: it can\'t be shown directly in the app.</string>
+    <string name="bando_viewer_open_external">Open with another app</string>
+
+    <string name="default_notification_channel_id">chessora_general</string>
+    <string name="default_notification_channel_name">Chessora notifications</string>
+    <string name="default_notification_channel_description">Announcements from your club and the Chessora platform</string>
+
+    <string name="urgent_notification_channel_id">chessora_urgent</string>
+    <string name="urgent_notification_channel_name">Chessora urgent notifications</string>
+    <string name="urgent_notification_channel_description">Urgent announcements from your club or the Chessora platform, shown prominently</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">Choose your club</string>
+    <string name="onboarding_search_hint">Search by name or city…</string>
+    <string name="onboarding_code_hint">…or enter a club code</string>
+    <string name="onboarding_code_button">Search by code</string>
+    <string name="onboarding_empty">No clubs found.</string>
+
+    <!-- Bottom bar navigation -->
+    <string name="nav_home">Events</string>
+    <string name="nav_news">News</string>
+    <string name="nav_ranking">Ranking</string>
+    <string name="nav_more">More</string>
+    <string name="nav_registrations">Tournament registrations</string>
+    <string name="nav_messaging">Messages</string>
+
+    <!-- Tournament registrations -->
+    <string name="registrations_empty">You aren\'t registered for any tournament.</string>
+    <string name="registrations_not_identified">Sign in to see the tournaments you\'re registered for.</string>
+
+    <!-- Messaging (ui/messaging/) -->
+    <string name="messaging_new">New message</string>
+    <string name="messaging_not_identified">Sign in to use messaging.</string>
+    <string name="messaging_empty">No conversations. Tap + to start one.</string>
+    <string name="messaging_chessora_empty">No notifications received yet.</string>
+    <string name="messaging_conversation_empty">No messages. Write the first one!</string>
+    <string name="messaging_type_hint">Write a message…</string>
+    <string name="messaging_send">Send</string>
+    <string name="messaging_tab_players">Players</string>
+    <string name="messaging_tab_clubs">Clubs</string>
+    <string name="messaging_search_hint">Search by name…</string>
+    <string name="messaging_club_no_referente">No messaging contact assigned</string>
+    <string name="messaging_status_sent">Sent</string>
+    <string name="messaging_status_delivered">Delivered</string>
+    <string name="messaging_status_read">Read</string>
+    <string name="settings_hide_read_receipts">Hide delivery and read receipts</string>
+    <string name="settings_hide_read_receipts_hint">Others will no longer see if or when you\'ve received or read their messages.</string>
+
+    <!-- More menu -->
+    <string name="more_calendar">Calendar</string>
+    <string name="more_performance">My performance</string>
+    <string name="ranking_no_data">No data available.</string>
+    <string name="fide_id_label">FIDE ID %1$s</string>
+    <string name="update_available_title">New version available</string>
+    <string name="update_available_body">Chessora %1$s is available.</string>
+    <string name="update_available_question">Do you want to download it now?</string>
+    <string name="update_available_confirm">Update</string>
+    <string name="update_available_dismiss">Later</string>
+
+    <!-- My performance (Elo history) -->
+    <string name="performance_title">Elo progress</string>
+    <string name="performance_standard">Standard</string>
+    <string name="performance_rapid">Rapid</string>
+    <string name="performance_blitz">Blitz</string>
+    <string name="performance_not_identified">Sign in to see your performance.</string>
+    <string name="performance_no_fide">You don\'t have a FIDE ID associated: this feature requires a card with a FIDE rating.</string>
+    <string name="performance_empty">No rating history available for your FIDE profile.</string>
+    <string name="performance_zoom_hint">Pinch to zoom, drag to scroll, tap a point to see the exact value.</string>
+    <string name="performance_reset_zoom">Reset zoom</string>
+    <string name="performance_period_6m">6 months</string>
+    <string name="performance_period_1y">1 year</string>
+    <string name="performance_period_5y">5 years</string>
+    <string name="performance_period_all">All</string>
+    <string name="performance_delta_up">Improving</string>
+    <string name="performance_delta_down">Declining</string>
+
+    <!-- Home -->
+    <string name="home_upcoming_appointments">Upcoming events</string>
+    <string name="home_no_upcoming">No events scheduled.</string>
+    <string name="home_no_results">No events found.</string>
+    <string name="home_search_hint">Search for an event by name…</string>
+    <string name="home_generic_event">Event</string>
+    <string name="home_no_bando">No flyer available for this event.</string>
+    <string name="home_countdown_days">DAYS</string>
+    <string name="home_countdown_hours">HRS</string>
+    <string name="home_countdown_minutes">MIN</string>
+    <string name="home_countdown_seconds">SEC</string>
+    <string name="home_registered_check">You\'re registered for this tournament</string>
+    <string name="home_registrations_locked">Registration isn\'t open yet or has already closed</string>
+    <string name="home_organizer">Organized by %1$s</string>
+    <string name="home_registered_players_count">%1$d registered</string>
+
+    <!-- Tournament detail (ui/tournaments/) -->
+    <string name="tournament_website">Website</string>
+    <string name="tournament_download_bando">Download the flyer</string>
+    <string name="tournament_register">Register</string>
+    <string name="tournament_registering">Registering…</string>
+    <string name="tournament_registered">Registration recorded: your participation will be confirmed at the tournament.</string>
+    <string name="tournament_register_error">Couldn\'t complete the registration. Please try again.</string>
+    <string name="tournament_seats_unlimited">Unlimited seats</string>
+    <string name="tournament_seats_available">Seats available</string>
+    <string name="tournament_seats_full">Seats full</string>
+    <string name="tournament_registered_count">%1$d registered</string>
+    <string name="tournament_registered_count_limit">%1$d / %2$d registered</string>
+    <string name="tournament_other_tornei">Other tournaments in the same event</string>
+    <string name="tournament_not_found">Tournament not found.</string>
+    <string name="tournament_already_registered">You\'re registered</string>
+    <string name="tournament_identify_to_register">Sign in to register for this event.</string>
+    <string name="tournament_manual_identity_title">Complete your registration</string>
+    <string name="tournament_manual_identity_body">You don\'t appear to be a member of a recognized club: enter your FIDE ID or your first and last name to continue (at least one of the two).</string>
+    <string name="tournament_manual_identity_idfide_label">FIDE ID (optional)</string>
+    <string name="tournament_manual_identity_name_label">First and last name</string>
+    <string name="tournament_manual_identity_cancel">Cancel</string>
+    <string name="tournament_choose_one">Choose the tournament to register for</string>
+    <string name="tournament_section_title">Registration</string>
+    <string name="tournament_registered_other_option">Registered for another tournament in this event</string>
+    <string name="tournament_cancel_registration">Withdraw</string>
+    <string name="tournament_show_registrants">See registrants</string>
+    <string name="tournament_loading_registrants">Loading…</string>
+    <string name="tournament_hide_registrants">Hide registrants</string>
+    <string name="tournament_no_registrants">No registrants yet.</string>
+    <string name="tournament_registrant_no_idfide">No FIDE ID</string>
+    <string name="tournament_message_player">Send a message</string>
+
+    <!-- Generic errors -->
+    <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="error_retry">Retry</string>
+    <string name="loading">Loading…</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_change_club">Change club</string>
+    <string name="settings_notifications">Push notifications</string>
+    <string name="settings_about">About this app</string>
+    <string name="settings_identity_none">Not identified</string>
+    <string name="settings_identity_as">Identified as %1$s</string>
+    <string name="settings_identity_button">Sign in</string>
+    <string name="settings_my_photo">My photo</string>
+    <string name="settings_display_mode">Display type</string>
+    <string name="settings_display_mode_classic">Current display</string>
+    <string name="settings_display_mode_desktop">Desktop display</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_italian">Italiano</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_splash_background">App opening image</string>
+    <string name="settings_desktop_background">Desktop background image</string>
+    <string name="settings_choose_image">Choose image</string>
+    <string name="settings_remove_image">Remove</string>
+    <string name="settings_icon_settings_button">Customize Home icons</string>
+    <string name="topbar_members_count">%1$d members</string>
+    <string name="manage_tournaments">Manage tournaments</string>
+
+    <!-- Desktop Home icons (ui/home/HomeScreen.kt DesktopHomeGrid,
+         ui/settings/IconSettingsScreen.kt) -->
+    <string name="desktop_icon_board">Board</string>
+    <string name="desktop_icon_shop">Shop</string>
+    <string name="desktop_icon_video">Video</string>
+    <string name="video_empty">No videos available.</string>
+    <string name="icon_settings_title">Home icons</string>
+    <string name="icon_settings_subtitle">Press and hold the handle and drag to change the order. Use the switch to hide an icon from Home.</string>
+    <string name="icon_settings_drag_handle">Drag to reorder</string>
+
+    <!-- Initial club membership question (ui/onboarding/MembershipQuestionScreen) -->
+    <string name="membership_question_title">Are you a member of a club?</string>
+    <string name="membership_question_subtitle">If you\'re a member of a chess club, choose your club. Otherwise you can still use the app: you\'ll see tournaments and news from every club.</string>
+    <string name="membership_question_yes">Yes, I\'m a member of a club</string>
+    <string name="membership_question_no">No, I\'m not a member of any club</string>
+    <string name="platform_branding_name">Chessora Platform</string>
+
+    <!-- Authentication (ui/auth/) - mandatory sign-in -->
+    <string name="identity_error_retry">Retry</string>
+    <string name="common_yes">Yes</string>
+    <string name="common_no">No</string>
+    <string name="common_confirm">Confirm</string>
+    <string name="common_loading">Loading…</string>
+
+    <string name="login_title">Sign in to Chessora</string>
+    <string name="login_subtitle">You need to sign in before using the app.</string>
+    <string name="login_google">Sign in with Google</string>
+    <string name="login_fide">Sign in with FIDE ID</string>
+    <string name="login_email">Sign in with email and password</string>
+    <string name="login_email_title">Sign in</string>
+    <string name="login_email_field_label">Email</string>
+    <string name="login_password_label">Password</string>
+    <string name="login_submit">Sign in</string>
+    <string name="login_forgot_password">Forgot your password?</string>
+    <string name="login_email_not_confirmed">You need to confirm your email first.</string>
+    <string name="login_resend_confirmation">Resend the email</string>
+    <string name="login_confirmation_resent">We\'ve sent you a new confirmation email.</string>
+
+    <string name="forgot_password_title">Forgot password</string>
+    <string name="forgot_password_subtitle">Enter your email: if it matches an account, you\'ll receive instructions to reset your password.</string>
+    <string name="forgot_password_submit">Send</string>
+    <string name="forgot_password_sent">If the address exists, you\'ll receive an email with instructions.</string>
+    <string name="forgot_password_network_error">Connection failed. Please try again.</string>
+
+    <string name="login_fide_title">Sign in with FIDE ID</string>
+    <string name="login_fide_field_label">FIDE ID</string>
+    <string name="login_fide_submit">Continue</string>
+    <string name="login_fide_dont_know">I don\'t know my FIDE ID</string>
+    <string name="login_fide_search_label">Search by first and last name</string>
+    <string name="login_fide_found">Hi, %1$s</string>
+    <string name="login_fide_ask_club_membership">Are you a member of a club?</string>
+    <string name="pick_club_title">Choose your club</string>
+    <string name="pick_roster_title">Choose your name</string>
+    <string name="pick_roster_search_hint">Search by name…</string>
+    <string name="register_confirm_password_label">Confirm password</string>
+    <string name="register_first_name_label">First name</string>
+    <string name="register_last_name_label">Last name</string>
+    <string name="register_submit">Sign up</string>
+
+    <string name="complete_profile_title">One more step</string>
+    <string name="complete_profile_ask_fide">Do you have a FIDE ID, or are you a member of a club?</string>
+    <string name="complete_profile_amateur_title">Complete your profile</string>
+
+    <string name="email_pending_title">Check your inbox</string>
+    <string name="email_pending_body">We\'ve sent an email to %1$s: open the link to confirm your address before you can sign in.</string>
+    <string name="email_pending_back_to_login">Back to sign in</string>
+
+    <string name="settings_logout">Log out</string>
+    <string name="settings_reset_button">Reset settings</string>
+    <string name="settings_reset_title">Reset settings</string>
+    <string name="settings_reset_body">All local preferences (chosen club, backgrounds, Home icon order and visibility, notifications) will be cleared, and you\'ll need to sign in again. This action can\'t be undone.</string>
+    <string name="settings_reset_confirm">Reset</string>
+    <string name="settings_reset_cancel">Cancel</string>
+
+    <!-- "My photo" (ui/profile/) -->
+    <string name="more_profile_photo">My photo</string>
+    <string name="profile_photo_title">My photo</string>
+    <string name="profile_photo_subtitle">Shown next to your name in the Ranking.</string>
+    <string name="profile_photo_camera">Take a photo</string>
+    <string name="profile_photo_gallery">Choose from gallery</string>
+    <string name="profile_photo_remove">Remove photo</string>
+    <string name="profile_photo_not_identified">You need to sign in first to set a photo.</string>
+</resources>

@@ -52,6 +52,24 @@ class ConversationViewModel(
         }
     }
 
+    /** Ricarica i messaggi SENZA passare da ConversationState.Loading (niente spinner/
+     * scroll-jump) - solo per aggiornare in background lo stato consegnato/letto dei
+     * MIEI messaggi mentre si resta nella schermata (vedi ConversationScreen, poll
+     * periodico). Nessun effetto sulla chat "Chessora" (sempre isReadOnly, mai un mio
+     * messaggio quindi nessuna spunta da aggiornare) né su una conversazione non ancora
+     * creata (idConversation < 0, niente ancora da rileggere). */
+    fun refreshSilently() {
+        val current = _state.value as? ConversationState.Ready ?: return
+        if (current.isReadOnly || idConversation < 0) return
+        val myIdPlayer = idPlayer ?: return
+        viewModelScope.launch {
+            repository.getConversationMessages(idConversation, myIdPlayer).onSuccess { messages ->
+                val latest = _state.value as? ConversationState.Ready ?: return@onSuccess
+                _state.value = latest.copy(messages = messages)
+            }
+        }
+    }
+
     fun send(body: String) {
         val trimmed = body.trim()
         val myIdPlayer = idPlayer

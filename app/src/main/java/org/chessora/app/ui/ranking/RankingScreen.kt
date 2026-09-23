@@ -28,11 +28,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import coil.compose.AsyncImagePainter
+import org.chessora.app.R
 import org.chessora.app.data.remote.NetworkModule
 import org.chessora.app.data.remote.dto.RankingPlayer
 import org.chessora.app.data.remote.dto.RankingResponse
@@ -79,7 +81,7 @@ fun RankingScreen(club: String?) {
 @Composable
 private fun RankingList(players: List<RankingPlayer>) {
     if (players.isEmpty()) {
-        Text("Nessun dato disponibile.", modifier = Modifier.fillMaxSize().padding(16.dp))
+        Text(stringResource(R.string.ranking_no_data), modifier = Modifier.fillMaxSize().padding(16.dp))
         return
     }
     LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {

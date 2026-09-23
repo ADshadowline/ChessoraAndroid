@@ -227,6 +227,9 @@ class ChessoraRepository(private val api: ChessoraApi) {
     suspend fun startDirectConversation(fromIdPlayer: Int, toIdPlayer: Int, body: String): Result<Int?> =
         safeCall { api.startDirectConversation(StartDirectConversationRequest(fromIdPlayer, toIdPlayer, body)).idConversation }
 
+    suspend fun findDirectConversation(fromIdPlayer: Int, toIdPlayer: Int): Result<Int?> =
+        safeCall { api.findDirectConversation(fromIdPlayer, toIdPlayer).idConversation }
+
     suspend fun startClubConversation(fromIdPlayer: Int, idClub: Int, body: String): Result<Int?> =
         safeCall { api.startClubConversation(StartClubConversationRequest(fromIdPlayer, idClub, body)).idConversation }
 

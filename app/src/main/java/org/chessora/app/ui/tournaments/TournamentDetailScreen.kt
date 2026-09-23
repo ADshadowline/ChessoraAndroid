@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -57,7 +59,7 @@ private val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.IT
  * tra cui scegliere UNA SOLA preiscrizione: richiede il login (vedi ui/auth/), l'identità
  * usata è sempre quella dell'utente autenticato, mai chiesta a mano qui. */
 @Composable
-fun TournamentDetailScreen(idTournament: Int, onLogin: () -> Unit) {
+fun TournamentDetailScreen(idTournament: Int, onLogin: () -> Unit, onMessagePlayer: (idPlayer: Int, displayName: String) -> Unit) {
     val viewModel = chessoraViewModel { app -> TournamentDetailViewModel(app.repository, app.clubPreferences) }
     val state by viewModel.state.collectAsState()
     val registering by viewModel.registering.collectAsState()
@@ -94,6 +96,7 @@ fun TournamentDetailScreen(idTournament: Int, onLogin: () -> Unit) {
                     registrants = registeredPlayers[option.tournament.id],
                     loadingRegistrants = option.tournament.id in loadingRegisteredPlayers,
                     onShowRegistrants = { viewModel.loadRegisteredPlayersIfNeeded(option.tournament.id) },
+                    onMessagePlayer = onMessagePlayer,
                     onRegister = {
                         viewModel.register(
                             option.tournament.id,
@@ -195,6 +198,7 @@ private fun TournamentOptionCard(
     registrants: List<RegisteredPlayer>?,
     loadingRegistrants: Boolean,
     onShowRegistrants: () -> Unit,
+    onMessagePlayer: (idPlayer: Int, displayName: String) -> Unit,
     onRegister: () -> Unit,
     onCancel: () -> Unit,
 ) {
@@ -267,14 +271,14 @@ private fun TournamentOptionCard(
                 )
             }
             AnimatedVisibility(visible = registrantsExpanded) {
-                RegistrantsList(registrants = registrants, loading = loadingRegistrants)
+                RegistrantsList(registrants = registrants, loading = loadingRegistrants, onMessagePlayer = onMessagePlayer)
             }
         }
     }
 }
 
 @Composable
-private fun RegistrantsList(registrants: List<RegisteredPlayer>?, loading: Boolean) {
+private fun RegistrantsList(registrants: List<RegisteredPlayer>?, loading: Boolean, onMessagePlayer: (idPlayer: Int, displayName: String) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 6.dp)) {
         when {
             loading || registrants == null -> Row(verticalAlignment = Alignment.CenterVertically) {
@@ -285,7 +289,14 @@ private fun RegistrantsList(registrants: List<RegisteredPlayer>?, loading: Boole
             else -> registrants.forEachIndexed { index, player ->
                 if (index > 0) HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
+                        .then(
+                            if (player.idPlayer != null) {
+                                Modifier.clickable { onMessagePlayer(player.idPlayer, player.name) }
+                            } else {
+                                Modifier
+                            },
+                        ),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -296,7 +307,17 @@ private fun RegistrantsList(registrants: List<RegisteredPlayer>?, loading: Boole
                             style = MaterialTheme.typography.bodySmall,
                         )
                     }
-                    Text("${player.rating}", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (player.idPlayer != null) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.Chat,
+                                contentDescription = stringResource(R.string.tournament_message_player),
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(end = 8.dp).size(18.dp),
+                            )
+                        }
+                        Text("${player.rating}", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
+                    }
                 }
             }
         }

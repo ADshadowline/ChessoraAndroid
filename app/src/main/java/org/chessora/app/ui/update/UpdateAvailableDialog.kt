@@ -12,6 +12,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import org.chessora.app.R
 import org.chessora.app.data.remote.AppUpdateChecker
 import org.chessora.app.data.remote.dto.AppVersionInfo
 
@@ -37,22 +39,22 @@ fun UpdateAvailableDialog() {
     if (info != null && !dismissed) {
         AlertDialog(
             onDismissRequest = { dismissed = true },
-            title = { Text("Nuova versione disponibile") },
+            title = { Text(stringResource(R.string.update_available_title)) },
             text = {
                 Text(
-                    "È disponibile Chessora ${info.versionName}." +
+                    stringResource(R.string.update_available_body, info.versionName) +
                         (info.notes?.takeIf { it.isNotBlank() }?.let { "\n\n$it" } ?: "") +
-                        "\n\nVuoi scaricarla ora?",
+                        "\n\n" + stringResource(R.string.update_available_question),
                 )
             },
             confirmButton = {
                 TextButton(onClick = {
                     dismissed = true
                     context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(info.downloadsUrl)))
-                }) { Text("Aggiorna") }
+                }) { Text(stringResource(R.string.update_available_confirm)) }
             },
             dismissButton = {
-                TextButton(onClick = { dismissed = true }) { Text("Più tardi") }
+                TextButton(onClick = { dismissed = true }) { Text(stringResource(R.string.update_available_dismiss)) }
             },
         )
     }

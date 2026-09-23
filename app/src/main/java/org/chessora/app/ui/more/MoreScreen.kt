@@ -67,26 +67,26 @@ fun MoreScreen(
         )
         if (!isPlatformMode) {
             ListItem(
-                headlineContent = { Text("Direttivo") },
+                headlineContent = { Text(stringResource(R.string.desktop_icon_board)) },
                 leadingContent = { Icon(Icons.Default.People, contentDescription = null) },
                 trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
                 modifier = Modifier.clickable(onClick = onBoardClick),
             )
             ListItem(
-                headlineContent = { Text("Negozio") },
+                headlineContent = { Text(stringResource(R.string.desktop_icon_shop)) },
                 leadingContent = { Icon(Icons.Default.ShoppingCart, contentDescription = null) },
                 trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
                 modifier = Modifier.clickable(onClick = onShopClick),
             )
             ListItem(
-                headlineContent = { Text("Video") },
+                headlineContent = { Text(stringResource(R.string.desktop_icon_video)) },
                 leadingContent = { Icon(Icons.Default.PlayCircle, contentDescription = null) },
                 trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
                 modifier = Modifier.clickable(onClick = onVideoClick),
             )
         }
         ListItem(
-            headlineContent = { Text("Impostazioni") },
+            headlineContent = { Text(stringResource(R.string.settings_title)) },
             leadingContent = { Icon(Icons.Default.Settings, contentDescription = null) },
             trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
             modifier = Modifier.clickable(onClick = onSettingsClick),

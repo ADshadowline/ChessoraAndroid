@@ -18,11 +18,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
 import coil.compose.AsyncImage
+import org.chessora.app.R
 import org.chessora.app.data.remote.NetworkModule
 import org.chessora.app.data.remote.dto.NewsComment
 import org.chessora.app.ui.common.UiStateContent
@@ -61,7 +63,7 @@ fun NewsDetailScreen(club: String?, idNews: Int) {
 
             if (data.comments.isNotEmpty()) {
                 Divider(modifier = Modifier.padding(vertical = 24.dp))
-                Text("Commenti", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(bottom = 8.dp))
+                Text(stringResource(R.string.news_comments), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(bottom = 8.dp))
                 data.comments.forEach { comment -> CommentRow(comment) }
             }
         }

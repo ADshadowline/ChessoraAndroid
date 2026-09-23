@@ -35,6 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +49,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import coil.compose.AsyncImage
+import kotlinx.coroutines.launch
 import org.chessora.app.R
 import androidx.compose.runtime.DisposableEffect
 import org.chessora.app.data.local.ClubPreferences
@@ -180,6 +182,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
     val registeredTournamentStartingSoon by sessionViewModel.registeredTournamentStartingSoon.collectAsState()
     val unreadMessagesCount by sessionViewModel.unreadMessagesCount.collectAsState()
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     // Un torneo può essere (pre)iscritto/ritirato da TournamentDetailScreen, un
     // ViewModel diverso da questo: senza un refresh esplicito il badge sull'icona
@@ -382,6 +385,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                 TournamentDetailScreen(
                     idTournament = idTournament,
                     onLogin = { navController.navigate(ChessoraDestinations.AUTH_LOGIN) },
+                    onMessagePlayer = { idPlayer, displayName -> openDirectConversation(scope, sessionViewModel, navController, idPlayer, displayName) },
                 )
             }
             composable(ChessoraDestinations.NEWS_LIST) {
@@ -495,9 +499,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                 RequireClub(selectedClub) { club ->
                     BoardScreen(
                         club = club,
-                        onOpenConversation = { idPlayer, displayName ->
-                            navController.navigate(ChessoraDestinations.conversation(-1, isClubConversation = false, recipientId = idPlayer, displayName = displayName))
-                        },
+                        onOpenConversation = { idPlayer, displayName -> openDirectConversation(scope, sessionViewModel, navController, idPlayer, displayName) },
                     )
                 }
             }
@@ -538,6 +540,23 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                 IconSettingsScreen(isPlatformMode = selectedClub == ClubPreferences.PLATFORM_CLUB_CODE)
             }
         }
+    }
+}
+
+/** Apre la messaggistica con [idPlayer]: se esiste già una conversazione diretta la apre
+ * (storico incluso), altrimenti apre il flusso "nuovo messaggio" (idConversation = -1,
+ * come prima) - usato sia dal Direttivo sia dall'elenco iscritti di un torneo, cosi' non
+ * si crea mai una seconda chat con la stessa persona per errore. */
+private fun openDirectConversation(
+    scope: kotlinx.coroutines.CoroutineScope,
+    sessionViewModel: SessionViewModel,
+    navController: androidx.navigation.NavController,
+    idPlayer: Int,
+    displayName: String,
+) {
+    scope.launch {
+        val existing = sessionViewModel.resolveDirectConversationId(idPlayer)
+        navController.navigate(ChessoraDestinations.conversation(existing ?: -1, isClubConversation = false, recipientId = idPlayer, displayName = displayName))
     }
 }
 

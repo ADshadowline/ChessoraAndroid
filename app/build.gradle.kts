@@ -33,8 +33,8 @@ android {
         // valerne la pena su un'app di sola consultazione.
         minSdk = 26
         targetSdk = 35
-        versionCode = 57
-        versionName = "1.23.0"
+        versionCode = 58
+        versionName = "1.24.0"
 
         // URL base dell'Api Chessora in produzione: iniettato come BuildConfig
         // string invece che hard-codato nel client Retrofit, cosi' un domani un
@@ -97,6 +97,13 @@ dependencies {
     // --- Ciclo di vita / ViewModel / Navigation ---
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.activity:activity-compose:1.9.3")
+    // Solo per AppCompatDelegate.setApplicationLocales (selettore lingua in
+    // Impostazioni, ui/settings/) - funziona anche senza AppCompatActivity (MainActivity
+    // resta un ComponentActivity puro Compose): dalla 1.6.0 in poi la libreria registra
+    // da sé, via manifest merge, il meccanismo di "auto-store" della lingua scelta e il
+    // recreate() automatico dell'Activity, senza bisogno di ereditare da AppCompatActivity
+    // né di persistere la scelta a mano (vedi SettingsViewModel.setLanguage).
+    implementation("androidx.appcompat:appcompat:1.7.0")
     // Dichiarata esplicitamente (e' gia' presente transitivamente via
     // activity-compose) solo perche' altrimenti lint non riesce a risolvere la
     // versione effettiva e segnala erroneamente "InvalidFragmentVersionForActivityResult"

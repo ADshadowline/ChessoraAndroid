@@ -68,6 +68,10 @@ fun SettingsScreen(
     val hideReadReceipts by viewModel.hideReadReceipts.collectAsState()
     val context = LocalContext.current
     var showResetConfirmation by remember { mutableStateOf(false) }
+    // Non reattivo (niente StateFlow): il cambio lingua ricrea l'Activity da sé (vedi
+    // SettingsViewModel.setLanguage), quindi a ogni ricomposizione "fresca" questo valore
+    // riflette già la lingua appena scelta - non serve altro.
+    var language by remember { mutableStateOf(viewModel.currentLanguageTag()) }
 
     LaunchedEffect(identifiedPlayerName) { viewModel.loadHideReadReceipts() }
 
@@ -163,6 +167,26 @@ fun SettingsScreen(
             OutlinedButton(onClick = onOpenIconSettings, modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
                 Text(stringResource(R.string.settings_icon_settings_button))
             }
+        }
+
+        Text(
+            stringResource(R.string.settings_language),
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(top = 28.dp),
+        )
+        Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            DisplayModeOption(
+                label = stringResource(R.string.settings_language_italian),
+                selected = language == "it",
+                onClick = { language = "it"; viewModel.setLanguage("it") },
+                modifier = Modifier.weight(1f),
+            )
+            DisplayModeOption(
+                label = stringResource(R.string.settings_language_english),
+                selected = language == "en",
+                onClick = { language = "en"; viewModel.setLanguage("en") },
+                modifier = Modifier.weight(1f),
+            )
         }
 
         BackgroundImagePicker(

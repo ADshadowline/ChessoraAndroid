@@ -25,7 +25,13 @@ class VideoViewModel(private val repository: ChessoraRepository) : ViewModel() {
         viewModelScope.launch {
             _state.value = UiState.Loading
             _state.value = repository.getVideoRows(club)
-                .map { rows -> rows.flatMap { it.items }.sortedByDescending { it.publishedAt ?: it.createdAt } }
+                .map { rows ->
+                    // Lo stesso video può comparire in più righe (es. sia nella riga "solo
+                    // il circolo" sia in una riga "rete"/canale che lo include a sua volta) -
+                    // distinctBy evita sia doppioni visivi sia un crash certo di LazyColumn
+                    // (items(key = { it.id })) che non ammette chiavi ripetute.
+                    rows.flatMap { it.items }.distinctBy { it.id }.sortedByDescending { it.publishedAt ?: it.createdAt }
+                }
                 .toUiState()
         }
     }
