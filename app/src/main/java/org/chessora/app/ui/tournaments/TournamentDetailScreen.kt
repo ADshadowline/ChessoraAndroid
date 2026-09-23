@@ -206,6 +206,7 @@ private fun TournamentOptionCard(
     val count = tournament.nPreRegisteredPlayers ?: 0
     val unlimited = tournament.limiteIscrizioni <= 0
     val full = !unlimited && count >= tournament.limiteIscrizioni
+    val registrationWindow = registrationWindowStatus(tournament)
     var registrantsExpanded by remember(tournament.id) { mutableStateOf(false) }
 
     Card(modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp)) {
@@ -230,6 +231,8 @@ private fun TournamentOptionCard(
                         when {
                             option.isRegistered -> stringResource(R.string.tournament_already_registered)
                             disabledByOther -> stringResource(R.string.tournament_registered_other_option)
+                            registrationWindow == RegistrationWindow.NOT_YET_OPEN -> stringResource(R.string.tournament_registration_not_open_yet)
+                            registrationWindow == RegistrationWindow.CLOSED -> stringResource(R.string.tournament_registration_closed)
                             full -> stringResource(R.string.tournament_seats_full)
                             unlimited -> stringResource(R.string.tournament_seats_unlimited)
                             else -> stringResource(R.string.tournament_seats_available)
@@ -251,7 +254,7 @@ private fun TournamentOptionCard(
                     }
                     else -> Button(
                         onClick = onRegister,
-                        enabled = isAuthenticated.not() || (!full && !registering && !disabledByOther),
+                        enabled = isAuthenticated.not() || (!full && !registering && !disabledByOther && registrationWindow == RegistrationWindow.OPEN),
                     ) {
                         Text(if (registering) stringResource(R.string.tournament_registering) else stringResource(R.string.tournament_register))
                     }
@@ -322,6 +325,23 @@ private fun RegistrantsList(registrants: List<RegisteredPlayer>?, loading: Boole
             }
         }
     }
+}
+
+private enum class RegistrationWindow { OPEN, NOT_YET_OPEN, CLOSED }
+
+/** Ci si può iscrivere solo nella finestra inizioIscrizioni/fineIscrizioni del torneo -
+ * l'enforcement reale resta lato server (TournamentRegistrationService.
+ * CheckRegistrationWindow, stessa regola di tourn.chessora.org), questo è solo per non
+ * mostrare abilitato un pulsante "Preiscriviti" che fallirebbe comunque. LocalDateTime,
+ * non Instant: il server invia orari locali "a muro", stesso trattamento di inizio/fine
+ * torneo (vedi formatRange sotto). */
+private fun registrationWindowStatus(tournament: TournamentSummary): RegistrationWindow {
+    val now = LocalDateTime.now()
+    val inizio = tournament.inizioIscrizioni?.let { runCatching { LocalDateTime.parse(it) }.getOrNull() }
+    if (inizio != null && now < inizio) return RegistrationWindow.NOT_YET_OPEN
+    val fine = tournament.fineIscrizioni?.let { runCatching { LocalDateTime.parse(it) }.getOrNull() }
+    if (fine != null && now > fine) return RegistrationWindow.CLOSED
+    return RegistrationWindow.OPEN
 }
 
 private fun formatTempo(tournament: TournamentSummary): String {

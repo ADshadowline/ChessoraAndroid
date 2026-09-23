@@ -118,6 +118,8 @@
     <string name="tournament_seats_unlimited">Posti illimitati</string>
     <string name="tournament_seats_available">Posti disponibili</string>
     <string name="tournament_seats_full">Posti esauriti</string>
+    <string name="tournament_registration_not_open_yet">Le iscrizioni non sono ancora aperte</string>
+    <string name="tournament_registration_closed">Iscrizioni chiuse</string>
     <string name="tournament_registered_count">%1$d preiscritti</string>
     <string name="tournament_registered_count_limit">%1$d / %2$d preiscritti</string>
     <string name="tournament_other_tornei">Altri tornei dello stesso evento</string>

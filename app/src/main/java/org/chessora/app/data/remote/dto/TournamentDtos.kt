@@ -36,6 +36,12 @@ data class TournamentSummary(
     val tempoMinuti: Int? = null,
     val tempoIncremento: Int? = null,
     val tempoMosse: Int? = null,
+    // Periodo di iscrizione (null = nessun vincolo su quel lato) - l'enforcement reale
+    // resta lato server (TournamentRegistrationService.PreRegisterAsync), questi campi
+    // servono solo a mostrare/disabilitare subito il pulsante "Preiscriviti" senza
+    // dover tentare la chiamata e mostrare l'errore del server.
+    val inizioIscrizioni: String? = null,
+    val fineIscrizioni: String? = null,
 )
 
 /** Specchio di Chessora.Contracts.Tournaments.TournamentRegistrationCountDto (risposta
