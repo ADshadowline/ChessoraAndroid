@@ -1,0 +1,255 @@
+<resources>
+    <string name="app_name">Chessora</string>
+
+    <!-- News (ui/news/) -->
+    <string name="news_search_hint">Bir haber ara…</string>
+    <string name="news_scope_circolo">Kulüp</string>
+    <string name="news_scope_mondo">Çevrimiçi</string>
+    <string name="news_comments">Yorumlar</string>
+
+    <!-- Bando in-app (ui/calendar/BandoViewerScreen.kt) -->
+    <string name="bando_viewer_error">Afiş görüntülenemiyor. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="bando_viewer_unsupported">Bu afiş PDF formatında değil: uygulama içinde doğrudan gösterilemez.</string>
+    <string name="bando_viewer_open_external">Başka bir uygulamayla aç</string>
+
+    <string name="default_notification_channel_id">chessora_general</string>
+    <string name="default_notification_channel_name">Chessora bildirimleri</string>
+    <string name="default_notification_channel_description">Kulübünüzden ve Chessora platformundan duyurular</string>
+
+    <string name="urgent_notification_channel_id">chessora_urgent</string>
+    <string name="urgent_notification_channel_name">Acil Chessora bildirimleri</string>
+    <string name="urgent_notification_channel_description">Kulübünüzden veya Chessora platformundan öne çıkan şekilde gösterilen acil duyurular</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">Kulübünüzü seçin</string>
+    <string name="onboarding_search_hint">Ada veya şehre göre ara…</string>
+    <string name="onboarding_code_hint">…veya bir kulüp kodu girin</string>
+    <string name="onboarding_code_button">Koda göre ara</string>
+    <string name="onboarding_empty">Kulüp bulunamadı.</string>
+
+    <!-- Bottom bar navigation -->
+    <string name="nav_home">Etkinlikler</string>
+    <string name="nav_news">Haberler</string>
+    <string name="nav_ranking">Sıralama</string>
+    <string name="nav_more">Diğer</string>
+    <string name="nav_registrations">Turnuva kayıtları</string>
+    <string name="nav_messaging">Mesajlar</string>
+
+    <!-- Tournament registrations -->
+    <string name="registrations_empty">Herhangi bir turnuvaya kayıtlı değilsiniz.</string>
+    <string name="registrations_not_identified">Kayıtlı olduğunuz turnuvaları görmek için giriş yapın.</string>
+
+    <!-- Messaging (ui/messaging/) -->
+    <string name="messaging_new">Yeni mesaj</string>
+    <string name="messaging_not_identified">Mesajlaşmayı kullanmak için giriş yapın.</string>
+    <string name="messaging_empty">Henüz konuşma yok. Başlatmak için + simgesine dokunun.</string>
+    <string name="messaging_chessora_empty">Henüz bildirim alınmadı.</string>
+    <string name="messaging_conversation_empty">Mesaj yok. İlkini yaz!</string>
+    <string name="messaging_type_hint">Bir mesaj yazın…</string>
+    <string name="messaging_send">Gönder</string>
+    <string name="messaging_tab_players">Oyuncular</string>
+    <string name="messaging_tab_clubs">Kulüpler</string>
+    <string name="messaging_search_hint">Ada göre ara…</string>
+    <string name="messaging_club_no_referente">Mesajlaşmadan sorumlu bir kişi atanmamış</string>
+    <string name="messaging_status_sent">Gönderildi</string>
+    <string name="messaging_status_delivered">İletildi</string>
+    <string name="messaging_status_read">Okundu</string>
+    <string name="settings_hide_read_receipts">Teslim ve okundu onaylarını gizle</string>
+    <string name="settings_hide_read_receipts_hint">Diğer kişiler artık mesajlarını alıp almadığınızı veya ne zaman okuduğunuzu göremeyecek.</string>
+
+    <!-- More menu -->
+    <string name="more_calendar">Takvim</string>
+    <string name="more_performance">Performansım</string>
+    <string name="ranking_no_data">Veri bulunmuyor.</string>
+    <string name="fide_id_label">FIDE ID %1$s</string>
+    <string name="update_available_title">Yeni sürüm mevcut</string>
+    <string name="update_available_body">Chessora %1$s kullanılabilir.</string>
+    <string name="update_available_question">Şimdi indirmek ister misiniz?</string>
+    <string name="update_available_confirm">Güncelle</string>
+    <string name="update_available_dismiss">Daha sonra</string>
+
+    <!-- My performance (Elo history) -->
+    <string name="performance_title">Elo gelişimi</string>
+    <string name="performance_standard">Standart</string>
+    <string name="performance_rapid">Hızlı</string>
+    <string name="performance_blitz">Blitz</string>
+    <string name="performance_not_identified">Performansınızı görmek için giriş yapın.</string>
+    <string name="performance_no_fide">İlişkilendirilmiş bir FIDE ID\'niz yok: bu özellik FIDE reytingli bir kart gerektirir.</string>
+    <string name="performance_empty">FIDE profiliniz için reyting geçmişi bulunmuyor.</string>
+    <string name="performance_zoom_hint">Yakınlaştırmak için sıkıştırın, kaydırmak için sürükleyin, tam değeri görmek için bir noktaya dokunun.</string>
+    <string name="performance_reset_zoom">Yakınlaştırmayı sıfırla</string>
+    <string name="performance_period_6m">6 ay</string>
+    <string name="performance_period_1y">1 yıl</string>
+    <string name="performance_period_5y">5 yıl</string>
+    <string name="performance_period_all">Tümü</string>
+    <string name="performance_delta_up">Yükseliyor</string>
+    <string name="performance_delta_down">Düşüyor</string>
+
+    <!-- Home -->
+    <string name="home_upcoming_appointments">Yaklaşan etkinlikler</string>
+    <string name="home_no_upcoming">Planlanmış etkinlik yok.</string>
+    <string name="home_no_results">Etkinlik bulunamadı.</string>
+    <string name="home_search_hint">Ada göre etkinlik ara…</string>
+    <string name="home_generic_event">Etkinlik</string>
+    <string name="home_no_bando">Bu etkinlik için afiş bulunmuyor.</string>
+    <string name="home_countdown_days">GÜN</string>
+    <string name="home_countdown_hours">SAAT</string>
+    <string name="home_countdown_minutes">DK</string>
+    <string name="home_countdown_seconds">SN</string>
+    <string name="home_registered_check">Bu turnuvaya kayıtlısınız</string>
+    <string name="home_registrations_locked">Kayıtlar henüz açılmadı veya zaten kapandı</string>
+    <string name="home_organizer">Organizatör: %1$s</string>
+    <string name="home_registered_players_count">%1$d kayıtlı</string>
+
+    <!-- Tournament detail (ui/tournaments/) -->
+    <string name="tournament_website">Web sitesi</string>
+    <string name="tournament_download_bando">Afişi indir</string>
+    <string name="tournament_register">Kaydol</string>
+    <string name="tournament_registering">Kaydolunuyor…</string>
+    <string name="tournament_registered">Kayıt alındı: katılım onayı turnuvada yapılacaktır.</string>
+    <string name="tournament_register_error">Kayıt tamamlanamadı. Tekrar deneyin.</string>
+    <string name="tournament_seats_unlimited">Sınırsız kontenjan</string>
+    <string name="tournament_seats_available">Kontenjan mevcut</string>
+    <string name="tournament_seats_full">Kontenjan doldu</string>
+    <string name="tournament_registered_count">%1$d kayıtlı</string>
+    <string name="tournament_registered_count_limit">%1$d / %2$d kayıtlı</string>
+    <string name="tournament_other_tornei">Aynı etkinlikteki diğer turnuvalar</string>
+    <string name="tournament_not_found">Turnuva bulunamadı.</string>
+    <string name="tournament_already_registered">Kayıtlısınız</string>
+    <string name="tournament_identify_to_register">Bu etkinliğe kaydolmak için giriş yapın.</string>
+    <string name="tournament_manual_identity_title">Kaydınızı tamamlayın</string>
+    <string name="tournament_manual_identity_body">Kayıtlı bir kulübün üyesi gibi görünmüyorsunuz: devam etmek için FIDE ID\'nizi veya adınızı ve soyadınızı girin (ikisinden en az biri).</string>
+    <string name="tournament_manual_identity_idfide_label">FIDE ID (isteğe bağlı)</string>
+    <string name="tournament_manual_identity_name_label">Ad ve soyad</string>
+    <string name="tournament_manual_identity_cancel">İptal</string>
+    <string name="tournament_choose_one">Kaydolmak istediğiniz turnuvayı seçin</string>
+    <string name="tournament_section_title">Kayıt</string>
+    <string name="tournament_registered_other_option">Bu etkinlikteki başka bir turnuvaya kayıtlısınız</string>
+    <string name="tournament_cancel_registration">Kaydı iptal et</string>
+    <string name="tournament_show_registrants">Kayıtlıları göster</string>
+    <string name="tournament_loading_registrants">Yükleniyor…</string>
+    <string name="tournament_hide_registrants">Kayıtlıları gizle</string>
+    <string name="tournament_no_registrants">Henüz kayıtlı yok.</string>
+    <string name="tournament_registrant_no_idfide">FIDE ID yok</string>
+    <string name="tournament_message_player">Mesaj gönder</string>
+
+    <!-- Generic errors -->
+    <string name="error_generic">Bir şeyler ters gitti. Tekrar deneyin.</string>
+    <string name="error_retry">Tekrar dene</string>
+    <string name="loading">Yükleniyor…</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Ayarlar</string>
+    <string name="settings_change_club">Kulübü değiştir</string>
+    <string name="settings_notifications">Push bildirimleri</string>
+    <string name="settings_about">Uygulama hakkında</string>
+    <string name="settings_identity_none">Tanımlanmadı</string>
+    <string name="settings_identity_as">%1$s olarak tanımlandı</string>
+    <string name="settings_identity_button">Giriş yap</string>
+    <string name="settings_my_photo">Fotoğrafım</string>
+    <string name="settings_display_mode">Görünüm türü</string>
+    <string name="settings_display_mode_classic">Mevcut görünüm</string>
+    <string name="settings_display_mode_desktop">Masaüstü görünümü</string>
+    <string name="settings_splash_background">Uygulama açılış görseli</string>
+    <string name="settings_desktop_background">Masaüstü arka plan görseli</string>
+    <string name="settings_choose_image">Görsel seç</string>
+    <string name="settings_remove_image">Kaldır</string>
+    <string name="settings_icon_settings_button">Ana ekran simgelerini özelleştir</string>
+    <string name="topbar_members_count">%1$d üye</string>
+    <string name="manage_tournaments">Turnuva yönetimi</string>
+
+    <!-- Desktop Home icons (ui/home/HomeScreen.kt DesktopHomeGrid,
+         ui/settings/IconSettingsScreen.kt) -->
+    <string name="desktop_icon_board">Yönetim kurulu</string>
+    <string name="desktop_icon_shop">Mağaza</string>
+    <string name="desktop_icon_video">Video</string>
+    <string name="video_empty">Kullanılabilir video yok.</string>
+    <string name="language_tile_label">Dil</string>
+    <string name="icon_settings_title">Ana ekran simgeleri</string>
+    <string name="icon_settings_subtitle">Sırayı değiştirmek için tutamacı basılı tutup sürükleyin. Bir simgeyi ana ekrandan gizlemek için anahtarı kullanın.</string>
+    <string name="icon_settings_drag_handle">Yeniden sıralamak için sürükleyin</string>
+
+    <!-- Initial club membership question (ui/onboarding/MembershipQuestionScreen) -->
+    <string name="membership_question_title">Bir kulübün üyesi misiniz?</string>
+    <string name="membership_question_subtitle">Bir satranç kulübüne üyeyseniz kulübünüzü seçin. Aksi takdirde uygulamayı yine de kullanabilirsiniz: tüm kulüplerin turnuvalarını ve haberlerini görürsünüz.</string>
+    <string name="membership_question_yes">Evet, bir kulübün üyesiyim</string>
+    <string name="membership_question_no">Hayır, hiçbir kulübe üye değilim</string>
+    <string name="platform_branding_name">Chessora Platform</string>
+
+    <!-- Authentication (ui/auth/) - mandatory sign-in -->
+    <string name="identity_error_retry">Tekrar dene</string>
+    <string name="common_yes">Evet</string>
+    <string name="common_no">Hayır</string>
+    <string name="common_confirm">Onayla</string>
+    <string name="common_loading">Yükleniyor…</string>
+
+    <string name="login_title">Chessora\'ya giriş yap</string>
+    <string name="login_subtitle">Uygulamayı kullanmadan önce giriş yapmalısınız.</string>
+    <string name="login_google">Google ile giriş yap</string>
+    <string name="login_fide">FIDE ID ile giriş yap</string>
+    <string name="login_email">E-posta ve şifre ile giriş yap</string>
+    <string name="login_email_title">Giriş yap</string>
+    <string name="login_email_field_label">E-posta</string>
+    <string name="login_password_label">Şifre</string>
+    <string name="login_submit">Giriş yap</string>
+    <string name="login_forgot_password">Şifrenizi mi unuttunuz?</string>
+    <string name="login_email_not_confirmed">Önce e-postanızı onaylamanız gerekiyor.</string>
+    <string name="login_resend_confirmation">E-postayı tekrar gönder</string>
+    <string name="login_confirmation_resent">Size yeni bir onay e-postası gönderdik.</string>
+
+    <string name="forgot_password_title">Şifre unutuldu</string>
+    <string name="forgot_password_subtitle">E-postanızı girin: bir hesapla eşleşiyorsa şifrenizi sıfırlamak için talimatları alacaksınız.</string>
+    <string name="forgot_password_submit">Gönder</string>
+    <string name="forgot_password_sent">Adres varsa, talimatları içeren bir e-posta alacaksınız.</string>
+    <string name="forgot_password_network_error">Bağlantı başarısız oldu. Tekrar deneyin.</string>
+
+    <string name="login_fide_title">FIDE ID ile giriş yap</string>
+    <string name="login_fide_field_label">FIDE ID</string>
+    <string name="login_fide_submit">Devam et</string>
+    <string name="login_fide_dont_know">FIDE ID\'mi bilmiyorum</string>
+    <string name="login_fide_search_label">Ad ve soyada göre ara</string>
+    <string name="login_fide_found">Merhaba, %1$s</string>
+    <string name="login_fide_ask_club_membership">Bir kulübün üyesi misiniz?</string>
+    <string name="pick_club_title">Kulübünüzü seçin</string>
+    <string name="pick_roster_title">Adınızı seçin</string>
+    <string name="pick_roster_search_hint">Ada göre ara…</string>
+    <string name="register_confirm_password_label">Şifreyi onayla</string>
+    <string name="register_first_name_label">Ad</string>
+    <string name="register_last_name_label">Soyad</string>
+    <string name="register_submit">Kaydol</string>
+
+    <string name="complete_profile_title">Bir adım daha</string>
+    <string name="complete_profile_ask_fide">Bir FIDE ID\'niz var mı yoksa bir kulübün üyesi misiniz?</string>
+    <string name="complete_profile_amateur_title">Profilinizi tamamlayın</string>
+
+    <string name="email_pending_title">Posta kutunuzu kontrol edin</string>
+    <string name="email_pending_body">%1$s adresine bir e-posta gönderdik: giriş yapabilmeden önce adresinizi onaylamak için bağlantıyı açın.</string>
+    <string name="email_pending_back_to_login">Girişe dön</string>
+
+    <string name="settings_logout">Çıkış yap</string>
+    <string name="settings_reset_button">Ayarları sıfırla</string>
+    <string name="settings_reset_title">Ayarları sıfırla</string>
+    <string name="settings_reset_body">Tüm yerel tercihler (seçilen kulüp, arka planlar, ana ekran simge sırası ve görünürlüğü, bildirimler) silinecek ve tekrar giriş yapmanız gerekecek. Bu işlem geri alınamaz.</string>
+    <string name="settings_reset_confirm">Sıfırla</string>
+    <string name="settings_reset_cancel">İptal</string>
+
+    <!-- "My photo" (ui/profile/) -->
+    <string name="more_profile_photo">Fotoğrafım</string>
+    <string name="profile_photo_title">Fotoğrafım</string>
+    <string name="profile_photo_subtitle">Sıralamada adınızın yanında gösterilir.</string>
+    <string name="profile_photo_camera">Fotoğraf çek</string>
+    <string name="profile_photo_gallery">Galeriden seç</string>
+    <string name="profile_photo_remove">Fotoğrafı kaldır</string>
+    <string name="profile_photo_not_identified">Bir fotoğraf belirlemek için önce giriş yapmalısınız.</string>
+
+    <!-- Language picker (ui/language/) -->
+    <string name="language_picker_title">Dilinizi seçin</string>
+    <string name="language_name_italian">Italiano</string>
+    <string name="language_name_english">English</string>
+    <string name="language_name_spanish">Español</string>
+    <string name="language_name_french">Français</string>
+    <string name="language_name_german">Deutsch</string>
+    <string name="language_name_russian">Русский</string>
+    <string name="language_name_romanian">Română</string>
+    <string name="language_name_turkish">Türkçe</string>
+</resources>

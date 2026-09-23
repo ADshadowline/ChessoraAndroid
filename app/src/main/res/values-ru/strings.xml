@@ -1,0 +1,255 @@
+<resources>
+    <string name="app_name">Chessora</string>
+
+    <!-- News (ui/news/) -->
+    <string name="news_search_hint">Поиск новости…</string>
+    <string name="news_scope_circolo">Клуб</string>
+    <string name="news_scope_mondo">В сети</string>
+    <string name="news_comments">Комментарии</string>
+
+    <!-- Bando in-app (ui/calendar/BandoViewerScreen.kt) -->
+    <string name="bando_viewer_error">Не удалось отобразить афишу. Повторите попытку позже.</string>
+    <string name="bando_viewer_unsupported">Эта афиша не в формате PDF: её нельзя показать прямо в приложении.</string>
+    <string name="bando_viewer_open_external">Открыть в другом приложении</string>
+
+    <string name="default_notification_channel_id">chessora_general</string>
+    <string name="default_notification_channel_name">Уведомления Chessora</string>
+    <string name="default_notification_channel_description">Сообщения от вашего клуба и платформы Chessora</string>
+
+    <string name="urgent_notification_channel_id">chessora_urgent</string>
+    <string name="urgent_notification_channel_name">Срочные уведомления Chessora</string>
+    <string name="urgent_notification_channel_description">Срочные сообщения от вашего клуба или платформы Chessora, показываются заметно</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">Выберите свой клуб</string>
+    <string name="onboarding_search_hint">Поиск по названию или городу…</string>
+    <string name="onboarding_code_hint">…или введите код клуба</string>
+    <string name="onboarding_code_button">Поиск по коду</string>
+    <string name="onboarding_empty">Клубы не найдены.</string>
+
+    <!-- Bottom bar navigation -->
+    <string name="nav_home">События</string>
+    <string name="nav_news">Новости</string>
+    <string name="nav_ranking">Рейтинг</string>
+    <string name="nav_more">Ещё</string>
+    <string name="nav_registrations">Регистрации на турниры</string>
+    <string name="nav_messaging">Сообщения</string>
+
+    <!-- Tournament registrations -->
+    <string name="registrations_empty">Вы не зарегистрированы ни на один турнир.</string>
+    <string name="registrations_not_identified">Войдите, чтобы увидеть турниры, на которые вы зарегистрированы.</string>
+
+    <!-- Messaging (ui/messaging/) -->
+    <string name="messaging_new">Новое сообщение</string>
+    <string name="messaging_not_identified">Войдите, чтобы пользоваться сообщениями.</string>
+    <string name="messaging_empty">Нет диалогов. Нажмите +, чтобы начать новый.</string>
+    <string name="messaging_chessora_empty">Пока нет уведомлений.</string>
+    <string name="messaging_conversation_empty">Нет сообщений. Напишите первое!</string>
+    <string name="messaging_type_hint">Напишите сообщение…</string>
+    <string name="messaging_send">Отправить</string>
+    <string name="messaging_tab_players">Игроки</string>
+    <string name="messaging_tab_clubs">Клубы</string>
+    <string name="messaging_search_hint">Поиск по имени…</string>
+    <string name="messaging_club_no_referente">Ответственный за сообщения не назначен</string>
+    <string name="messaging_status_sent">Отправлено</string>
+    <string name="messaging_status_delivered">Доставлено</string>
+    <string name="messaging_status_read">Прочитано</string>
+    <string name="settings_hide_read_receipts">Скрыть подтверждения доставки и прочтения</string>
+    <string name="settings_hide_read_receipts_hint">Другие больше не будут видеть, получили и прочитали ли вы их сообщения.</string>
+
+    <!-- More menu -->
+    <string name="more_calendar">Календарь</string>
+    <string name="more_performance">Мои результаты</string>
+    <string name="ranking_no_data">Нет доступных данных.</string>
+    <string name="fide_id_label">ID ФИДЕ %1$s</string>
+    <string name="update_available_title">Доступна новая версия</string>
+    <string name="update_available_body">Доступна версия Chessora %1$s.</string>
+    <string name="update_available_question">Скачать сейчас?</string>
+    <string name="update_available_confirm">Обновить</string>
+    <string name="update_available_dismiss">Позже</string>
+
+    <!-- My performance (Elo history) -->
+    <string name="performance_title">Динамика рейтинга Эло</string>
+    <string name="performance_standard">Классика</string>
+    <string name="performance_rapid">Рапид</string>
+    <string name="performance_blitz">Блиц</string>
+    <string name="performance_not_identified">Войдите, чтобы увидеть свои результаты.</string>
+    <string name="performance_no_fide">У вас нет привязанного ID ФИДЕ: эта функция требует карточку с рейтингом ФИДЕ.</string>
+    <string name="performance_empty">История рейтинга для вашего профиля ФИДЕ недоступна.</string>
+    <string name="performance_zoom_hint">Сведите пальцы для масштабирования, проведите пальцем для прокрутки, коснитесь точки, чтобы увидеть точное значение.</string>
+    <string name="performance_reset_zoom">Сбросить масштаб</string>
+    <string name="performance_period_6m">6 месяцев</string>
+    <string name="performance_period_1y">1 год</string>
+    <string name="performance_period_5y">5 лет</string>
+    <string name="performance_period_all">Всё</string>
+    <string name="performance_delta_up">Рост</string>
+    <string name="performance_delta_down">Снижение</string>
+
+    <!-- Home -->
+    <string name="home_upcoming_appointments">Ближайшие события</string>
+    <string name="home_no_upcoming">Нет запланированных событий.</string>
+    <string name="home_no_results">События не найдены.</string>
+    <string name="home_search_hint">Поиск события по названию…</string>
+    <string name="home_generic_event">Событие</string>
+    <string name="home_no_bando">Для этого события афиша недоступна.</string>
+    <string name="home_countdown_days">ДНИ</string>
+    <string name="home_countdown_hours">Ч</string>
+    <string name="home_countdown_minutes">МИН</string>
+    <string name="home_countdown_seconds">СЕК</string>
+    <string name="home_registered_check">Вы зарегистрированы на этот турнир</string>
+    <string name="home_registrations_locked">Регистрация ещё не открыта или уже закрыта</string>
+    <string name="home_organizer">Организатор: %1$s</string>
+    <string name="home_registered_players_count">Зарегистрировано: %1$d</string>
+
+    <!-- Tournament detail (ui/tournaments/) -->
+    <string name="tournament_website">Сайт</string>
+    <string name="tournament_download_bando">Скачать афишу</string>
+    <string name="tournament_register">Зарегистрироваться</string>
+    <string name="tournament_registering">Регистрация…</string>
+    <string name="tournament_registered">Регистрация оформлена: подтверждение участия произойдёт на турнире.</string>
+    <string name="tournament_register_error">Не удалось завершить регистрацию. Повторите попытку.</string>
+    <string name="tournament_seats_unlimited">Мест неограниченно</string>
+    <string name="tournament_seats_available">Места есть</string>
+    <string name="tournament_seats_full">Мест нет</string>
+    <string name="tournament_registered_count">Зарегистрировано: %1$d</string>
+    <string name="tournament_registered_count_limit">%1$d / %2$d зарегистрировано</string>
+    <string name="tournament_other_tornei">Другие турниры этого события</string>
+    <string name="tournament_not_found">Турнир не найден.</string>
+    <string name="tournament_already_registered">Вы зарегистрированы</string>
+    <string name="tournament_identify_to_register">Войдите, чтобы зарегистрироваться на это событие.</string>
+    <string name="tournament_manual_identity_title">Завершите регистрацию</string>
+    <string name="tournament_manual_identity_body">Похоже, вы не являетесь членом признанного клуба: введите ваш ID ФИДЕ или имя и фамилию, чтобы продолжить (хотя бы одно из двух).</string>
+    <string name="tournament_manual_identity_idfide_label">ID ФИДЕ (необязательно)</string>
+    <string name="tournament_manual_identity_name_label">Имя и фамилия</string>
+    <string name="tournament_manual_identity_cancel">Отмена</string>
+    <string name="tournament_choose_one">Выберите турнир для регистрации</string>
+    <string name="tournament_section_title">Регистрация</string>
+    <string name="tournament_registered_other_option">Вы зарегистрированы на другой турнир этого события</string>
+    <string name="tournament_cancel_registration">Отменить регистрацию</string>
+    <string name="tournament_show_registrants">Показать участников</string>
+    <string name="tournament_loading_registrants">Загрузка…</string>
+    <string name="tournament_hide_registrants">Скрыть участников</string>
+    <string name="tournament_no_registrants">Пока нет участников.</string>
+    <string name="tournament_registrant_no_idfide">Без ID ФИДЕ</string>
+    <string name="tournament_message_player">Написать сообщение</string>
+
+    <!-- Generic errors -->
+    <string name="error_generic">Что-то пошло не так. Повторите попытку.</string>
+    <string name="error_retry">Повторить</string>
+    <string name="loading">Загрузка…</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_change_club">Сменить клуб</string>
+    <string name="settings_notifications">Push-уведомления</string>
+    <string name="settings_about">О приложении</string>
+    <string name="settings_identity_none">Не идентифицирован</string>
+    <string name="settings_identity_as">Вы вошли как %1$s</string>
+    <string name="settings_identity_button">Войти</string>
+    <string name="settings_my_photo">Моё фото</string>
+    <string name="settings_display_mode">Тип отображения</string>
+    <string name="settings_display_mode_classic">Текущий вид</string>
+    <string name="settings_display_mode_desktop">Вид рабочего стола</string>
+    <string name="settings_splash_background">Заставка при запуске приложения</string>
+    <string name="settings_desktop_background">Фон рабочего стола</string>
+    <string name="settings_choose_image">Выбрать изображение</string>
+    <string name="settings_remove_image">Удалить</string>
+    <string name="settings_icon_settings_button">Настроить значки главного экрана</string>
+    <string name="topbar_members_count">Участников: %1$d</string>
+    <string name="manage_tournaments">Управление турнирами</string>
+
+    <!-- Desktop Home icons (ui/home/HomeScreen.kt DesktopHomeGrid,
+         ui/settings/IconSettingsScreen.kt) -->
+    <string name="desktop_icon_board">Правление</string>
+    <string name="desktop_icon_shop">Магазин</string>
+    <string name="desktop_icon_video">Видео</string>
+    <string name="video_empty">Нет доступных видео.</string>
+    <string name="language_tile_label">Язык</string>
+    <string name="icon_settings_title">Значки главного экрана</string>
+    <string name="icon_settings_subtitle">Удерживайте ручку и перетаскивайте, чтобы изменить порядок. Используйте переключатель, чтобы скрыть значок с главного экрана.</string>
+    <string name="icon_settings_drag_handle">Перетащите для изменения порядка</string>
+
+    <!-- Initial club membership question (ui/onboarding/MembershipQuestionScreen) -->
+    <string name="membership_question_title">Вы состоите в клубе?</string>
+    <string name="membership_question_subtitle">Если вы являетесь членом шахматного клуба, выберите свой клуб. В противном случае вы всё равно можете пользоваться приложением: вы увидите турниры и новости всех клубов.</string>
+    <string name="membership_question_yes">Да, я состою в клубе</string>
+    <string name="membership_question_no">Нет, я не состою ни в одном клубе</string>
+    <string name="platform_branding_name">Chessora Platform</string>
+
+    <!-- Authentication (ui/auth/) - mandatory sign-in -->
+    <string name="identity_error_retry">Повторить</string>
+    <string name="common_yes">Да</string>
+    <string name="common_no">Нет</string>
+    <string name="common_confirm">Подтвердить</string>
+    <string name="common_loading">Загрузка…</string>
+
+    <string name="login_title">Вход в Chessora</string>
+    <string name="login_subtitle">Перед использованием приложения нужно войти в систему.</string>
+    <string name="login_google">Войти через Google</string>
+    <string name="login_fide">Войти по ID ФИДЕ</string>
+    <string name="login_email">Войти по email и паролю</string>
+    <string name="login_email_title">Вход</string>
+    <string name="login_email_field_label">Email</string>
+    <string name="login_password_label">Пароль</string>
+    <string name="login_submit">Войти</string>
+    <string name="login_forgot_password">Забыли пароль?</string>
+    <string name="login_email_not_confirmed">Сначала подтвердите свой email.</string>
+    <string name="login_resend_confirmation">Отправить письмо повторно</string>
+    <string name="login_confirmation_resent">Мы отправили вам новое письмо для подтверждения.</string>
+
+    <string name="forgot_password_title">Забыли пароль</string>
+    <string name="forgot_password_subtitle">Введите свой email: если он соответствует аккаунту, вы получите инструкции по сбросу пароля.</string>
+    <string name="forgot_password_submit">Отправить</string>
+    <string name="forgot_password_sent">Если такой адрес существует, вы получите письмо с инструкциями.</string>
+    <string name="forgot_password_network_error">Не удалось подключиться. Повторите попытку.</string>
+
+    <string name="login_fide_title">Войти по ID ФИДЕ</string>
+    <string name="login_fide_field_label">ID ФИДЕ</string>
+    <string name="login_fide_submit">Продолжить</string>
+    <string name="login_fide_dont_know">Я не знаю свой ID ФИДЕ</string>
+    <string name="login_fide_search_label">Поиск по имени и фамилии</string>
+    <string name="login_fide_found">Привет, %1$s</string>
+    <string name="login_fide_ask_club_membership">Вы состоите в клубе?</string>
+    <string name="pick_club_title">Выберите свой клуб</string>
+    <string name="pick_roster_title">Выберите своё имя</string>
+    <string name="pick_roster_search_hint">Поиск по имени…</string>
+    <string name="register_confirm_password_label">Подтвердите пароль</string>
+    <string name="register_first_name_label">Имя</string>
+    <string name="register_last_name_label">Фамилия</string>
+    <string name="register_submit">Зарегистрироваться</string>
+
+    <string name="complete_profile_title">Ещё один шаг</string>
+    <string name="complete_profile_ask_fide">У вас есть ID ФИДЕ или вы состоите в клубе?</string>
+    <string name="complete_profile_amateur_title">Заполните профиль</string>
+
+    <string name="email_pending_title">Проверьте почту</string>
+    <string name="email_pending_body">Мы отправили письмо на %1$s: перейдите по ссылке, чтобы подтвердить адрес, прежде чем сможете войти.</string>
+    <string name="email_pending_back_to_login">Назад ко входу</string>
+
+    <string name="settings_logout">Выйти</string>
+    <string name="settings_reset_button">Сбросить настройки</string>
+    <string name="settings_reset_title">Сбросить настройки</string>
+    <string name="settings_reset_body">Все локальные настройки (выбранный клуб, фоны, порядок и видимость значков главного экрана, уведомления) будут сброшены, и вам нужно будет войти снова. Это действие нельзя отменить.</string>
+    <string name="settings_reset_confirm">Сбросить</string>
+    <string name="settings_reset_cancel">Отмена</string>
+
+    <!-- "My photo" (ui/profile/) -->
+    <string name="more_profile_photo">Моё фото</string>
+    <string name="profile_photo_title">Моё фото</string>
+    <string name="profile_photo_subtitle">Отображается рядом с вашим именем в Рейтинге.</string>
+    <string name="profile_photo_camera">Сделать фото</string>
+    <string name="profile_photo_gallery">Выбрать из галереи</string>
+    <string name="profile_photo_remove">Удалить фото</string>
+    <string name="profile_photo_not_identified">Сначала войдите, чтобы установить фото.</string>
+
+    <!-- Language picker (ui/language/) -->
+    <string name="language_picker_title">Выберите язык</string>
+    <string name="language_name_italian">Italiano</string>
+    <string name="language_name_english">English</string>
+    <string name="language_name_spanish">Español</string>
+    <string name="language_name_french">Français</string>
+    <string name="language_name_german">Deutsch</string>
+    <string name="language_name_russian">Русский</string>
+    <string name="language_name_romanian">Română</string>
+    <string name="language_name_turkish">Türkçe</string>
+</resources>

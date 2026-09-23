@@ -12,6 +12,11 @@ enum class AppLanguage(val tag: String, val flag: String, val labelRes: Int) {
     ITALIAN("it", "🇮🇹", R.string.language_name_italian),
     ENGLISH("en", "🇬🇧", R.string.language_name_english),
     SPANISH("es", "🇪🇸", R.string.language_name_spanish),
+    FRENCH("fr", "🇫🇷", R.string.language_name_french),
+    GERMAN("de", "🇩🇪", R.string.language_name_german),
+    RUSSIAN("ru", "🇷🇺", R.string.language_name_russian),
+    ROMANIAN("ro", "🇷🇴", R.string.language_name_romanian),
+    TURKISH("tr", "🇹🇷", R.string.language_name_turkish),
 }
 
 /** "it"/"en"/"es" - "it" di fallback se non è mai stata scelta esplicitamente una lingua

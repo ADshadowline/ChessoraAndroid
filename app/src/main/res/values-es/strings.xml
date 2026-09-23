@@ -247,4 +247,9 @@
     <string name="language_name_italian">Italiano</string>
     <string name="language_name_english">English</string>
     <string name="language_name_spanish">Español</string>
+    <string name="language_name_french">Français</string>
+    <string name="language_name_german">Deutsch</string>
+    <string name="language_name_russian">Русский</string>
+    <string name="language_name_romanian">Română</string>
+    <string name="language_name_turkish">Türkçe</string>
 </resources>
