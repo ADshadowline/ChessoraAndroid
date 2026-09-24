@@ -44,7 +44,9 @@ import org.chessora.app.data.remote.dto.ShopProduct
 import org.chessora.app.data.remote.dto.StartClubConversationRequest
 import org.chessora.app.data.remote.dto.StartDirectConversationRequest
 import org.chessora.app.data.remote.dto.SiteSettings
+import org.chessora.app.data.remote.dto.StandingsRow
 import org.chessora.app.data.remote.dto.TournamentPreRegistrationResult
+import org.chessora.app.data.remote.dto.TournamentRound
 import org.chessora.app.data.remote.dto.TournamentSummary
 import org.chessora.app.data.remote.dto.VideoNewsItem
 import org.chessora.app.data.remote.dto.VideoRow
@@ -168,6 +170,12 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun getRegisteredPlayers(id: Int): Result<List<RegisteredPlayer>> =
         safeCall { api.getRegisteredPlayers(id) }
+
+    suspend fun getTournamentRounds(id: Int): Result<List<TournamentRound>> =
+        safeCall { api.getTournamentRounds(id) }
+
+    suspend fun getTournamentStandings(id: Int): Result<List<StandingsRow>> =
+        safeCall { api.getTournamentStandings(id) }
 
     // ---------- Classifica ----------
 

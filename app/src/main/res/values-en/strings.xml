@@ -32,7 +32,7 @@
     <string name="nav_news">News</string>
     <string name="nav_ranking">Ranking</string>
     <string name="nav_more">More</string>
-    <string name="nav_registrations">Tournament registrations</string>
+    <string name="nav_registrations">My tournaments</string>
     <string name="nav_messaging">Messages</string>
 
     <!-- Tournament registrations -->

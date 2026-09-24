@@ -32,7 +32,7 @@
     <string name="nav_news">Новости</string>
     <string name="nav_ranking">Рейтинг</string>
     <string name="nav_more">Ещё</string>
-    <string name="nav_registrations">Регистрации на турниры</string>
+    <string name="nav_registrations">Мои турниры</string>
     <string name="nav_messaging">Сообщения</string>
 
     <!-- Tournament registrations -->

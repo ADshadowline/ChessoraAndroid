@@ -42,6 +42,12 @@ data class TournamentSummary(
     // dover tentare la chiamata e mostrare l'errore del server.
     val inizioIscrizioni: String? = null,
     val fineIscrizioni: String? = null,
+    // Ciclo di vita reale (0=Creato,1=InCorso,2=Concluso - vedi
+    // TournamentRegistrationCodes.LifecycleStatus) - un torneo InCorso non accetta più
+    // preiscrizioni (stesso controllo lato server) e in "Iscrizioni ai tornei"/Home mostra
+    // il pallino verde lampeggiante che porta agli abbinamenti/classifica invece che al
+    // dettaglio torneo (vedi RegistrationsScreen/ui/pairings/).
+    val lifecycleStatus: Int = 0,
 )
 
 /** Specchio di Chessora.Contracts.Tournaments.TournamentRegistrationCountDto (risposta

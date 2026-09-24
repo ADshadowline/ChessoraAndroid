@@ -41,8 +41,10 @@ import org.chessora.app.data.remote.dto.ReportDeliveryRequest
 import org.chessora.app.data.remote.dto.ResolveClubResponse
 import org.chessora.app.data.remote.dto.ShopProduct
 import org.chessora.app.data.remote.dto.SiteSettings
+import org.chessora.app.data.remote.dto.StandingsRow
 import org.chessora.app.data.remote.dto.TournamentPreRegistrationResult
 import org.chessora.app.data.remote.dto.RegisteredPlayer
+import org.chessora.app.data.remote.dto.TournamentRound
 import org.chessora.app.data.remote.dto.TournamentSummary
 import org.chessora.app.data.remote.dto.VideoNewsItem
 import org.chessora.app.data.remote.dto.VideoRow
@@ -312,6 +314,17 @@ interface ChessoraApi {
      * stesso endpoint usato dalla lista iscritti su tourn.chessora.org. */
     @GET("api/tornei/{id}/iscritti")
     suspend fun getRegisteredPlayers(@Path("id") id: Int): List<RegisteredPlayer>
+
+    /** Turni pubblicati di un torneo avviato (mai i turni ancora in bozza) - nessuna
+     * autenticazione richiesta, stesso endpoint usato da abbinamenti-risultati.html sul
+     * sito. */
+    @GET("api/tornei/{id}/rounds")
+    suspend fun getTournamentRounds(@Path("id") id: Int): List<TournamentRound>
+
+    /** Classifica calcolata dai risultati inseriti (mai un punteggio "cotto" salvato per
+     * turno) - nessuna autenticazione richiesta. */
+    @GET("api/tornei/{id}/standings")
+    suspend fun getTournamentStandings(@Path("id") id: Int): List<StandingsRow>
 
     // ---------- Notifiche push ----------
 

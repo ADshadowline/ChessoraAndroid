@@ -74,6 +74,7 @@ class SessionViewModel(
         _isTournamentManager.value = false
         _registeredTournamentsCount.value = 0
         _registeredTournamentStartingSoon.value = null
+        _hasTournamentInProgress.value = false
         _unreadMessagesCount.value = 0
         viewModelScope.launch {
             AuthSessionPersister.clear(authPreferences, clubPreferences)
@@ -95,6 +96,7 @@ class SessionViewModel(
         _isTournamentManager.value = false
         _registeredTournamentsCount.value = 0
         _registeredTournamentStartingSoon.value = null
+        _hasTournamentInProgress.value = false
         _unreadMessagesCount.value = 0
         viewModelScope.launch {
             authPreferences.clearSession()
@@ -151,15 +153,24 @@ class SessionViewModel(
     private val _registeredTournamentStartingSoon = MutableStateFlow<LocalDateTime?>(null)
     val registeredTournamentStartingSoon: StateFlow<LocalDateTime?> = _registeredTournamentStartingSoon
 
+    /** True se tra i tornei preiscritti ce n'è almeno uno InCorso (LifecycleStatus=1) -
+     * mostra il pallino verde lampeggiante sull'icona "I miei tornei" (stesso pallino
+     * usato in RegistrationsScreen/tourn.chessora.org per un torneo live), stesso punto
+     * di aggiornamento di [registeredTournamentsCount] sopra. */
+    private val _hasTournamentInProgress = MutableStateFlow(false)
+    val hasTournamentInProgress: StateFlow<Boolean> = _hasTournamentInProgress
+
     fun refreshRegisteredTournamentsCount() {
         if (!_isLoggedIn.value) {
             _registeredTournamentsCount.value = 0
             _registeredTournamentStartingSoon.value = null
+            _hasTournamentInProgress.value = false
             return
         }
         viewModelScope.launch {
             val tournaments = repository.getMyPreRegistrations().getOrNull() ?: emptyList()
             _registeredTournamentsCount.value = tournaments.size
+            _hasTournamentInProgress.value = tournaments.any { it.lifecycleStatus == 1 }
             val today = LocalDate.now()
             _registeredTournamentStartingSoon.value = tournaments
                 .mapNotNull { runCatching { LocalDateTime.parse(it.inizio) }.getOrNull() }

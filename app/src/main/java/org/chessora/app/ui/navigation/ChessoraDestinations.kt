@@ -61,6 +61,10 @@ object ChessoraDestinations {
     const val PERFORMANCE = "performance?focus={focus}"
     const val PROFILE_PHOTO = "profile-photo"
     const val TOURNAMENT_DETAIL = "tornei/{idTournament}"
+    /** Abbinamenti/classifica di un torneo AVVIATO (LifecycleStatus InCorso/Concluso) -
+     * aperta da RegistrationsScreen al posto di TOURNAMENT_DETAIL quando il torneo
+     * preiscritto non accetta più iscrizioni, vedi ui/pairings/PairingsScreen.kt. */
+    const val TOURNAMENT_PAIRINGS = "tornei/{idTournament}/abbinamenti"
     /** [url] è l'URL assoluto del bando, URL-encoded - vedi BandoViewerScreen. */
     const val BANDO_VIEWER = "bando-viewer/{url}"
 
@@ -79,6 +83,8 @@ object ChessoraDestinations {
     fun performance(focus: String? = null) = if (focus != null) "performance?focus=$focus" else "performance"
 
     fun tournamentDetail(idTournament: Int) = "tornei/$idTournament"
+
+    fun tournamentPairings(idTournament: Int) = "tornei/$idTournament/abbinamenti"
 
     fun bandoViewer(url: String) = "bando-viewer/${java.net.URLEncoder.encode(url, "UTF-8")}"
 

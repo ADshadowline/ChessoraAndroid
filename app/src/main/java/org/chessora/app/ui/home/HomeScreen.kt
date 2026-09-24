@@ -99,6 +99,7 @@ import org.chessora.app.ui.language.AppLanguage
 import org.chessora.app.ui.language.LanguagePickerDialog
 import org.chessora.app.ui.language.currentAppLanguageTag
 import org.chessora.app.ui.language.setAppLanguage
+import org.chessora.app.ui.pairings.LiveTournamentDot
 
 /**
  * Voci di navigazione mostrate come icone quando l'utente ha scelto la
@@ -129,6 +130,7 @@ fun HomeScreen(
     registeredTournamentsCount: Int = 0,
     unreadMessagesCount: Int = 0,
     registeredTournamentStartingSoon: LocalDateTime? = null,
+    hasTournamentInProgress: Boolean = false,
 ) {
     val viewModel = chessoraViewModel { app -> HomeViewModel(app.repository, app.clubPreferences) }
     val displayMode by viewModel.displayMode.collectAsState()
@@ -164,6 +166,7 @@ fun HomeScreen(
                 registeredTournamentsCount = registeredTournamentsCount,
                 unreadMessagesCount = unreadMessagesCount,
                 registeredTournamentStartingSoon = registeredTournamentStartingSoon,
+                hasTournamentInProgress = hasTournamentInProgress,
                 nextEventStart = nextEventStart,
             )
         }
@@ -254,6 +257,10 @@ private data class DesktopIcon(
      * dell'inizio (vedi [rememberIconCountdownText] su DesktopIconTile), non subito al
      * passaggio di questo valore da null a non-null. */
     val countdownTarget: LocalDateTime? = null,
+    /** True per "I miei tornei" quando almeno un torneo preiscritto è InCorso - mostra il
+     * pallino verde lampeggiante (vedi ui/pairings/LiveTournamentDot), stesso linguaggio
+     * visivo di tourn.chessora.org per un torneo live. */
+    val showLiveDot: Boolean = false,
 )
 
 /**
@@ -343,6 +350,8 @@ private fun DesktopHomeGrid(
      * proprio scatta solo nell'ultima ora, vedi DesktopIcon.countdownTarget) - vedi
      * SessionViewModel.registeredTournamentStartingSoon. */
     registeredTournamentStartingSoon: LocalDateTime? = null,
+    /** Vedi DesktopIcon.showLiveDot - SessionViewModel.hasTournamentInProgress. */
+    hasTournamentInProgress: Boolean = false,
     /** Orario dell'evento più vicino in calendario, qualunque esso sia - vedi
      * HomeScreen (che lo risolve solo in modalità desktop, dove EventsListScreen non è
      * montata e non lo caricherebbe altrimenti). */
@@ -351,7 +360,7 @@ private fun DesktopHomeGrid(
     // Messaggi e Impostazioni sono ancorate agli angoli in basso (sinistra/destra), non
     // parte della griglia scorrevole - posizione fissa richiesta esplicitamente, non
     // riordinabili/nascondibili da Impostazioni > Icone Home.
-    val baseIcons = remember(desktop, isPlatformMode, iconOrder, hiddenIcons, registeredTournamentsCount, registeredTournamentStartingSoon, nextEventStart) {
+    val baseIcons = remember(desktop, isPlatformMode, iconOrder, hiddenIcons, registeredTournamentsCount, registeredTournamentStartingSoon, hasTournamentInProgress, nextEventStart) {
         val defaults = DESKTOP_ICON_DESCRIPTORS.filter { !(isPlatformMode && it.hiddenInPlatformMode) }
         applyIconPreferences(defaults, iconOrder, hiddenIcons).mapNotNull { descriptor ->
             callbackFor(descriptor.id, desktop)?.let { onClick ->
@@ -361,7 +370,8 @@ private fun DesktopHomeGrid(
                     "events" -> nextEventStart
                     else -> null
                 }
-                DesktopIcon(descriptor.id, descriptor.labelRes, descriptor.icon, onClick, badgeCount, countdownTarget)
+                val showLiveDot = descriptor.id == "registrations" && hasTournamentInProgress
+                DesktopIcon(descriptor.id, descriptor.labelRes, descriptor.icon, onClick, badgeCount, countdownTarget, showLiveDot)
             }
         }
     }
@@ -533,7 +543,14 @@ private fun DesktopIconTile(entry: DesktopIcon, modifier: Modifier = Modifier, c
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            if (entry.badgeCount > 0) {
+            // Un torneo InCorso ha priorità sul semplice conteggio preiscrizioni: il
+            // pallino lampeggiante segnala qualcosa da guardare ORA (abbinamenti/
+            // classifica), più urgente di un numero statico.
+            if (entry.showLiveDot) {
+                BadgedBox(badge = { LiveTournamentDot(size = 10.dp) }) {
+                    Icon(entry.icon, contentDescription = null, modifier = Modifier.size(iconSize))
+                }
+            } else if (entry.badgeCount > 0) {
                 BadgedBox(badge = { ChessoraCountBadge(entry.badgeCount) }) {
                     Icon(entry.icon, contentDescription = null, modifier = Modifier.size(iconSize))
                 }

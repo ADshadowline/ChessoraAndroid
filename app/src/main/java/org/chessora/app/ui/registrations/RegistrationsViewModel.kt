@@ -12,13 +12,17 @@ import org.chessora.app.data.repository.ChessoraRepository
 import org.chessora.app.ui.common.UiState
 import org.chessora.app.ui.common.toUiState
 
-/** Una riga della schermata "Iscrizioni": un torneo a cui il chiamante risulta
+/** Una riga della schermata "I miei tornei": un torneo a cui il chiamante risulta
  * PREISCRITTO (vedi TournamentRegistration.PreRegisteredPlayers - non è una conferma di
- * partecipazione) - id serve per aprirne il dettaglio. */
+ * partecipazione) - id serve per aprirne il dettaglio. isInProgress (LifecycleStatus
+ * InCorso) porta al pallino verde lampeggiante e cambia la destinazione al tocco:
+ * abbinamenti/classifica (ui/pairings/) invece del solito dettaglio torneo, dove non si
+ * potrebbe comunque più fare nulla (le iscrizioni sono chiuse una volta avviato). */
 data class TournamentRegistrationEntry(
     val id: Int,
     val title: String,
     val dateLabel: String,
+    val isInProgress: Boolean,
 )
 
 /** Schermata "Iscrizioni" (sostituisce il Calendario in bottom bar, spostato dentro
@@ -58,7 +62,14 @@ class RegistrationsViewModel(
 
         _state.value = repository.getMyPreRegistrations()
             .map { tornei ->
-                tornei.map { t -> TournamentRegistrationEntry(id = t.id, title = t.eventoNome, dateLabel = formatDateLabel(t.inizio, t.fine)) }
+                tornei.map { t ->
+                    TournamentRegistrationEntry(
+                        id = t.id,
+                        title = t.eventoNome,
+                        dateLabel = formatDateLabel(t.inizio, t.fine),
+                        isInProgress = t.lifecycleStatus == 1,
+                    )
+                }
             }
             .toUiState()
     }

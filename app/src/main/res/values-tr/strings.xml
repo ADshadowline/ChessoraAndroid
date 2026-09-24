@@ -32,7 +32,7 @@
     <string name="nav_news">Haberler</string>
     <string name="nav_ranking">Sıralama</string>
     <string name="nav_more">Diğer</string>
-    <string name="nav_registrations">Turnuva kayıtları</string>
+    <string name="nav_registrations">Turnuvalarım</string>
     <string name="nav_messaging">Mesajlar</string>
 
     <!-- Tournament registrations -->

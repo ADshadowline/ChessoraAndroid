@@ -3,6 +3,7 @@ package org.chessora.app.ui.registrations
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,9 +28,10 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import org.chessora.app.R
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
+import org.chessora.app.ui.pairings.LiveTournamentDot
 
 @Composable
-fun RegistrationsScreen(onIdentify: () -> Unit, onOpenTournament: (Int) -> Unit) {
+fun RegistrationsScreen(onIdentify: () -> Unit, onOpenTournament: (idTournament: Int, isInProgress: Boolean) -> Unit) {
     val viewModel = chessoraViewModel { app -> RegistrationsViewModel(app.repository, app.clubPreferences) }
     val state by viewModel.state.collectAsState()
     val isAuthenticated by viewModel.isAuthenticated.collectAsState()
@@ -78,16 +80,21 @@ private fun EmptyContent() {
 }
 
 @Composable
-private fun RegistrationsList(registrations: List<TournamentRegistrationEntry>, onOpenTournament: (Int) -> Unit) {
+private fun RegistrationsList(registrations: List<TournamentRegistrationEntry>, onOpenTournament: (Int, Boolean) -> Unit) {
     LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         items(registrations, key = { it.id }) { entry ->
             Card(
-                onClick = { onOpenTournament(entry.id) },
+                onClick = { onOpenTournament(entry.id, entry.isInProgress) },
                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
             ) {
-                Column(modifier = Modifier.padding(12.dp)) {
-                    Text(entry.title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-                    Text(entry.dateLabel, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 2.dp))
+                Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(entry.title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                        Text(entry.dateLabel, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 2.dp))
+                    }
+                    if (entry.isInProgress) {
+                        LiveTournamentDot(modifier = Modifier.padding(start = 8.dp))
+                    }
                 }
             }
         }

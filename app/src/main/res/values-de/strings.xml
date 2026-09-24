@@ -32,7 +32,7 @@
     <string name="nav_news">News</string>
     <string name="nav_ranking">Rangliste</string>
     <string name="nav_more">Mehr</string>
-    <string name="nav_registrations">Turnieranmeldungen</string>
+    <string name="nav_registrations">Meine Turniere</string>
     <string name="nav_messaging">Nachrichten</string>
 
     <!-- Tournament registrations -->

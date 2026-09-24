@@ -80,6 +80,8 @@ import org.chessora.app.ui.news.NewsDetailScreen
 import org.chessora.app.ui.news.NewsListScreen
 import org.chessora.app.ui.onboarding.MembershipQuestionScreen
 import org.chessora.app.ui.onboarding.OnboardingScreen
+import org.chessora.app.ui.pairings.LiveTournamentDot
+import org.chessora.app.ui.pairings.PairingsScreen
 import org.chessora.app.ui.performance.EloRatingType
 import org.chessora.app.ui.performance.PerformanceScreen
 import org.chessora.app.ui.profile.ProfilePhotoScreen
@@ -183,6 +185,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
     val isTournamentManager by sessionViewModel.isTournamentManager.collectAsState()
     val registeredTournamentsCount by sessionViewModel.registeredTournamentsCount.collectAsState()
     val registeredTournamentStartingSoon by sessionViewModel.registeredTournamentStartingSoon.collectAsState()
+    val hasTournamentInProgress by sessionViewModel.hasTournamentInProgress.collectAsState()
     val unreadMessagesCount by sessionViewModel.unreadMessagesCount.collectAsState()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -234,7 +237,14 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                                     ChessoraDestinations.MESSAGING -> unreadMessagesCount
                                     else -> 0
                                 }
-                                if (badgeCount > 0) {
+                                // Un torneo InCorso ha priorità sul semplice conteggio: il
+                                // pallino lampeggiante segnala qualcosa da guardare ORA
+                                // (abbinamenti/classifica), più urgente di un numero statico.
+                                if (tab.route == ChessoraDestinations.REGISTRATIONS && hasTournamentInProgress) {
+                                    BadgedBox(badge = { LiveTournamentDot(size = 8.dp) }) {
+                                        Icon(tab.icon, contentDescription = null)
+                                    }
+                                } else if (badgeCount > 0) {
                                     BadgedBox(badge = { ChessoraCountBadge(badgeCount) }) {
                                         Icon(tab.icon, contentDescription = null)
                                     }
@@ -367,6 +377,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                         registeredTournamentsCount = registeredTournamentsCount,
                         unreadMessagesCount = unreadMessagesCount,
                         registeredTournamentStartingSoon = registeredTournamentStartingSoon,
+                        hasTournamentInProgress = hasTournamentInProgress,
                         desktop = DesktopHomeCallbacks(
                             onOpenEvents = { navController.navigate(ChessoraDestinations.EVENTS) },
                             onOpenCalendar = { navController.navigate(ChessoraDestinations.CALENDAR) },
@@ -450,8 +461,20 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                 // serve RequireClub: funziona identica anche in modalità piattaforma.
                 RegistrationsScreen(
                     onIdentify = { navController.navigate(ChessoraDestinations.AUTH_LOGIN) },
-                    onOpenTournament = { idTournament -> navController.navigate(ChessoraDestinations.tournamentDetail(idTournament)) },
+                    // Un torneo InCorso non è più raggiungibile per (dis)iscriversi -
+                    // porta invece ad abbinamenti/classifica (vedi ui/pairings/).
+                    onOpenTournament = { idTournament, isInProgress ->
+                        val route = if (isInProgress) ChessoraDestinations.tournamentPairings(idTournament) else ChessoraDestinations.tournamentDetail(idTournament)
+                        navController.navigate(route)
+                    },
                 )
+            }
+            composable(
+                ChessoraDestinations.TOURNAMENT_PAIRINGS,
+                arguments = listOf(navArgument("idTournament") { type = NavType.IntType }),
+            ) { backStack ->
+                val idTournament = backStack.arguments?.getInt("idTournament") ?: return@composable
+                PairingsScreen(idTournament = idTournament)
             }
             composable(ChessoraDestinations.RANKING) {
                 RankingScreen(club = selectedClub?.takeIf { it != ClubPreferences.PLATFORM_CLUB_CODE })

@@ -32,7 +32,7 @@
     <string name="nav_news">Actualités</string>
     <string name="nav_ranking">Classement</string>
     <string name="nav_more">Plus</string>
-    <string name="nav_registrations">Inscriptions aux tournois</string>
+    <string name="nav_registrations">Mes tournois</string>
     <string name="nav_messaging">Messages</string>
 
     <!-- Tournament registrations -->
