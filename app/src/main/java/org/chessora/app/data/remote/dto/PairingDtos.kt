@@ -27,9 +27,10 @@ data class Pairing(
     val result: String? = null,
 )
 
-/** Specchio di Chessora.Contracts.Tournaments.RoundDto (GET /api/tornei/{id}/rounds,
- * pubblico - solo i turni Published, mai i turni Pending ancora in revisione
- * dall'organizzatore). */
+/** Specchio di Chessora.Contracts.Tournaments.RoundDto - usato sia da GET
+ * /api/tornei/{id}/rounds (pubblico, solo turni Published) sia da GET
+ * /api/tornei/admin/{id}/rounds (organizzatore, vedi ui/tournamentmanager/: include anche
+ * i turni Pending ancora in revisione, non pubblicati). */
 @Serializable
 data class TournamentRound(
     val id: Int,
@@ -50,3 +51,9 @@ data class StandingsRow(
     val score: Double = 0.0,
     val buchholz: Double = 0.0,
 )
+
+/** Specchio di Chessora.Contracts.Tournaments.SubmitResultRequest - corpo di PUT
+ * api/tornei/admin/{id}/pairings/{pairingId}/result (organizzatore, vedi
+ * ui/tournamentmanager/). result=null annulla un risultato già inserito. */
+@Serializable
+data class SubmitResultRequestDto(val result: String? = null)

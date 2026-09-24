@@ -34,6 +34,7 @@
     <string name="nav_more">Ещё</string>
     <string name="nav_registrations">Мои турниры</string>
     <string name="nav_messaging">Сообщения</string>
+    <string name="nav_tournament_manager">Управление турнирами</string>
 
     <!-- Tournament registrations -->
     <string name="registrations_empty">Вы не зарегистрированы ни на один турнир.</string>

@@ -41,6 +41,7 @@
     <string name="nav_more">Altro</string>
     <string name="nav_registrations">I miei tornei</string>
     <string name="nav_messaging">Messaggi</string>
+    <string name="nav_tournament_manager">Gestione tornei</string>
 
     <!-- Iscrizioni ai tornei -->
     <string name="registrations_empty">Non sei iscritto a nessun torneo.</string>

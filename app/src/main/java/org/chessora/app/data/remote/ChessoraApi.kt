@@ -27,6 +27,7 @@ import org.chessora.app.data.remote.dto.RegisterWithFideRequestDto
 import org.chessora.app.data.remote.dto.ResendConfirmationRequestDto
 import org.chessora.app.data.remote.dto.NetworkNewsItem
 import org.chessora.app.data.remote.dto.NewsArticle
+import org.chessora.app.data.remote.dto.OrganizerLoginResponseDto
 import org.chessora.app.data.remote.dto.PerformanceHistoryDto
 import org.chessora.app.data.remote.dto.NewsComment
 import org.chessora.app.data.remote.dto.PlayerSearchResult
@@ -42,6 +43,7 @@ import org.chessora.app.data.remote.dto.ResolveClubResponse
 import org.chessora.app.data.remote.dto.ShopProduct
 import org.chessora.app.data.remote.dto.SiteSettings
 import org.chessora.app.data.remote.dto.StandingsRow
+import org.chessora.app.data.remote.dto.SubmitResultRequestDto
 import org.chessora.app.data.remote.dto.TournamentPreRegistrationResult
 import org.chessora.app.data.remote.dto.RegisteredPlayer
 import org.chessora.app.data.remote.dto.TournamentRound
@@ -52,6 +54,7 @@ import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
@@ -70,9 +73,13 @@ import retrofit2.http.Query
  * estendere - dopodiché il DTO corrispondente in data/remote/dto/ e infine il
  * punto di chiamata in data/repository/ChessoraRepository.kt.
  *
- * NON aggiungere qui endpoint che richiedono autenticazione ADMIN (tutto ciò che
- * sta sotto un percorso "…/admin" oppure "api/platform/…") - quelli restano fuori
- * scope, distinti dal login giocatori sopra (vedi PlayerAuthService lato server).
+ * Eccezione alla regola sopra: la sezione "Gestione tornei (organizzatore)" in fondo
+ * chiama endpoint "…/admin" reali, ma con un SECONDO token (ruolo GestoreTornei/Admin,
+ * ottenuto via la claim self-service api/tourn-organizers/claim - vedi
+ * data/local/OrganizerSession.kt), passato esplicitamente come @Header("Authorization")
+ * su ogni chiamata invece che tramite l'interceptor di default: non va MAI confuso con
+ * il Bearer giocatore di cui sopra. Endpoint "api/platform/…" (admin di piattaforma,
+ * tutt'altra cosa) restano invece fuori scope.
  */
 interface ChessoraApi {
 
@@ -336,4 +343,35 @@ interface ChessoraApi {
 
     @POST("api/devices/messages/{idMessage}/read")
     suspend fun reportNotificationRead(@Path("idMessage") idMessage: Int, @Body request: ReportDeliveryRequest)
+
+    // ---------- Gestione tornei (organizzatore, ui/tournamentmanager/) ----------
+    // Vedi il commento sull'interfaccia sopra: queste chiamate NON usano il Bearer
+    // giocatore di default, ognuna passa esplicitamente il token organizzatore (vedi
+    // ChessoraRepository.ensureOrganizerAuth/OrganizerSession).
+
+    /** Self-service: chiunque abbia un account giocatore può ottenere il ruolo
+     * organizzatore (GestoreTornei, o resta Admin se lo era già) - stesso endpoint/
+     * comportamento di gestione-tornei.html sul sito. Usa il Bearer giocatore di
+     * DEFAULT (nessun @Header qui): è il punto di passaggio da un token all'altro. */
+    @POST("api/tourn-organizers/claim")
+    suspend fun claimTournOrganizer(@Body body: EmptyRequestBody = EmptyRequestBody()): OrganizerLoginResponseDto
+
+    /** "I miei tornei" lato organizzatore (tutti quelli del circolo/dell'utente, non solo
+     * quelli InCorso: il filtro InCorso lo applica ChessoraRepository). */
+    @GET("api/tornei/admin")
+    suspend fun getOrganizedTournaments(@Header("Authorization") auth: String): List<TournamentSummary>
+
+    /** Come getTournamentRounds sopra ma lato organizzatore: include anche i turni
+     * Pending ancora in bozza, non solo i Published. */
+    @GET("api/tornei/admin/{id}/rounds")
+    suspend fun getOrganizerRounds(@Header("Authorization") auth: String, @Path("id") id: Int): List<TournamentRound>
+
+    @POST("api/tornei/admin/{id}/rounds/generate")
+    suspend fun generateRound(@Header("Authorization") auth: String, @Path("id") id: Int, @Body body: EmptyRequestBody = EmptyRequestBody()): TournamentRound
+
+    @POST("api/tornei/admin/{id}/rounds/{roundId}/publish")
+    suspend fun publishRound(@Header("Authorization") auth: String, @Path("id") id: Int, @Path("roundId") roundId: Int, @Body body: EmptyRequestBody = EmptyRequestBody())
+
+    @PUT("api/tornei/admin/{id}/pairings/{pairingId}/result")
+    suspend fun submitOrganizerResult(@Header("Authorization") auth: String, @Path("id") id: Int, @Path("pairingId") pairingId: Int, @Body body: SubmitResultRequestDto)
 }

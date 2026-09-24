@@ -29,6 +29,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.automirrored.filled.EventNote
@@ -119,6 +120,7 @@ data class DesktopHomeCallbacks(
     val onOpenShop: () -> Unit,
     val onOpenVideo: () -> Unit,
     val onOpenSettings: () -> Unit,
+    val onOpenTournamentManager: () -> Unit,
 )
 
 @Composable
@@ -290,6 +292,11 @@ val DESKTOP_ICON_DESCRIPTORS = listOf(
     DesktopIconDescriptor("board", R.string.desktop_icon_board, Icons.Default.People, hiddenInPlatformMode = true),
     DesktopIconDescriptor("shop", R.string.desktop_icon_shop, Icons.Default.ShoppingCart, hiddenInPlatformMode = true),
     DesktopIconDescriptor("video", R.string.desktop_icon_video, Icons.Default.PlayCircle, hiddenInPlatformMode = true),
+    // Self-service (claim automatica al primo apertura, vedi ChessoraRepository.
+    // ensureOrganizerAuth) - ha senso anche in modalità piattaforma, quindi nessun
+    // hiddenInPlatformMode. Da non confondere con l'icona trofeo di isTournamentManager
+    // in ChessoraNavHost (ruolo "Responsabile dei tornei", apre il wizard: tutt'altro).
+    DesktopIconDescriptor("tournamentManager", R.string.nav_tournament_manager, Icons.AutoMirrored.Filled.Assignment),
 )
 
 /** Applica ordine personalizzato e icone nascoste (vedi ClubPreferences) all'elenco di
@@ -316,6 +323,7 @@ private fun callbackFor(id: String, desktop: DesktopHomeCallbacks): (() -> Unit)
     "board" -> desktop.onOpenBoard
     "shop" -> desktop.onOpenShop
     "video" -> desktop.onOpenVideo
+    "tournamentManager" -> desktop.onOpenTournamentManager
     else -> null
 }
 

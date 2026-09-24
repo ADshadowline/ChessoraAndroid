@@ -34,6 +34,7 @@
     <string name="nav_more">Diğer</string>
     <string name="nav_registrations">Turnuvalarım</string>
     <string name="nav_messaging">Mesajlar</string>
+    <string name="nav_tournament_manager">Turnuva yönetimi</string>
 
     <!-- Tournament registrations -->
     <string name="registrations_empty">Herhangi bir turnuvaya kayıtlı değilsiniz.</string>

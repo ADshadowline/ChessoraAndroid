@@ -59,14 +59,22 @@ object NetworkModule {
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(15, TimeUnit.SECONDS)
             .addInterceptor { chain ->
+                // Le chiamate "organizzatore" (api/tornei/admin/**, vedi OrganizerSession)
+                // passano il proprio Bearer esplicitamente come @Header per-richiesta,
+                // scavalcando questo default: senza il controllo su header() qui sotto la
+                // richiesta finirebbe con DUE header Authorization, e un 401/403 su un
+                // token organizzatore scaduto disconnetterebbe per errore anche la
+                // sessione giocatore, che non c'entra nulla.
+                val original = chain.request()
+                val hasExplicitAuth = original.header("Authorization") != null
                 val token = AuthSession.accessToken
-                val request = if (!token.isNullOrBlank()) {
-                    chain.request().newBuilder().addHeader("Authorization", "Bearer $token").build()
+                val request = if (!hasExplicitAuth && !token.isNullOrBlank()) {
+                    original.newBuilder().addHeader("Authorization", "Bearer $token").build()
                 } else {
-                    chain.request()
+                    original
                 }
                 val response = chain.proceed(request)
-                if (response.code == 401 && !token.isNullOrBlank()) {
+                if (!hasExplicitAuth && response.code == 401 && !token.isNullOrBlank()) {
                     AuthSession.accessToken = null
                     onUnauthorized?.invoke()
                 }

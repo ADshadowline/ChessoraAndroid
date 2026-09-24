@@ -3,6 +3,7 @@ package org.chessora.app.data.repository
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.chessora.app.data.local.OrganizerSession
 import org.chessora.app.data.remote.ChessoraApi
 import org.chessora.app.data.remote.dto.BoardMember
 import org.chessora.app.data.remote.dto.CalendarEvent
@@ -45,6 +46,7 @@ import org.chessora.app.data.remote.dto.StartClubConversationRequest
 import org.chessora.app.data.remote.dto.StartDirectConversationRequest
 import org.chessora.app.data.remote.dto.SiteSettings
 import org.chessora.app.data.remote.dto.StandingsRow
+import org.chessora.app.data.remote.dto.SubmitResultRequestDto
 import org.chessora.app.data.remote.dto.TournamentPreRegistrationResult
 import org.chessora.app.data.remote.dto.TournamentRound
 import org.chessora.app.data.remote.dto.TournamentSummary
@@ -176,6 +178,50 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun getTournamentStandings(id: Int): Result<List<StandingsRow>> =
         safeCall { api.getTournamentStandings(id) }
+
+    // ---------- Gestione tornei (organizzatore, ui/tournamentmanager/) ----------
+    // Vedi OrganizerSession/il commento su ChessoraApi: un secondo token, mai il Bearer
+    // giocatore, ottenuto on-demand con la claim self-service (come gestione-tornei.html
+    // sul sito) e riusato finché resta valido.
+
+    /** Ottiene il token organizzatore da OrganizerSession, richiedendolo con la claim se
+     * assente o se [forceRefresh] (dopo un 401/403 sul token precedente, vedi
+     * [withOrganizerAuth]). */
+    private suspend fun ensureOrganizerAuth(forceRefresh: Boolean = false): String {
+        val cached = OrganizerSession.token
+        if (!forceRefresh && cached != null) return "Bearer $cached"
+        val claimed = api.claimTournOrganizer().token
+        OrganizerSession.token = claimed
+        return "Bearer $claimed"
+    }
+
+    /** Esegue [block] col token organizzatore corrente; se risponde 401/403 (token
+     * scaduto/revocato) ri-effettua la claim UNA sola volta e ritenta, prima di
+     * propagare l'errore - mai un logout globale, quello riguarda solo il token
+     * giocatore (vedi NetworkModule). */
+    private suspend fun <T> withOrganizerAuth(block: suspend (String) -> T): Result<T> = safeCall {
+        val auth = ensureOrganizerAuth()
+        try {
+            block(auth)
+        } catch (e: HttpException) {
+            if (e.code() == 401 || e.code() == 403) block(ensureOrganizerAuth(forceRefresh = true)) else throw e
+        }
+    }
+
+    suspend fun getOrganizedTournaments(): Result<List<TournamentSummary>> =
+        withOrganizerAuth { auth -> api.getOrganizedTournaments(auth) }
+
+    suspend fun getOrganizerRounds(id: Int): Result<List<TournamentRound>> =
+        withOrganizerAuth { auth -> api.getOrganizerRounds(auth, id) }
+
+    suspend fun generateRound(id: Int): Result<TournamentRound> =
+        withOrganizerAuth { auth -> api.generateRound(auth, id) }
+
+    suspend fun publishRound(id: Int, roundId: Int): Result<Unit> =
+        withOrganizerAuth { auth -> api.publishRound(auth, id, roundId) }
+
+    suspend fun submitOrganizerResult(id: Int, pairingId: Int, result: String?): Result<Unit> =
+        withOrganizerAuth { auth -> api.submitOrganizerResult(auth, id, pairingId, SubmitResultRequestDto(result)) }
 
     // ---------- Classifica ----------
 

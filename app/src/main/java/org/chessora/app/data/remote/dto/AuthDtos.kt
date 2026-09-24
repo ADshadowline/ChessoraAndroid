@@ -19,6 +19,19 @@ data class PlayerAuthResponseDto(
     val profileComplete: Boolean = false,
 )
 
+/** Specchio minimo di Chessora.Contracts.Auth.LoginResponse - risposta di POST
+ * api/tourn-organizers/claim (vedi OrganizerSession/ChessoraRepository.ensureOrganizerAuth):
+ * un contratto DIVERSO da PlayerAuthResponseDto (Token invece di AccessToken, più un
+ * Role/IdClub che il token giocatore non ha). Bastano i tre campi usati: ignoreUnknownKeys
+ * (vedi NetworkModule) scarta il resto (ExpiresAtUtc, UserName, AllowedMenuCategories/
+ * Steps, ClubPublicCode/Name - pensati per il wizard, non usati qui). */
+@Serializable
+data class OrganizerLoginResponseDto(
+    val token: String,
+    val role: String,
+    val idClub: Int? = null,
+)
+
 @Serializable
 data class GoogleLoginResponseDto(val auth: PlayerAuthResponseDto)
 

@@ -34,6 +34,7 @@
     <string name="nav_more">Mai mult</string>
     <string name="nav_registrations">Turneele mele</string>
     <string name="nav_messaging">Mesaje</string>
+    <string name="nav_tournament_manager">Gestionare turnee</string>
 
     <!-- Tournament registrations -->
     <string name="registrations_empty">Nu ești înscris la niciun turneu.</string>

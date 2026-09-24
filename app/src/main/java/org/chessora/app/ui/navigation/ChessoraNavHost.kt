@@ -93,6 +93,8 @@ import org.chessora.app.ui.settings.SettingsScreen
 import org.chessora.app.ui.shop.ShopScreen
 import org.chessora.app.ui.splash.SplashScreen
 import org.chessora.app.ui.theme.ChessoraGold
+import org.chessora.app.ui.tournamentmanager.TournamentManagerListScreen
+import org.chessora.app.ui.tournamentmanager.TournamentManagerRoundsScreen
 import org.chessora.app.ui.tournaments.TournamentDetailScreen
 import org.chessora.app.ui.video.VideoScreen
 
@@ -390,6 +392,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                             onOpenShop = { navController.navigate(ChessoraDestinations.SHOP) },
                             onOpenVideo = { navController.navigate(ChessoraDestinations.VIDEO) },
                             onOpenSettings = { navController.navigate(ChessoraDestinations.SETTINGS) },
+                            onOpenTournamentManager = { navController.navigate(ChessoraDestinations.TOURNAMENT_MANAGER_LIST) },
                         ),
                     )
                 }
@@ -475,6 +478,18 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
             ) { backStack ->
                 val idTournament = backStack.arguments?.getInt("idTournament") ?: return@composable
                 PairingsScreen(idTournament = idTournament)
+            }
+            composable(ChessoraDestinations.TOURNAMENT_MANAGER_LIST) {
+                TournamentManagerListScreen(
+                    onOpenTournament = { idTournament -> navController.navigate(ChessoraDestinations.tournamentManagerRounds(idTournament)) },
+                )
+            }
+            composable(
+                ChessoraDestinations.TOURNAMENT_MANAGER_ROUNDS,
+                arguments = listOf(navArgument("idTournament") { type = NavType.IntType }),
+            ) { backStack ->
+                val idTournament = backStack.arguments?.getInt("idTournament") ?: return@composable
+                TournamentManagerRoundsScreen(idTournament = idTournament)
             }
             composable(ChessoraDestinations.RANKING) {
                 RankingScreen(club = selectedClub?.takeIf { it != ClubPreferences.PLATFORM_CLUB_CODE })

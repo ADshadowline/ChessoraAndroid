@@ -34,6 +34,7 @@
     <string name="nav_more">More</string>
     <string name="nav_registrations">My tournaments</string>
     <string name="nav_messaging">Messages</string>
+    <string name="nav_tournament_manager">Manage tournaments</string>
 
     <!-- Tournament registrations -->
     <string name="registrations_empty">You aren\'t registered for any tournament.</string>

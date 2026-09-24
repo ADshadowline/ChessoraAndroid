@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.chessora.app.data.local.AuthPreferences
 import org.chessora.app.data.local.AuthSession
+import org.chessora.app.data.local.OrganizerSession
 import org.chessora.app.data.local.ClubPreferences
 import org.chessora.app.data.remote.dto.SiteBranding
 import org.chessora.app.data.repository.ChessoraRepository
@@ -76,6 +77,7 @@ class SessionViewModel(
         _registeredTournamentStartingSoon.value = null
         _hasTournamentInProgress.value = false
         _unreadMessagesCount.value = 0
+        OrganizerSession.token = null
         viewModelScope.launch {
             AuthSessionPersister.clear(authPreferences, clubPreferences)
             clubPreferences.clearSelectedClub()
@@ -98,6 +100,7 @@ class SessionViewModel(
         _registeredTournamentStartingSoon.value = null
         _hasTournamentInProgress.value = false
         _unreadMessagesCount.value = 0
+        OrganizerSession.token = null
         viewModelScope.launch {
             authPreferences.clearSession()
             AuthSession.accessToken = null

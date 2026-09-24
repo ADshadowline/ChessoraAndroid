@@ -68,6 +68,15 @@ object ChessoraDestinations {
     /** [url] è l'URL assoluto del bando, URL-encoded - vedi BandoViewerScreen. */
     const val BANDO_VIEWER = "bando-viewer/{url}"
 
+    // ---------- Gestione tornei (organizzatore, ui/tournamentmanager/) ----------
+    /** Elenco dei tornei InCorso che l'utente (auto-promosso a organizzatore via la
+     * claim self-service, vedi OrganizerSession) può gestire. */
+    const val TOURNAMENT_MANAGER_LIST = "gestione-tornei"
+    /** Turni/scacchiere/risultati di un singolo torneo, lato organizzatore - genera/
+     * pubblica turni e inserisce risultati (a differenza di TOURNAMENT_PAIRINGS, che è
+     * sola lettura per un giocatore preiscritto). */
+    const val TOURNAMENT_MANAGER_ROUNDS = "gestione-tornei/{idTournament}"
+
     const val NEW_MESSAGE = "messaging/new"
 
     /** recipientId è l'idPlayer (diretta) o l'idClub (con un circolo) del
@@ -85,6 +94,8 @@ object ChessoraDestinations {
     fun tournamentDetail(idTournament: Int) = "tornei/$idTournament"
 
     fun tournamentPairings(idTournament: Int) = "tornei/$idTournament/abbinamenti"
+
+    fun tournamentManagerRounds(idTournament: Int) = "gestione-tornei/$idTournament"
 
     fun bandoViewer(url: String) = "bando-viewer/${java.net.URLEncoder.encode(url, "UTF-8")}"
 
