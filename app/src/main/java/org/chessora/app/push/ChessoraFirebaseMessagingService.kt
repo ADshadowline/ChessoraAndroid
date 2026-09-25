@@ -56,6 +56,20 @@ class ChessoraFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
 
+        if (message.data["type"] == "tournament_round") {
+            val idTournamentRegistration = message.data["idTournamentRegistration"]?.toIntOrNull() ?: return
+            val roundNumber = message.data["roundNumber"]?.toIntOrNull() ?: return
+            val tournamentName = message.data["tournamentName"] ?: getString(R.string.app_name)
+            if (AppForegroundTracker.isForeground) {
+                // App aperta in questo momento: niente notifica di sistema, la schermata a
+                // tutto schermo (montata in ChessoraNavHost) la mostra subito da sola.
+                TournamentRoundEvents.emit(RoundPublishedEvent(idTournamentRegistration, roundNumber, tournamentName))
+            } else {
+                showTournamentRoundNotification(idTournamentRegistration, roundNumber, tournamentName)
+            }
+            return
+        }
+
         if (message.data["type"] == "chat") {
             val idConversation = message.data["idConversation"]?.toIntOrNull() ?: return
             val senderName = message.data["senderName"] ?: getString(R.string.app_name)
@@ -152,6 +166,37 @@ class ChessoraFirebaseMessagingService : FirebaseMessagingService() {
         }
     }
 
+    /** Notifica di un turno pubblicato mentre l'app NON è in primo piano - canale
+     * "urgente" (stesso spirito di showChatNotification: l'utente deve accorgersene in
+     * fretta), tocco apre direttamente gli abbinamenti di quel torneo (vedi
+     * EXTRA_ID_TOURNAMENT, letto da ChessoraNavHost). Ad app aperta questo ramo non
+     * viene mai chiamato: vedi il branch "tournament_round" sopra. */
+    private fun showTournamentRoundNotification(idTournamentRegistration: Int, roundNumber: Int, tournamentName: String) {
+        val openAppIntent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra(EXTRA_ID_TOURNAMENT, idTournamentRegistration)
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0, openAppIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+
+        val notification = NotificationCompat.Builder(this, getString(R.string.urgent_notification_channel_id))
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(tournamentName)
+            .setContentText(getString(R.string.tournament_round_published_notification, roundNumber))
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .build()
+
+        try {
+            NotificationManagerCompat.from(this).notify(idTournamentRegistration, notification)
+        } catch (e: SecurityException) {
+            // Permesso negato dall'utente: nessuna notifica, nessun crash.
+        }
+    }
+
     companion object {
         /** Extra sull'Intent che apre MainActivity al tocco della notifica - letto
          * lì per segnalare "letto" al server (vedi MainActivity.kt). */
@@ -160,5 +205,10 @@ class ChessoraFirebaseMessagingService : FirebaseMessagingService() {
         /** Extra sull'Intent che apre MainActivity al tocco di una notifica di chat -
          * letto da ChessoraNavHost per aprire direttamente quella conversazione. */
         const val EXTRA_ID_CONVERSATION = "push_id_conversation"
+
+        /** Extra sull'Intent che apre MainActivity al tocco di una notifica di turno
+         * pubblicato (app NON in primo piano al momento dell'invio) - letto da
+         * ChessoraNavHost per aprire direttamente gli abbinamenti di quel torneo. */
+        const val EXTRA_ID_TOURNAMENT = "push_id_tournament"
     }
 }

@@ -160,6 +160,7 @@
     <string name="settings_icon_settings_button">Customize Home icons</string>
     <string name="topbar_members_count">%1$d members</string>
     <string name="manage_tournaments">Manage tournaments</string>
+    <string name="tournament_round_published_notification">Round %1$d published</string>
 
     <!-- Desktop Home icons (ui/home/HomeScreen.kt DesktopHomeGrid,
          ui/settings/IconSettingsScreen.kt) -->

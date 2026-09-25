@@ -45,10 +45,12 @@ class MainActivity : AppCompatActivity() {
 
         val pendingConversationId = intent?.getIntExtra(ChessoraFirebaseMessagingService.EXTRA_ID_CONVERSATION, -1)
             ?.takeIf { it >= 0 }
+        val pendingTournamentId = intent?.getIntExtra(ChessoraFirebaseMessagingService.EXTRA_ID_TOURNAMENT, -1)
+            ?.takeIf { it >= 0 }
 
         setContent {
             ChessoraTheme {
-                ChessoraNavHost(pendingConversationId = pendingConversationId)
+                ChessoraNavHost(pendingConversationId = pendingConversationId, pendingTournamentId = pendingTournamentId)
                 UpdateAvailableDialog()
             }
         }

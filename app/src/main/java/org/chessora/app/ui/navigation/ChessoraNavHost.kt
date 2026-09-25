@@ -5,9 +5,11 @@ import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -82,6 +84,9 @@ import org.chessora.app.ui.onboarding.MembershipQuestionScreen
 import org.chessora.app.ui.onboarding.OnboardingScreen
 import org.chessora.app.ui.pairings.LiveTournamentDot
 import org.chessora.app.ui.pairings.PairingsScreen
+import org.chessora.app.ui.pairings.RoundPublishedOverlay
+import org.chessora.app.push.RoundPublishedEvent
+import org.chessora.app.push.TournamentRoundEvents
 import org.chessora.app.ui.performance.EloRatingType
 import org.chessora.app.ui.performance.PerformanceScreen
 import org.chessora.app.ui.profile.ProfilePhotoScreen
@@ -121,9 +126,10 @@ private val BOTTOM_TABS = listOf(
  * scelto nulla).
  */
 @Composable
-fun ChessoraNavHost(pendingConversationId: Int? = null) {
+fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int? = null) {
     val navController = rememberNavController()
     var unconsumedConversationId by remember { mutableStateOf(pendingConversationId) }
+    var unconsumedTournamentId by remember { mutableStateOf(pendingTournamentId) }
     val sessionViewModel = chessoraViewModel { app -> SessionViewModel(app.repository, app.clubPreferences, app.authPreferences) }
     val selectedClub by sessionViewModel.selectedClub.collectAsState()
     val identityResolved by sessionViewModel.identityResolved.collectAsState()
@@ -181,6 +187,25 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
         }
     }
 
+    // Tocco di una notifica "turno pubblicato" ricevuta ad app NON in primo piano (vedi
+    // ChessoraFirebaseMessagingService/MainActivity) - stesso pattern di
+    // unconsumedConversationId sopra, apre direttamente gli abbinamenti di quel torneo.
+    LaunchedEffect(currentRoute, unconsumedTournamentId) {
+        val idTournament = unconsumedTournamentId
+        if (idTournament != null && currentRoute in ChessoraDestinations.BOTTOM_BAR_ROUTES) {
+            unconsumedTournamentId = null
+            navController.navigate(ChessoraDestinations.tournamentPairings(idTournament))
+        }
+    }
+
+    // Turno pubblicato mentre l'app era già in primo piano (vedi TournamentRoundEvents) -
+    // mostrato subito come overlay a tutto schermo, indipendentemente da quale schermata
+    // si stia guardando in quel momento (vedi il Box in fondo a questo composable).
+    var roundPublishedEvent by remember { mutableStateOf<RoundPublishedEvent?>(null) }
+    LaunchedEffect(Unit) {
+        TournamentRoundEvents.events.collect { event -> roundPublishedEvent = event }
+    }
+
     val branding by sessionViewModel.branding.collectAsState()
     val identifiedPlayerName by sessionViewModel.identifiedPlayerName.collectAsState()
     val membersCount by sessionViewModel.membersCount.collectAsState()
@@ -202,6 +227,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
         sessionViewModel.refreshUnreadMessagesCount()
     }
 
+    Box(modifier = Modifier.fillMaxSize()) {
     Scaffold(
         topBar = {
             if (showTopBar) {
@@ -592,6 +618,10 @@ fun ChessoraNavHost(pendingConversationId: Int? = null) {
                 IconSettingsScreen(isPlatformMode = selectedClub == ClubPreferences.PLATFORM_CLUB_CODE)
             }
         }
+    }
+    roundPublishedEvent?.let { event ->
+        RoundPublishedOverlay(event = event, onDismiss = { roundPublishedEvent = null })
+    }
     }
 }
 

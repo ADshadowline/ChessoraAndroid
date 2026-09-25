@@ -160,6 +160,7 @@
     <string name="settings_icon_settings_button">Start-Symbole anpassen</string>
     <string name="topbar_members_count">%1$d Mitglieder</string>
     <string name="manage_tournaments">Turnierverwaltung</string>
+    <string name="tournament_round_published_notification">Runde %1$d veröffentlicht</string>
 
     <!-- Desktop Home icons (ui/home/HomeScreen.kt DesktopHomeGrid,
          ui/settings/IconSettingsScreen.kt) -->

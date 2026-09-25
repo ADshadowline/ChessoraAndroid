@@ -11,6 +11,7 @@ import org.chessora.app.data.local.AuthSession
 import org.chessora.app.data.local.ClubPreferences
 import org.chessora.app.data.remote.NetworkModule
 import org.chessora.app.data.repository.ChessoraRepository
+import org.chessora.app.push.AppForegroundTracker
 
 /**
  * Application class: crea una sola volta le dipendenze condivise da tutta l'app
@@ -42,6 +43,7 @@ class ChessoraApplication : Application() {
         // l'interceptor (data/remote/NetworkModule.kt) non allegherebbe il Bearer.
         AuthSession.accessToken = runBlocking { authPreferences.accessToken.first() }
         createNotificationChannel()
+        AppForegroundTracker.register()
     }
 
     /**

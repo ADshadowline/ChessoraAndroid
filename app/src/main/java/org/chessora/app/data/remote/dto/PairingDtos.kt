@@ -3,14 +3,18 @@ package org.chessora.app.data.remote.dto
 import kotlinx.serialization.Serializable
 
 /** Specchio di Chessora.Contracts.Tournaments.PairingPlayerDto - un giocatore così come
- * compare su una scacchiera (nome/rating/titolo, mai l'IdPlayer: qui basta cosa mostrare,
- * non serve messaggiarlo). */
+ * compare su una scacchiera (nome/rating/titolo). idPlayer/photoPath (null se l'iscritto
+ * non ha un IdPlayer risolto) servono a ui/pairings/RoundPublishedOverlay.kt per trovare
+ * "qual è la mia scacchiera" quando arriva la push di turno pubblicato (che non porta un
+ * riferimento diretto alla scacchiera del destinatario) e per mostrarne la foto. */
 @Serializable
 data class PairingPlayer(
     val id: Int,
     val name: String,
     val rating: Int? = null,
     val title: String? = null,
+    val idPlayer: Int? = null,
+    val photoPath: String? = null,
 )
 
 /** Specchio di Chessora.Contracts.Tournaments.PairingDto - una scacchiera di un turno.

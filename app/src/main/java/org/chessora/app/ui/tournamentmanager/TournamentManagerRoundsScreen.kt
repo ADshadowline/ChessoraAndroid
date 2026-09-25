@@ -70,6 +70,12 @@ fun TournamentManagerRoundsScreen(idTournament: Int) {
         }
         val round = rounds.firstOrNull { it.roundNumber == selectedRoundNumber }
         val hasPendingRound = rounds.any { it.status == "Pending" }
+        // "Genera turno successivo" ha senso solo quando l'ultimo turno generato è
+        // completo (tutte le scacchiere hanno un risultato, bye compresi - vedi
+        // Pairing.result, sempre valorizzato per un bye): generare un nuovo turno a metà
+        // dell'attuale produrrebbe abbinamenti basati su punteggi incompleti.
+        val latestRound = rounds.maxByOrNull { it.roundNumber }
+        val latestRoundComplete = latestRound == null || latestRound.pairings.all { it.result != null }
 
         Column(modifier = Modifier.fillMaxSize()) {
             if (rounds.isEmpty()) {
@@ -103,7 +109,7 @@ fun TournamentManagerRoundsScreen(idTournament: Int) {
                 if (!hasPendingRound) {
                     Button(
                         onClick = { viewModel.generateRound(idTournament, onError = ::showError) },
-                        enabled = !busy,
+                        enabled = !busy && latestRoundComplete,
                         modifier = Modifier.weight(1f),
                     ) { Text("Genera turno successivo") }
                 }

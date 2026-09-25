@@ -7,11 +7,15 @@
       MainActivity.kt), qui è solo la dichiarazione.
     Nessun permesso relativo al numero di telefono: il login (ui/auth/) usa solo
     Google/ID FIDE/email+password, mai il numero della SIM.
+    - VIBRATE: la schermata a tutto schermo di "turno pubblicato" (vedi
+      ui/pairings/RoundPublishedOverlay.kt) fa vibrare il telefono 5 secondi -
+      permesso "normale", nessuna richiesta a runtime necessaria.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".ChessoraApplication"

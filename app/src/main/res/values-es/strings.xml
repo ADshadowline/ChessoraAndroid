@@ -160,6 +160,7 @@
     <string name="settings_icon_settings_button">Personalizar iconos de Inicio</string>
     <string name="topbar_members_count">%1$d socios</string>
     <string name="manage_tournaments">Gestión de torneos</string>
+    <string name="tournament_round_published_notification">Ronda %1$d publicada</string>
 
     <!-- Desktop Home icons (ui/home/HomeScreen.kt DesktopHomeGrid,
          ui/settings/IconSettingsScreen.kt) -->

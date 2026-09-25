@@ -116,6 +116,10 @@ dependencies {
     // di un torneo, senza il quale resterebbero al valore letto alla primissima
     // apertura della schermata (il ViewModel non viene ricreato tornando indietro).
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+    // ProcessLifecycleOwner - sapere se l'app è in primo piano quando arriva una push
+    // "turno pubblicato" (vedi push/AppForegroundTracker.kt): in foreground si mostra
+    // subito la schermata a tutto schermo, in background la normale notifica di sistema.
+    implementation("androidx.lifecycle:lifecycle-process:2.8.7")
     implementation("androidx.navigation:navigation-compose:2.8.4")
 
     // --- Rete: Retrofit + OkHttp + kotlinx.serialization (niente Gson: coerente
