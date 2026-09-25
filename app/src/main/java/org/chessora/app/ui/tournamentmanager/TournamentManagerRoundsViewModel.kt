@@ -7,7 +7,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.chessora.app.data.remote.apiErrorMessage
+import org.chessora.app.data.remote.dto.StandingsRow
 import org.chessora.app.data.remote.dto.TournamentRound
+import org.chessora.app.data.remote.dto.TournamentViewMode
 import org.chessora.app.data.repository.ChessoraRepository
 import org.chessora.app.ui.common.UiState
 import org.chessora.app.ui.common.toUiState
@@ -19,6 +21,16 @@ class TournamentManagerRoundsViewModel(private val repository: ChessoraRepositor
     private val _state = MutableStateFlow<UiState<List<TournamentRound>>>(UiState.Loading)
     val state: StateFlow<UiState<List<TournamentRound>>> = _state.asStateFlow()
 
+    private val _standings = MutableStateFlow<List<StandingsRow>>(emptyList())
+    val standings: StateFlow<List<StandingsRow>> = _standings.asStateFlow()
+
+    /** Abbinamenti o classifica provvisoria - condivisa col sito (vedi
+     * ChessoraRepository.getTournamentViewState/setTournamentViewState): [load] la rilegge
+     * a ogni giro del polling per seguire un cambio fatto altrove (sito, o un altro
+     * organizzatore), [setViewMode] la scrive quando è QUESTO client a cambiarla. */
+    private val _viewMode = MutableStateFlow(TournamentViewMode.PAIRINGS)
+    val viewMode: StateFlow<TournamentViewMode> = _viewMode.asStateFlow()
+
     /** True mentre una generazione/pubblicazione/inserimento risultato è in corso - disabilita
      * i pulsanti per evitare doppie chiamate (es. due tap veloci su "Genera turno"). */
     private val _busy = MutableStateFlow(false)
@@ -28,7 +40,15 @@ class TournamentManagerRoundsViewModel(private val repository: ChessoraRepositor
         viewModelScope.launch {
             if (_state.value !is UiState.Success) _state.value = UiState.Loading
             _state.value = repository.getOrganizerRounds(idTournament).toUiState()
+            repository.getTournamentStandings(idTournament).onSuccess { _standings.value = it }
+            repository.getTournamentViewState(idTournament).onSuccess { remote -> _viewMode.value = remote }
         }
+    }
+
+    fun setViewMode(idTournament: Int, mode: TournamentViewMode) {
+        if (_viewMode.value == mode) return
+        _viewMode.value = mode
+        viewModelScope.launch { repository.setTournamentViewState(idTournament, mode) }
     }
 
     fun generateRound(idTournament: Int, onError: (String) -> Unit) {

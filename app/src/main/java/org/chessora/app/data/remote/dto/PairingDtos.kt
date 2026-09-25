@@ -61,3 +61,22 @@ data class StandingsRow(
  * ui/tournamentmanager/). result=null annulla un risultato già inserito. */
 @Serializable
 data class SubmitResultRequestDto(val result: String? = null)
+
+/** Specchio di Chessora.Contracts.Tournaments.TournamentViewStateDto - su quale vista è
+ * "puntato" un torneo in questo momento per il suo organizzatore (sia risposta di GET che
+ * corpo di PUT .../view-state), condivisa tra sito e app: vedi
+ * ui/tournamentmanager/TournamentViewMode. */
+@Serializable
+data class TournamentViewStateDto(val view: String)
+
+/** "Pairings"/"Standings" lato Kotlin, mai una stringa libera in giro - [wireValue] è
+ * esattamente TournamentViewStateCodes lato server. */
+enum class TournamentViewMode(val wireValue: String) {
+    PAIRINGS("Pairings"),
+    STANDINGS("Standings"),
+    ;
+
+    companion object {
+        fun fromWire(value: String): TournamentViewMode = entries.firstOrNull { it.wireValue == value } ?: PAIRINGS
+    }
+}

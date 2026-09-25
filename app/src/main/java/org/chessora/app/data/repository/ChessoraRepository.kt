@@ -47,6 +47,8 @@ import org.chessora.app.data.remote.dto.StartDirectConversationRequest
 import org.chessora.app.data.remote.dto.SiteSettings
 import org.chessora.app.data.remote.dto.StandingsRow
 import org.chessora.app.data.remote.dto.SubmitResultRequestDto
+import org.chessora.app.data.remote.dto.TournamentViewMode
+import org.chessora.app.data.remote.dto.TournamentViewStateDto
 import org.chessora.app.data.remote.dto.TournamentPreRegistrationResult
 import org.chessora.app.data.remote.dto.TournamentRound
 import org.chessora.app.data.remote.dto.TournamentSummary
@@ -222,6 +224,12 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun submitOrganizerResult(id: Int, pairingId: Int, result: String?): Result<Unit> =
         withOrganizerAuth { auth -> api.submitOrganizerResult(auth, id, pairingId, SubmitResultRequestDto(result)) }
+
+    suspend fun getTournamentViewState(id: Int): Result<TournamentViewMode> =
+        withOrganizerAuth { auth -> TournamentViewMode.fromWire(api.getTournamentViewState(auth, id).view) }
+
+    suspend fun setTournamentViewState(id: Int, mode: TournamentViewMode): Result<Unit> =
+        withOrganizerAuth { auth -> api.setTournamentViewState(auth, id, TournamentViewStateDto(mode.wireValue)) }
 
     // ---------- Classifica ----------
 

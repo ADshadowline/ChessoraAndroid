@@ -13,8 +13,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -34,6 +36,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.chessora.app.data.remote.dto.Pairing
+import org.chessora.app.data.remote.dto.StandingsRow
+import org.chessora.app.data.remote.dto.TournamentViewMode
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
 
@@ -53,6 +57,8 @@ private const val ROUNDS_POLL_INTERVAL_MS = 8_000L
 fun TournamentManagerRoundsScreen(idTournament: Int) {
     val viewModel = chessoraViewModel { app -> TournamentManagerRoundsViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
+    val standings by viewModel.standings.collectAsState()
+    val viewMode by viewModel.viewMode.collectAsState()
     val busy by viewModel.busy.collectAsState()
     val context = LocalContext.current
     var selectedRoundNumber by remember { mutableStateOf<Int?>(null) }
@@ -95,6 +101,16 @@ fun TournamentManagerRoundsScreen(idTournament: Int) {
                 Box(modifier = Modifier.weight(1f).fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
                     Text("Nessun turno generato ancora.", style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
                 }
+            } else if (viewMode == TournamentViewMode.STANDINGS) {
+                if (standings.isEmpty()) {
+                    Box(modifier = Modifier.weight(1f).fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
+                        Text("Classifica non ancora disponibile.", style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+                    }
+                } else {
+                    LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth().padding(16.dp)) {
+                        items(standings, key = { it.entrantId }) { row -> OrganizerStandingsRow(row) }
+                    }
+                }
             } else {
                 if (rounds.size > 1) {
                     TabRow(selectedTabIndex = rounds.indexOfFirst { it.roundNumber == round?.roundNumber }.coerceAtLeast(0)) {
@@ -119,19 +135,32 @@ fun TournamentManagerRoundsScreen(idTournament: Int) {
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                if (!hasPendingRound) {
-                    Button(
-                        onClick = { viewModel.generateRound(idTournament, onError = ::showError) },
-                        enabled = !busy && latestRoundComplete,
-                        modifier = Modifier.weight(1f),
-                    ) { Text("Genera turno successivo") }
-                }
-                if (round?.status == "Pending") {
-                    Button(
-                        onClick = { viewModel.publishRound(idTournament, round.id, onError = ::showError) },
-                        enabled = !busy,
-                        modifier = Modifier.weight(1f),
-                    ) { Text("Pubblica turno") }
+                // Condivisa col sito (vedi TournamentManagerRoundsViewModel.setViewMode): se
+                // sposti la vista da qui, tourn.chessora.org la segue entro pochi secondi, e
+                // viceversa.
+                OutlinedButton(
+                    onClick = {
+                        val next = if (viewMode == TournamentViewMode.PAIRINGS) TournamentViewMode.STANDINGS else TournamentViewMode.PAIRINGS
+                        viewModel.setViewMode(idTournament, next)
+                    },
+                    modifier = Modifier.weight(1f),
+                ) { Text(if (viewMode == TournamentViewMode.PAIRINGS) "Classifica provvisoria" else "Torna agli abbinamenti") }
+
+                if (viewMode == TournamentViewMode.PAIRINGS) {
+                    if (!hasPendingRound) {
+                        Button(
+                            onClick = { viewModel.generateRound(idTournament, onError = ::showError) },
+                            enabled = !busy && latestRoundComplete,
+                            modifier = Modifier.weight(1f),
+                        ) { Text("Genera turno successivo") }
+                    }
+                    if (round?.status == "Pending") {
+                        Button(
+                            onClick = { viewModel.publishRound(idTournament, round.id, onError = ::showError) },
+                            enabled = !busy,
+                            modifier = Modifier.weight(1f),
+                        ) { Text("Pubblica turno") }
+                    }
                 }
             }
         }
@@ -180,6 +209,33 @@ private fun OrganizerPairingRow(pairing: Pairing, onClick: () -> Unit) {
         Card(onClick = onClick, modifier = modifier) { content() }
     }
 }
+
+@Composable
+private fun OrganizerStandingsRow(row: StandingsRow) {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+        colors = if (row.rank <= 3) CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer) else CardDefaults.cardColors(),
+    ) {
+        Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                "${row.rank}",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(end = 12.dp),
+            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(row.name, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    "Elo ${row.rating ?: "—"} · Buchholz ${formatScore(row.buchholz)}",
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+            Text(formatScore(row.score), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+private fun formatScore(n: Double): String = if (n % 1.0 == 0.0) n.toInt().toString() else n.toString().replace('.', ',')
 
 @Composable
 private fun ResultDialog(pairing: Pairing, onDismiss: () -> Unit, onSelect: (String?) -> Unit) {

@@ -44,6 +44,7 @@ import org.chessora.app.data.remote.dto.ShopProduct
 import org.chessora.app.data.remote.dto.SiteSettings
 import org.chessora.app.data.remote.dto.StandingsRow
 import org.chessora.app.data.remote.dto.SubmitResultRequestDto
+import org.chessora.app.data.remote.dto.TournamentViewStateDto
 import org.chessora.app.data.remote.dto.TournamentPreRegistrationResult
 import org.chessora.app.data.remote.dto.RegisteredPlayer
 import org.chessora.app.data.remote.dto.TournamentRound
@@ -374,4 +375,12 @@ interface ChessoraApi {
 
     @PUT("api/tornei/admin/{id}/pairings/{pairingId}/result")
     suspend fun submitOrganizerResult(@Header("Authorization") auth: String, @Path("id") id: Int, @Path("pairingId") pairingId: Int, @Body body: SubmitResultRequestDto)
+
+    /** Su quale vista (abbinamenti/classifica provvisoria) è "puntato" questo torneo in
+     * questo momento - condivisa col sito, vedi TournamentViewMode. */
+    @GET("api/tornei/admin/{id}/view-state")
+    suspend fun getTournamentViewState(@Header("Authorization") auth: String, @Path("id") id: Int): TournamentViewStateDto
+
+    @PUT("api/tornei/admin/{id}/view-state")
+    suspend fun setTournamentViewState(@Header("Authorization") auth: String, @Path("id") id: Int, @Body body: TournamentViewStateDto)
 }
