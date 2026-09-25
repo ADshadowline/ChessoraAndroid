@@ -7,6 +7,11 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -39,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -129,14 +135,19 @@ private val OverlayTextPrimary = Color.White
 private val OverlayTextSecondary = Color(0xFFC7C6D6)
 private val OverlayAccent = Color(0xFFF2C744)
 
-private enum class OverlayPhase { COUNTDOWN, FLASH, CONTENT }
+private enum class OverlayPhase { COUNTDOWN, CONTENT }
+
+/** Quanto resta a schermo il fulmine pulsante sopra nomi/foto dopo il conto alla
+ * rovescia, prima di dissolversi (vedi [PulsingBolt]) - "effetto scenico di sfida". */
+private const val BOLT_DURATION_MS = 2_800L
 
 /** Schermata a tutto schermo mostrata quando un turno viene pubblicato mentre l'app è in
  * primo piano (vedi ChessoraFirebaseMessagingService/TournamentRoundEvents, montata una
  * sola volta in cima a ChessoraNavHost): vibrazione di 4 secondi mentre appare un
- * conto alla rovescia (3-2-1), un lampo, poi torneo/turno e i due giocatori della
- * propria scacchiera (o uno solo su un bye) con foto/nome/Elo/punteggio nel torneo -
- * pulsante di chiusura, auto-chiusura dopo 5 minuti. */
+ * conto alla rovescia (3-2-1), poi torneo/turno e i due giocatori della propria
+ * scacchiera (o uno solo su un bye) con foto/nome/Elo/punteggio nel torneo, con un
+ * fulmine che pulsa per qualche secondo SOPRA nomi e foto (effetto scenico di sfida)
+ * prima di dissolversi - pulsante di chiusura, auto-chiusura dopo 5 minuti. */
 @Composable
 fun RoundPublishedOverlay(event: RoundPublishedEvent, onDismiss: () -> Unit) {
     val viewModel = chessoraViewModel { app -> RoundPublishedViewModel(app.repository, app.clubPreferences) }
@@ -144,6 +155,7 @@ fun RoundPublishedOverlay(event: RoundPublishedEvent, onDismiss: () -> Unit) {
     val context = LocalContext.current
     var phase by remember { mutableStateOf(OverlayPhase.COUNTDOWN) }
     var countdownValue by remember { mutableIntStateOf(3) }
+    var showBolt by remember { mutableStateOf(false) }
 
     LaunchedEffect(event) { viewModel.load(event) }
     LaunchedEffect(event) { VibrationHelper.vibrate(context, 4_000L) }
@@ -152,9 +164,10 @@ fun RoundPublishedOverlay(event: RoundPublishedEvent, onDismiss: () -> Unit) {
             countdownValue = n
             delay(650)
         }
-        phase = OverlayPhase.FLASH
-        delay(350)
         phase = OverlayPhase.CONTENT
+        showBolt = true
+        delay(BOLT_DURATION_MS)
+        showBolt = false
     }
     LaunchedEffect(Unit) {
         delay(5 * 60 * 1000L)
@@ -167,55 +180,65 @@ fun RoundPublishedOverlay(event: RoundPublishedEvent, onDismiss: () -> Unit) {
     ) {
         when (phase) {
             OverlayPhase.COUNTDOWN -> CountdownContent(countdownValue)
-            OverlayPhase.FLASH -> FlashContent()
             OverlayPhase.CONTENT -> {
-                AnimatedVisibility(
-                    visible = true,
-                    enter = fadeIn(tween(450)) + scaleIn(tween(450), initialScale = 0.85f),
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize().padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
+                Box(contentAlignment = Alignment.Center) {
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = fadeIn(tween(450)) + scaleIn(tween(450), initialScale = 0.85f),
                     ) {
-                        UiStateContent(state = state, onRetry = { viewModel.load(event) }) { data ->
-                            Text(
-                                data.tournamentName, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold,
-                                color = OverlayTextPrimary, textAlign = TextAlign.Center,
-                            )
-                            Text(
-                                "Turno ${data.roundNumber}", style = MaterialTheme.typography.titleMedium,
-                                color = OverlayTextSecondary, modifier = Modifier.padding(top = 4.dp, bottom = 32.dp),
-                            )
-
-                            val board = data.myBoard
-                            if (board == null) {
+                        Column(
+                            modifier = Modifier.fillMaxSize().padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            UiStateContent(state = state, onRetry = { viewModel.load(event) }) { data ->
                                 Text(
-                                    "Nessuna scacchiera trovata per questo turno.", style = MaterialTheme.typography.bodyLarge,
+                                    data.tournamentName, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold,
                                     color = OverlayTextPrimary, textAlign = TextAlign.Center,
                                 )
-                            } else {
-                                PlayerCard(board.white, data.scoreByEntrantId)
-                                if (!board.isBye) {
-                                    Text(
-                                        "vs", style = MaterialTheme.typography.titleMedium,
-                                        color = OverlayTextSecondary, modifier = Modifier.padding(vertical = 16.dp),
-                                    )
-                                    PlayerCard(board.black, data.scoreByEntrantId)
-                                } else {
-                                    Text(
-                                        "Riposo in questo turno", style = MaterialTheme.typography.bodyMedium,
-                                        color = OverlayTextSecondary, modifier = Modifier.padding(top = 16.dp),
-                                    )
-                                }
-                            }
+                                Text(
+                                    "Turno ${data.roundNumber}", style = MaterialTheme.typography.titleMedium,
+                                    color = OverlayTextSecondary, modifier = Modifier.padding(top = 4.dp, bottom = 32.dp),
+                                )
 
-                            Button(
-                                onClick = onDismiss,
-                                colors = ButtonDefaults.buttonColors(containerColor = OverlayAccent, contentColor = Color(0xFF1B1C22)),
-                                modifier = Modifier.padding(top = 40.dp),
-                            ) { Text("Chiudi") }
+                                val board = data.myBoard
+                                if (board == null) {
+                                    Text(
+                                        "Nessuna scacchiera trovata per questo turno.", style = MaterialTheme.typography.bodyLarge,
+                                        color = OverlayTextPrimary, textAlign = TextAlign.Center,
+                                    )
+                                } else {
+                                    PlayerCard(board.white, data.scoreByEntrantId)
+                                    if (!board.isBye) {
+                                        Text(
+                                            "vs", style = MaterialTheme.typography.titleMedium,
+                                            color = OverlayTextSecondary, modifier = Modifier.padding(vertical = 16.dp),
+                                        )
+                                        PlayerCard(board.black, data.scoreByEntrantId)
+                                    } else {
+                                        Text(
+                                            "Riposo in questo turno", style = MaterialTheme.typography.bodyMedium,
+                                            color = OverlayTextSecondary, modifier = Modifier.padding(top = 16.dp),
+                                        )
+                                    }
+                                }
+
+                                Button(
+                                    onClick = onDismiss,
+                                    colors = ButtonDefaults.buttonColors(containerColor = OverlayAccent, contentColor = Color(0xFF1B1C22)),
+                                    modifier = Modifier.padding(top = 40.dp),
+                                ) { Text("Chiudi") }
+                            }
                         }
+                    }
+                    // Sopra nomi/foto già visibili sotto (stesso Box, disegnato per
+                    // ultimo) - pulsa qualche secondo poi si dissolve da solo.
+                    AnimatedVisibility(
+                        visible = showBolt,
+                        enter = fadeIn(tween(200)) + scaleIn(tween(200), initialScale = 0.5f),
+                        exit = fadeOut(tween(500)),
+                    ) {
+                        PulsingBolt()
                     }
                 }
             }
@@ -242,14 +265,27 @@ private fun CountdownContent(value: Int) {
     }
 }
 
+/** Fulmine che cresce e si rimpicciolisce in loop (stesso spirito pulsante di
+ * LiveTournamentDot, qui sulla scala invece che sull'alpha) - un alone semi-trasparente
+ * dietro lo rende leggibile anche sopra foto/testo chiari. */
 @Composable
-private fun FlashContent() {
-    Box(modifier = Modifier.fillMaxSize().background(Color.White), contentAlignment = Alignment.Center) {
+private fun PulsingBolt() {
+    val infiniteTransition = rememberInfiniteTransition(label = "bolt")
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 0.85f,
+        targetValue = 1.4f,
+        animationSpec = infiniteRepeatable(animation = tween(550, easing = FastOutSlowInEasing), repeatMode = RepeatMode.Reverse),
+        label = "boltScale",
+    )
+    Box(
+        modifier = Modifier.size(220.dp).background(Color.Black.copy(alpha = 0.35f), CircleShape),
+        contentAlignment = Alignment.Center,
+    ) {
         Icon(
             imageVector = Icons.Filled.Bolt,
             contentDescription = null,
             tint = OverlayAccent,
-            modifier = Modifier.size(160.dp),
+            modifier = Modifier.size(140.dp).scale(scale),
         )
     }
 }
