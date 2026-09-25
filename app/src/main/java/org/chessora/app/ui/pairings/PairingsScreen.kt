@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import org.chessora.app.data.remote.dto.Pairing
 import org.chessora.app.data.remote.dto.StandingsRow
 import org.chessora.app.data.remote.dto.TournamentRound
@@ -49,6 +50,8 @@ private val RESULT_LABELS = mapOf(
     "1-0F" to "1 – 0 (a tavolino)", "0-1F" to "0 – 1 (a tavolino)", "0-0F" to "0 – 0",
 )
 
+private const val PAIRINGS_POLL_INTERVAL_MS = 8_000L
+
 /** Abbinamenti e classifica di un torneo AVVIATO - stesso dato mostrato da
  * abbinamenti-risultati.html sul sito (solo lettura qui, la correzione/pubblicazione dei
  * turni resta un'azione da organizzatore, solo sul sito). Aperta da RegistrationsScreen
@@ -59,7 +62,16 @@ fun PairingsScreen(idTournament: Int) {
     val state by viewModel.state.collectAsState()
     var tabIndex by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(idTournament) { viewModel.load(idTournament) }
+    // Aggiornamento quasi in tempo reale: un risultato/turno può cambiare dal sito o da
+    // "Gestione tornei" mentre questa schermata resta aperta - senza un ricaricamento
+    // periodico l'unico modo per vederlo sarebbe uscire e rientrare. Il loop si ferma da
+    // solo (cancellazione della coroutine) quando si lascia la schermata.
+    LaunchedEffect(idTournament) {
+        while (true) {
+            viewModel.load(idTournament)
+            delay(PAIRINGS_POLL_INTERVAL_MS)
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TabRow(selectedTabIndex = tabIndex) {

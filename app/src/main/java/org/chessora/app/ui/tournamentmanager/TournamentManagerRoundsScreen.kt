@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import org.chessora.app.data.remote.dto.Pairing
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
@@ -40,6 +41,8 @@ private val RESULT_LABELS = mapOf(
     "1-0" to "1 – 0", "0-1" to "0 – 1", "1/2-1/2" to "½ – ½",
     "1-0F" to "1 – 0 (a tavolino)", "0-1F" to "0 – 1 (a tavolino)", "0-0F" to "0 – 0",
 )
+
+private const val ROUNDS_POLL_INTERVAL_MS = 8_000L
 
 /** Turni/scacchiere/risultati di un torneo InCorso, lato organizzatore: genera il turno
  * successivo, pubblica un turno in bozza, inserisce/corregge i risultati - stesse azioni
@@ -55,7 +58,17 @@ fun TournamentManagerRoundsScreen(idTournament: Int) {
     var selectedRoundNumber by remember { mutableStateOf<Int?>(null) }
     var resultDialogPairing by remember { mutableStateOf<Pairing?>(null) }
 
-    LaunchedEffect(idTournament) { viewModel.load(idTournament) }
+    // Aggiornamento quasi in tempo reale: un risultato/turno può cambiare dal sito (o da
+    // un altro organizzatore) mentre questa schermata resta aperta - senza un
+    // ricaricamento periodico il pulsante "Pubblica turno"/i risultati mostrati
+    // resterebbero indietro finché non si esce e rientra. Il loop si ferma da solo
+    // (cancellazione della coroutine) quando si lascia la schermata.
+    LaunchedEffect(idTournament) {
+        while (true) {
+            viewModel.load(idTournament)
+            delay(ROUNDS_POLL_INTERVAL_MS)
+        }
+    }
 
     fun showError(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()

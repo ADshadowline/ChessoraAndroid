@@ -28,9 +28,13 @@ class PairingsViewModel(private val repository: ChessoraRepository) : ViewModel(
     private val _state = MutableStateFlow<UiState<PairingsData>>(UiState.Loading)
     val state: StateFlow<UiState<PairingsData>> = _state.asStateFlow()
 
+    /** Non azzera a Loading se già in Success (vedi PairingsScreen: chiamato ogni pochi
+     * secondi per un aggiornamento quasi in tempo reale - un risultato/turno può cambiare
+     * dal sito o da "Gestione tornei" mentre questa schermata resta aperta - altrimenti
+     * lampeggerebbe uno spinner a ogni giro). */
     fun load(idTournament: Int) {
         viewModelScope.launch {
-            _state.value = UiState.Loading
+            if (_state.value !is UiState.Success) _state.value = UiState.Loading
             _state.value = repository.getTournamentRounds(idTournament)
                 .mapCatching { rounds ->
                     val standings = repository.getTournamentStandings(idTournament).getOrDefault(emptyList())
