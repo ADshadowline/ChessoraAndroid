@@ -86,11 +86,15 @@ data class SubmitResultRequestDto(val result: String? = null)
 @Serializable
 data class TournamentViewStateDto(val view: String)
 
-/** "Pairings"/"Standings" lato Kotlin, mai una stringa libera in giro - [wireValue] è
- * esattamente TournamentViewStateCodes lato server. */
+/** "Pairings"/"Standings"/"Prizes" lato Kotlin, mai una stringa libera in giro -
+ * [wireValue] è esattamente TournamentViewStateCodes lato server. PREMIAZIONE è
+ * condivisa come le altre due: se questo client apre/chiude la premiazione, il sito la
+ * segue entro pochi secondi (vedi pushViewState/pollViewState in
+ * abbinamenti-risultati.html) e viceversa. */
 enum class TournamentViewMode(val wireValue: String) {
     PAIRINGS("Pairings"),
     STANDINGS("Standings"),
+    PREMIAZIONE("Prizes"),
     ;
 
     companion object {

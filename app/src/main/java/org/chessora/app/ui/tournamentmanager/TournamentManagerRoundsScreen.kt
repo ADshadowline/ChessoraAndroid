@@ -67,7 +67,6 @@ fun TournamentManagerRoundsScreen(idTournament: Int, totalRounds: Int) {
     val context = LocalContext.current
     var selectedRoundNumber by remember { mutableStateOf<Int?>(null) }
     var resultDialogPairing by remember { mutableStateOf<Pairing?>(null) }
-    var showPremiazione by remember { mutableStateOf(false) }
 
     // Aggiornamento quasi in tempo reale: un risultato/turno può cambiare dal sito (o da
     // un altro organizzatore) mentre questa schermata resta aperta - senza un
@@ -123,7 +122,7 @@ fun TournamentManagerRoundsScreen(idTournament: Int, totalRounds: Int) {
 
         Column(modifier = Modifier.fillMaxSize()) {
             when {
-                showPremiazione -> {
+                viewMode == TournamentViewMode.PREMIAZIONE -> {
                     val sections = remember(standings, titleByEntrantId) { computePrizeSections(standings, titleByEntrantId) }
                     PremiazioneContent(sections, modifier = Modifier.weight(1f))
                 }
@@ -166,6 +165,7 @@ fun TournamentManagerRoundsScreen(idTournament: Int, totalRounds: Int) {
             // alla classifica - "Genera turno" ricompare lì finché non è l'ultimo turno
             // del torneo, altrimenti (torneo finito) è "Premiazione" a comparire al suo
             // posto, mai insieme.
+            val showPremiazione = viewMode == TournamentViewMode.PREMIAZIONE
             val showStandingsToggle = !showPremiazione && (viewMode == TournamentViewMode.STANDINGS || (rounds.isNotEmpty() && !hasPendingRound && latestRoundComplete))
             val showGenerate = rounds.isEmpty() || (!hasPendingRound && !isFinalRound && (viewMode == TournamentViewMode.STANDINGS || !latestRoundComplete))
             val showPremiazioneButton = !showPremiazione && viewMode == TournamentViewMode.STANDINGS && !hasPendingRound && latestRoundComplete && isFinalRound
@@ -174,7 +174,11 @@ fun TournamentManagerRoundsScreen(idTournament: Int, totalRounds: Int) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 if (showPremiazione) {
-                    OutlinedButton(onClick = { showPremiazione = false }, modifier = Modifier.weight(1f)) {
+                    // Condivisa col sito come lo stato Pairings/Standings (vedi sopra):
+                    // tornare alla classifica da qui sposta anche tourn.chessora.org, e
+                    // viceversa passare da "Premiazione" a "Classifica finale" sul sito
+                    // sposta anche questa schermata entro pochi secondi.
+                    OutlinedButton(onClick = { viewModel.setViewMode(idTournament, TournamentViewMode.STANDINGS) }, modifier = Modifier.weight(1f)) {
                         Text("Torna alla classifica")
                     }
                 } else {
@@ -200,7 +204,7 @@ fun TournamentManagerRoundsScreen(idTournament: Int, totalRounds: Int) {
                     }
 
                     if (showPremiazioneButton) {
-                        Button(onClick = { showPremiazione = true }, modifier = Modifier.weight(1f)) { Text("Premiazione") }
+                        Button(onClick = { viewModel.setViewMode(idTournament, TournamentViewMode.PREMIAZIONE) }, modifier = Modifier.weight(1f)) { Text("Premiazione") }
                     }
 
                     if (viewMode == TournamentViewMode.PAIRINGS && round?.status == "Pending") {
