@@ -335,6 +335,13 @@ interface ChessoraApi {
     @GET("api/tornei/{id}/standings")
     suspend fun getTournamentStandings(@Path("id") id: Int): List<StandingsRow>
 
+    /** Ogni quanti millisecondi ricontrollare abbinamenti/risultati/classifica di questo
+     * torneo (Club.PollingIntervalMs, configurabile per circolo dalla superamministrazione)
+     * - nessuna autenticazione richiesta, riletto a ogni giro del polling (non solo
+     * all'apertura) in PairingsScreen/TournamentManagerRoundsScreen. */
+    @GET("api/tornei/{id}/polling-interval-ms")
+    suspend fun getPollingIntervalMs(@Path("id") id: Int): Int
+
     // ---------- Notifiche push ----------
 
     @POST("api/devices/register")

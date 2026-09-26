@@ -53,6 +53,12 @@ data class TournamentSummary(
     // turno successivo", vedi TournamentManagerRoundsScreen). 0 = non impostato/sconosciuto
     // (torneo creato prima che questo campo esistesse).
     val turni: Int = 0,
+    // Millisecondi tra un ricontrollo e l'altro del server durante l'aggiornamento quasi
+    // in tempo reale di abbinamenti/risultati/classifica (vedi Chessora.Domain.Clubs.Club.
+    // PollingIntervalMs) - configurabile per circolo dalla superamministrazione, sempre
+    // valorizzato dal server (8000 se il circolo non ha impostato nulla), usato al posto
+    // delle vecchie costanti fisse in PairingsScreen/TournamentManagerRoundsScreen.
+    val pollingIntervalMs: Int = 8000,
 )
 
 /** Specchio di Chessora.Contracts.Tournaments.TournamentRegistrationCountDto (risposta

@@ -47,8 +47,6 @@ private val RESULT_LABELS = mapOf(
     "1-0F" to "1 – 0 (a tavolino)", "0-1F" to "0 – 1 (a tavolino)", "0-0F" to "0 – 0",
 )
 
-private const val ROUNDS_POLL_INTERVAL_MS = 8_000L
-
 /** Turni/scacchiere/risultati di un torneo InCorso, lato organizzatore: mostra gli
  * iscritti effettivi finché non è ancora stato generato alcun turno, genera il turno
  * successivo, pubblica un turno in bozza, inserisce/corregge i risultati e infine (a
@@ -64,6 +62,7 @@ fun TournamentManagerRoundsScreen(idTournament: Int, totalRounds: Int) {
     val entrants by viewModel.entrants.collectAsState()
     val viewMode by viewModel.viewMode.collectAsState()
     val busy by viewModel.busy.collectAsState()
+    val pollingIntervalMs by viewModel.pollingIntervalMs.collectAsState()
     val context = LocalContext.current
     var selectedRoundNumber by remember { mutableStateOf<Int?>(null) }
     var resultDialogPairing by remember { mutableStateOf<Pairing?>(null) }
@@ -72,11 +71,13 @@ fun TournamentManagerRoundsScreen(idTournament: Int, totalRounds: Int) {
     // un altro organizzatore) mentre questa schermata resta aperta - senza un
     // ricaricamento periodico il pulsante "Pubblica turno"/i risultati mostrati
     // resterebbero indietro finché non si esce e rientra. Il loop si ferma da solo
-    // (cancellazione della coroutine) quando si lascia la schermata.
+    // (cancellazione della coroutine) quando si lascia la schermata. L'intervallo è
+    // configurabile per circolo dalla superamministrazione (vedi
+    // TournamentManagerRoundsViewModel).
     LaunchedEffect(idTournament) {
         while (true) {
             viewModel.load(idTournament)
-            delay(ROUNDS_POLL_INTERVAL_MS)
+            delay(pollingIntervalMs)
         }
     }
 

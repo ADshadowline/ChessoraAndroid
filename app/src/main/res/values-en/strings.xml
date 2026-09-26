@@ -114,6 +114,7 @@
     <string name="tournament_seats_full">Seats full</string>
     <string name="tournament_registration_not_open_yet">Registration is not open yet</string>
     <string name="tournament_registration_closed">Registration closed</string>
+    <string name="tournament_registration_started">The tournament has already started</string>
     <string name="tournament_registered_count">%1$d registered</string>
     <string name="tournament_registered_count_limit">%1$d / %2$d registered</string>
     <string name="tournament_other_tornei">Other tournaments in the same event</string>

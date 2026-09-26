@@ -50,8 +50,6 @@ private val RESULT_LABELS = mapOf(
     "1-0F" to "1 – 0 (a tavolino)", "0-1F" to "0 – 1 (a tavolino)", "0-0F" to "0 – 0",
 )
 
-private const val PAIRINGS_POLL_INTERVAL_MS = 8_000L
-
 /** Abbinamenti e classifica di un torneo AVVIATO - stesso dato mostrato da
  * abbinamenti-risultati.html sul sito (solo lettura qui, la correzione/pubblicazione dei
  * turni resta un'azione da organizzatore, solo sul sito). Aperta da RegistrationsScreen
@@ -60,16 +58,18 @@ private const val PAIRINGS_POLL_INTERVAL_MS = 8_000L
 fun PairingsScreen(idTournament: Int) {
     val viewModel = chessoraViewModel { app -> PairingsViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
+    val pollingIntervalMs by viewModel.pollingIntervalMs.collectAsState()
     var tabIndex by remember { mutableIntStateOf(0) }
 
     // Aggiornamento quasi in tempo reale: un risultato/turno può cambiare dal sito o da
     // "Gestione tornei" mentre questa schermata resta aperta - senza un ricaricamento
     // periodico l'unico modo per vederlo sarebbe uscire e rientrare. Il loop si ferma da
-    // solo (cancellazione della coroutine) quando si lascia la schermata.
+    // solo (cancellazione della coroutine) quando si lascia la schermata. L'intervallo è
+    // configurabile per circolo dalla superamministrazione (vedi PairingsViewModel).
     LaunchedEffect(idTournament) {
         while (true) {
             viewModel.load(idTournament)
-            delay(PAIRINGS_POLL_INTERVAL_MS)
+            delay(pollingIntervalMs)
         }
     }
 

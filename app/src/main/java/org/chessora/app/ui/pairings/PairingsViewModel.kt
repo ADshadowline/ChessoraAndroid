@@ -28,6 +28,13 @@ class PairingsViewModel(private val repository: ChessoraRepository) : ViewModel(
     private val _state = MutableStateFlow<UiState<PairingsData>>(UiState.Loading)
     val state: StateFlow<UiState<PairingsData>> = _state.asStateFlow()
 
+    /** Intervallo di polling (Club.PollingIntervalMs, configurabile per circolo dalla
+     * superamministrazione) - riletto a ogni [load] cosi' un cambio impostato mentre questa
+     * schermata è aperta si applica entro un ciclo. 8000 finché il primo giro non ha ancora
+     * risposto (stesso default applicato lato server). */
+    private val _pollingIntervalMs = MutableStateFlow(8_000L)
+    val pollingIntervalMs: StateFlow<Long> = _pollingIntervalMs.asStateFlow()
+
     /** Non azzera a Loading se già in Success (vedi PairingsScreen: chiamato ogni pochi
      * secondi per un aggiornamento quasi in tempo reale - un risultato/turno può cambiare
      * dal sito o da "Gestione tornei" mentre questa schermata resta aperta - altrimenti
@@ -41,6 +48,7 @@ class PairingsViewModel(private val repository: ChessoraRepository) : ViewModel(
                     PairingsData(rounds = rounds, standings = standings)
                 }
                 .toUiState()
+            repository.getPollingIntervalMs(idTournament).onSuccess { _pollingIntervalMs.value = it.toLong() }
         }
     }
 }

@@ -43,6 +43,13 @@ class TournamentManagerRoundsViewModel(private val repository: ChessoraRepositor
     private val _busy = MutableStateFlow(false)
     val busy: StateFlow<Boolean> = _busy.asStateFlow()
 
+    /** Intervallo di polling (Club.PollingIntervalMs, configurabile per circolo dalla
+     * superamministrazione) - riletto a ogni [load] cosi' un cambio impostato mentre
+     * questa schermata è aperta si applica entro un ciclo. 8000 finché il primo giro non
+     * ha ancora risposto (stesso default applicato lato server). */
+    private val _pollingIntervalMs = MutableStateFlow(8_000L)
+    val pollingIntervalMs: StateFlow<Long> = _pollingIntervalMs.asStateFlow()
+
     fun load(idTournament: Int) {
         viewModelScope.launch {
             if (_state.value !is UiState.Success) _state.value = UiState.Loading
@@ -50,6 +57,7 @@ class TournamentManagerRoundsViewModel(private val repository: ChessoraRepositor
             repository.getTournamentStandings(idTournament).onSuccess { _standings.value = it }
             repository.getTournamentViewState(idTournament).onSuccess { remote -> _viewMode.value = remote }
             repository.getEntrants(idTournament).onSuccess { _entrants.value = it }
+            repository.getPollingIntervalMs(idTournament).onSuccess { _pollingIntervalMs.value = it.toLong() }
         }
     }
 

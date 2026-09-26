@@ -182,6 +182,9 @@ class ChessoraRepository(private val api: ChessoraApi) {
     suspend fun getTournamentStandings(id: Int): Result<List<StandingsRow>> =
         safeCall { api.getTournamentStandings(id) }
 
+    suspend fun getPollingIntervalMs(id: Int): Result<Int> =
+        safeCall { api.getPollingIntervalMs(id) }
+
     // ---------- Gestione tornei (organizzatore, ui/tournamentmanager/) ----------
     // Vedi OrganizerSession/il commento su ChessoraApi: un secondo token, mai il Bearer
     // giocatore, ottenuto on-demand con la claim self-service (come gestione-tornei.html

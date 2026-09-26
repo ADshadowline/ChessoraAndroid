@@ -114,6 +114,7 @@
     <string name="tournament_seats_full">Places complètes</string>
     <string name="tournament_registration_not_open_yet">Les inscriptions ne sont pas encore ouvertes</string>
     <string name="tournament_registration_closed">Inscriptions fermées</string>
+    <string name="tournament_registration_started">Le tournoi a déjà commencé</string>
     <string name="tournament_registered_count">%1$d inscrits</string>
     <string name="tournament_registered_count_limit">%1$d / %2$d inscrits</string>
     <string name="tournament_other_tornei">Autres tournois du même événement</string>

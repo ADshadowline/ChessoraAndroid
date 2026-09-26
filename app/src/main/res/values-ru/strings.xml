@@ -114,6 +114,7 @@
     <string name="tournament_seats_full">Мест нет</string>
     <string name="tournament_registration_not_open_yet">Регистрация ещё не открыта</string>
     <string name="tournament_registration_closed">Регистрация закрыта</string>
+    <string name="tournament_registration_started">Турнир уже начался</string>
     <string name="tournament_registered_count">Зарегистрировано: %1$d</string>
     <string name="tournament_registered_count_limit">%1$d / %2$d зарегистрировано</string>
     <string name="tournament_other_tornei">Другие турниры этого события</string>

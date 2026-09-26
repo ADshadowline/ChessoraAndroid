@@ -231,6 +231,7 @@ private fun TournamentOptionCard(
                         when {
                             option.isRegistered -> stringResource(R.string.tournament_already_registered)
                             disabledByOther -> stringResource(R.string.tournament_registered_other_option)
+                            registrationWindow == RegistrationWindow.STARTED -> stringResource(R.string.tournament_registration_started)
                             registrationWindow == RegistrationWindow.NOT_YET_OPEN -> stringResource(R.string.tournament_registration_not_open_yet)
                             registrationWindow == RegistrationWindow.CLOSED -> stringResource(R.string.tournament_registration_closed)
                             full -> stringResource(R.string.tournament_seats_full)
@@ -327,15 +328,17 @@ private fun RegistrantsList(registrants: List<RegisteredPlayer>?, loading: Boole
     }
 }
 
-private enum class RegistrationWindow { OPEN, NOT_YET_OPEN, CLOSED }
+private enum class RegistrationWindow { OPEN, NOT_YET_OPEN, CLOSED, STARTED }
 
-/** Ci si può iscrivere solo nella finestra inizioIscrizioni/fineIscrizioni del torneo -
- * l'enforcement reale resta lato server (TournamentRegistrationService.
- * CheckRegistrationWindow, stessa regola di tourn.chessora.org), questo è solo per non
- * mostrare abilitato un pulsante "Preiscriviti" che fallirebbe comunque. LocalDateTime,
- * non Instant: il server invia orari locali "a muro", stesso trattamento di inizio/fine
- * torneo (vedi formatRange sotto). */
+/** Ci si può iscrivere solo nella finestra inizioIscrizioni/fineIscrizioni del torneo, e
+ * mai una volta che il torneo è InCorso/Concluso (controllato PRIMA delle date, stesso
+ * ordine di TournamentRegistrationService.CheckRegistrationWindow e di
+ * torneo-dettaglio.html/registrationWindowStatus sul sito) - l'enforcement reale resta
+ * lato server, questo è solo per non mostrare abilitato un pulsante "Preiscriviti" che
+ * fallirebbe comunque. LocalDateTime, non Instant: il server invia orari locali "a muro",
+ * stesso trattamento di inizio/fine torneo (vedi formatRange sotto). */
 private fun registrationWindowStatus(tournament: TournamentSummary): RegistrationWindow {
+    if (tournament.lifecycleStatus != 0) return RegistrationWindow.STARTED
     val now = LocalDateTime.now()
     val inizio = tournament.inizioIscrizioni?.let { runCatching { LocalDateTime.parse(it) }.getOrNull() }
     if (inizio != null && now < inizio) return RegistrationWindow.NOT_YET_OPEN
