@@ -3,6 +3,7 @@ package org.chessora.app.ui.tournamentmanager
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,13 +24,16 @@ import androidx.compose.ui.unit.dp
 import org.chessora.app.data.remote.dto.TournamentSummary
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
+import org.chessora.app.ui.pairings.LiveTournamentDot
 
-/** Elenco dei tornei InCorso gestibili dall'organizzatore - punto di ingresso dell'icona
- * Home "Gestione tornei" (self-service: la claim del ruolo organizzatore avviene al primo
- * caricamento, vedi ChessoraRepository.ensureOrganizerAuth, non serve un'azione esplicita
+/** Elenco dei tornei InCorso gestibili dall'organizzatore (già filtrato per
+ * lifecycleStatus in TournamentManagerListViewModel: da qui non si può selezionare un
+ * torneo non ancora avviato o già concluso) - punto di ingresso dell'icona Home "Gestione
+ * tornei" (self-service: la claim del ruolo organizzatore avviene al primo caricamento,
+ * vedi ChessoraRepository.ensureOrganizerAuth, non serve un'azione esplicita
  * dell'utente). Tap su un torneo apre TournamentManagerRoundsScreen. */
 @Composable
-fun TournamentManagerListScreen(onOpenTournament: (idTournament: Int) -> Unit) {
+fun TournamentManagerListScreen(onOpenTournament: (idTournament: Int, turni: Int) -> Unit) {
     val viewModel = chessoraViewModel { app -> TournamentManagerListViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
 
@@ -56,18 +60,23 @@ private fun EmptyContent() {
 }
 
 @Composable
-private fun TournamentManagerList(tornei: List<TournamentSummary>, onOpenTournament: (Int) -> Unit) {
+private fun TournamentManagerList(tornei: List<TournamentSummary>, onOpenTournament: (Int, Int) -> Unit) {
     LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         items(tornei, key = { it.id }) { t ->
             Card(
-                onClick = { onOpenTournament(t.id) },
+                onClick = { onOpenTournament(t.id, t.turni) },
                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
             ) {
-                Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text(t.nome, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-                    if (t.eventoNome != t.nome) {
-                        Text(t.eventoNome, style = MaterialTheme.typography.bodyMedium)
+                Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text(t.nome, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                        if (t.eventoNome != t.nome) {
+                            Text(t.eventoNome, style = MaterialTheme.typography.bodyMedium)
+                        }
                     }
+                    // Sempre acceso in questo elenco (già filtrato solo InCorso), stesso
+                    // linguaggio visivo del pallino "live" usato altrove nell'app.
+                    LiveTournamentDot(modifier = Modifier.padding(start = 8.dp))
                 }
             }
         }

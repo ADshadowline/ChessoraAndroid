@@ -48,6 +48,11 @@ data class TournamentSummary(
     // il pallino verde lampeggiante che porta agli abbinamenti/classifica invece che al
     // dettaglio torneo (vedi RegistrationsScreen/ui/pairings/).
     val lifecycleStatus: Int = 0,
+    // Numero di turni previsti - serve a ui/tournamentmanager/ per sapere quando l'ultimo
+    // turno generato è anche l'ultimo del torneo (mostra "Premiazione" invece di "Genera
+    // turno successivo", vedi TournamentManagerRoundsScreen). 0 = non impostato/sconosciuto
+    // (torneo creato prima che questo campo esistesse).
+    val turni: Int = 0,
 )
 
 /** Specchio di Chessora.Contracts.Tournaments.TournamentRegistrationCountDto (risposta

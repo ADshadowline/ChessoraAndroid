@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+import org.chessora.app.data.remote.dto.EntrantDto
 import org.chessora.app.data.remote.dto.Pairing
 import org.chessora.app.data.remote.dto.StandingsRow
 import org.chessora.app.data.remote.dto.TournamentViewMode
@@ -48,21 +49,25 @@ private val RESULT_LABELS = mapOf(
 
 private const val ROUNDS_POLL_INTERVAL_MS = 8_000L
 
-/** Turni/scacchiere/risultati di un torneo InCorso, lato organizzatore: genera il turno
- * successivo, pubblica un turno in bozza, inserisce/corregge i risultati - stesse azioni
- * di abbinamenti-risultati.html sul sito (senza la correzione manuale degli abbinamenti,
+/** Turni/scacchiere/risultati di un torneo InCorso, lato organizzatore: mostra gli
+ * iscritti effettivi finché non è ancora stato generato alcun turno, genera il turno
+ * successivo, pubblica un turno in bozza, inserisce/corregge i risultati e infine (a
+ * torneo concluso, vedi [totalRounds]) mostra la premiazione - stesse azioni di
+ * abbinamenti-risultati.html sul sito (senza la correzione manuale degli abbinamenti,
  * fuori scope qui). Ogni azione ricarica i turni dal server, cosi' il sito vede subito i
  * cambiamenti fatti dall'app e viceversa (stessa Api/DB). */
 @Composable
-fun TournamentManagerRoundsScreen(idTournament: Int) {
+fun TournamentManagerRoundsScreen(idTournament: Int, totalRounds: Int) {
     val viewModel = chessoraViewModel { app -> TournamentManagerRoundsViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
     val standings by viewModel.standings.collectAsState()
+    val entrants by viewModel.entrants.collectAsState()
     val viewMode by viewModel.viewMode.collectAsState()
     val busy by viewModel.busy.collectAsState()
     val context = LocalContext.current
     var selectedRoundNumber by remember { mutableStateOf<Int?>(null) }
     var resultDialogPairing by remember { mutableStateOf<Pairing?>(null) }
+    var showPremiazione by remember { mutableStateOf(false) }
 
     // Aggiornamento quasi in tempo reale: un risultato/turno può cambiare dal sito (o da
     // un altro organizzatore) mentre questa schermata resta aperta - senza un
@@ -95,81 +100,116 @@ fun TournamentManagerRoundsScreen(idTournament: Int) {
         // dell'attuale produrrebbe abbinamenti basati su punteggi incompleti.
         val latestRound = rounds.maxByOrNull { it.roundNumber }
         val latestRoundComplete = latestRound == null || latestRound.pairings.all { it.result != null }
+        // Come sul sito (isFinal in abbinamenti-risultati.html): "ultimo turno del
+        // torneo" si sa solo confrontando col numero di turni previsti, mai dalla sola
+        // assenza di un turno successivo (i turni si generano uno alla volta). Se
+        // totalRounds non è impostato (torneo creato prima che il campo esistesse) non si
+        // può mai essere certi di essere all'ultimo turno: si resta sempre su "Genera
+        // turno", mai forzati a mostrare "Premiazione" per errore.
+        val isFinalRound = totalRounds > 0 && (latestRound?.roundNumber ?: 0) >= totalRounds
+        // idPlayer→titolo di ogni iscritto, ricostruito dalle scacchiere già caricate (mai
+        // una fetch a parte): serve solo per la Premiazione, per la stessa regola di
+        // categoria del sito (titolo FIDE se c'è, altrimenti fasce Elo).
+        val titleByEntrantId = remember(rounds) {
+            val map = mutableMapOf<Int, String?>()
+            rounds.forEach { r ->
+                r.pairings.forEach { p ->
+                    p.white?.let { map[it.id] = it.title }
+                    p.black?.let { map[it.id] = it.title }
+                }
+            }
+            map
+        }
 
         Column(modifier = Modifier.fillMaxSize()) {
-            if (rounds.isEmpty()) {
-                Box(modifier = Modifier.weight(1f).fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
-                    Text("Nessun turno generato ancora.", style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+            when {
+                showPremiazione -> {
+                    val sections = remember(standings, titleByEntrantId) { computePrizeSections(standings, titleByEntrantId) }
+                    PremiazioneContent(sections, modifier = Modifier.weight(1f))
                 }
-            } else if (viewMode == TournamentViewMode.STANDINGS) {
-                if (standings.isEmpty()) {
-                    Box(modifier = Modifier.weight(1f).fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
-                        Text("Classifica non ancora disponibile.", style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
-                    }
-                } else {
-                    LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth().padding(16.dp)) {
-                        items(standings, key = { it.entrantId }) { row -> OrganizerStandingsRow(row) }
-                    }
-                }
-            } else {
-                if (rounds.size > 1) {
-                    TabRow(selectedTabIndex = rounds.indexOfFirst { it.roundNumber == round?.roundNumber }.coerceAtLeast(0)) {
-                        rounds.sortedBy { it.roundNumber }.forEach { r ->
-                            Tab(
-                                selected = r.roundNumber == round?.roundNumber,
-                                onClick = { selectedRoundNumber = r.roundNumber },
-                                text = { Text("Turno ${r.roundNumber}" + if (r.status == "Pending") " · bozza" else "") },
-                            )
+                rounds.isEmpty() -> EntrantsContent(entrants, modifier = Modifier.weight(1f))
+                viewMode == TournamentViewMode.STANDINGS -> {
+                    if (standings.isEmpty()) {
+                        Box(modifier = Modifier.weight(1f).fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
+                            Text("Classifica non ancora disponibile.", style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+                        }
+                    } else {
+                        LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth().padding(16.dp)) {
+                            items(standings, key = { it.entrantId }) { row -> OrganizerStandingsRow(row) }
                         }
                     }
                 }
-                if (round != null) {
-                    LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth().padding(16.dp)) {
-                        items(round.pairings.sortedBy { it.board }, key = { it.id }) { pairing ->
-                            OrganizerPairingRow(pairing, onClick = { resultDialogPairing = pairing })
+                else -> {
+                    if (rounds.size > 1) {
+                        TabRow(selectedTabIndex = rounds.indexOfFirst { it.roundNumber == round?.roundNumber }.coerceAtLeast(0)) {
+                            rounds.sortedBy { it.roundNumber }.forEach { r ->
+                                Tab(
+                                    selected = r.roundNumber == round?.roundNumber,
+                                    onClick = { selectedRoundNumber = r.roundNumber },
+                                    text = { Text("Turno ${r.roundNumber}" + if (r.status == "Pending") " · bozza" else "") },
+                                )
+                            }
+                        }
+                    }
+                    if (round != null) {
+                        LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth().padding(16.dp)) {
+                            items(round.pairings.sortedBy { it.board }, key = { it.id }) { pairing ->
+                                OrganizerPairingRow(pairing, onClick = { resultDialogPairing = pairing })
+                            }
                         }
                     }
                 }
             }
-            // "Classifica provvisoria" (sulla vista abbinamenti) e "Genera turno
-            // successivo" non compaiono mai insieme: finché l'ultimo turno non è completo
-            // ha senso solo generare (anche se ancora disabilitato), una volta completo si
-            // passa PRIMA alla classifica - "Genera turno" ricompare lì (insieme a "Torna
-            // agli abbinamenti", un pulsante diverso, mai in conflitto con "Classifica
-            // provvisoria" perché quell'etichetta non esiste più in quella vista).
-            val showStandingsToggle = viewMode == TournamentViewMode.STANDINGS || (!hasPendingRound && latestRoundComplete)
-            val showGenerate = !hasPendingRound && (viewMode == TournamentViewMode.STANDINGS || !latestRoundComplete)
+            // "Classifica provvisoria"/"Premiazione" e "Genera turno successivo" non
+            // compaiono mai insieme: finché l'ultimo turno non è completo ha senso solo
+            // generare (anche se ancora disabilitato); una volta completo si passa PRIMA
+            // alla classifica - "Genera turno" ricompare lì finché non è l'ultimo turno
+            // del torneo, altrimenti (torneo finito) è "Premiazione" a comparire al suo
+            // posto, mai insieme.
+            val showStandingsToggle = !showPremiazione && (viewMode == TournamentViewMode.STANDINGS || (rounds.isNotEmpty() && !hasPendingRound && latestRoundComplete))
+            val showGenerate = rounds.isEmpty() || (!hasPendingRound && !isFinalRound && (viewMode == TournamentViewMode.STANDINGS || !latestRoundComplete))
+            val showPremiazioneButton = !showPremiazione && viewMode == TournamentViewMode.STANDINGS && !hasPendingRound && latestRoundComplete && isFinalRound
             Row(
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                // Condivisa col sito (vedi TournamentManagerRoundsViewModel.setViewMode): se
-                // sposti la vista da qui, tourn.chessora.org la segue entro pochi secondi, e
-                // viceversa.
-                if (showStandingsToggle) {
-                    OutlinedButton(
-                        onClick = {
-                            val next = if (viewMode == TournamentViewMode.PAIRINGS) TournamentViewMode.STANDINGS else TournamentViewMode.PAIRINGS
-                            viewModel.setViewMode(idTournament, next)
-                        },
-                        modifier = Modifier.weight(1f),
-                    ) { Text(if (viewMode == TournamentViewMode.PAIRINGS) "Classifica provvisoria" else "Torna agli abbinamenti") }
-                }
+                if (showPremiazione) {
+                    OutlinedButton(onClick = { showPremiazione = false }, modifier = Modifier.weight(1f)) {
+                        Text("Torna alla classifica")
+                    }
+                } else {
+                    // Condivisa col sito (vedi TournamentManagerRoundsViewModel.setViewMode):
+                    // se sposti la vista da qui, tourn.chessora.org la segue entro pochi
+                    // secondi, e viceversa. Mai mostrata prima che esista un turno.
+                    if (showStandingsToggle) {
+                        OutlinedButton(
+                            onClick = {
+                                val next = if (viewMode == TournamentViewMode.PAIRINGS) TournamentViewMode.STANDINGS else TournamentViewMode.PAIRINGS
+                                viewModel.setViewMode(idTournament, next)
+                            },
+                            modifier = Modifier.weight(1f),
+                        ) { Text(if (viewMode == TournamentViewMode.PAIRINGS) "Classifica provvisoria" else "Torna agli abbinamenti") }
+                    }
 
-                if (showGenerate) {
-                    Button(
-                        onClick = { viewModel.generateRound(idTournament, onError = ::showError) },
-                        enabled = !busy && latestRoundComplete,
-                        modifier = Modifier.weight(1f),
-                    ) { Text("Genera turno successivo") }
-                }
+                    if (showGenerate) {
+                        Button(
+                            onClick = { viewModel.generateRound(idTournament, onError = ::showError) },
+                            enabled = !busy && latestRoundComplete,
+                            modifier = Modifier.weight(1f),
+                        ) { Text(if (rounds.isEmpty()) "Genera turno 1" else "Genera turno successivo") }
+                    }
 
-                if (viewMode == TournamentViewMode.PAIRINGS && round?.status == "Pending") {
-                    Button(
-                        onClick = { viewModel.publishRound(idTournament, round.id, onError = ::showError) },
-                        enabled = !busy,
-                        modifier = Modifier.weight(1f),
-                    ) { Text("Pubblica turno") }
+                    if (showPremiazioneButton) {
+                        Button(onClick = { showPremiazione = true }, modifier = Modifier.weight(1f)) { Text("Premiazione") }
+                    }
+
+                    if (viewMode == TournamentViewMode.PAIRINGS && round?.status == "Pending") {
+                        Button(
+                            onClick = { viewModel.publishRound(idTournament, round.id, onError = ::showError) },
+                            enabled = !busy,
+                            modifier = Modifier.weight(1f),
+                        ) { Text("Pubblica turno") }
+                    }
                 }
             }
         }
@@ -184,6 +224,44 @@ fun TournamentManagerRoundsScreen(idTournament: Int) {
                 resultDialogPairing = null
             },
         )
+    }
+}
+
+@Composable
+private fun EntrantsContent(entrants: List<EntrantDto>, modifier: Modifier = Modifier) {
+    if (entrants.isEmpty()) {
+        Box(modifier = modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
+            Text("Nessun turno generato ancora. Nessun iscritto trovato.", style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+        }
+        return
+    }
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            "Iscritti effettivi (${entrants.size})",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(16.dp),
+        )
+        LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = 16.dp)) {
+            items(entrants, key = { it.id }) { e -> EntrantRow(e) }
+        }
+    }
+}
+
+@Composable
+private fun EntrantRow(entrant: EntrantDto) {
+    Card(modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp)) {
+        Column(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
+            Text(entrant.name, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
+            val meta = listOfNotNull(
+                entrant.title?.takeIf { it.isNotBlank() },
+                entrant.federation?.takeIf { it.isNotBlank() },
+                entrant.rating?.let { "Elo $it" },
+            ).joinToString(" · ")
+            if (meta.isNotEmpty()) {
+                Text(meta, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 2.dp))
+            }
+        }
     }
 }
 
@@ -245,6 +323,153 @@ private fun OrganizerStandingsRow(row: StandingsRow) {
 }
 
 private fun formatScore(n: Double): String = if (n % 1.0 == 0.0) n.toInt().toString() else n.toString().replace('.', ',')
+
+// ---------------- Premiazione ----------------
+// Stessa logica di abbinamenti-risultati.html (Assoluti poi Fasce Elo poi Categorie, mai
+// cumulabili: chi vince in un gruppo non ricompare nei successivi), con gli importi di
+// DEFAULT del sito (monte premi/fasce/percentuali) - la configurazione personalizzata di
+// un organizzatore vive SOLO nel localStorage del suo browser, il server non la conosce e
+// quindi l'app non può leggerla (vedi la richiesta dell'utente/la spiegazione data prima
+// di implementare questa schermata).
+
+private data class PrizeFascia(val label: String, val min: Int?, val max: Int?)
+private data class PrizeRankConfig(val percent: Boolean, val value: Int)
+private data class PrizeRow(val entrantId: Int, val rank: Int, val name: String, val title: String?, val rating: Int?, val amount: Int)
+private data class PrizeGroup(val label: String, val rows: List<PrizeRow>)
+private data class PrizeSections(val assoluti: List<PrizeRow>, val fasce: List<PrizeGroup>, val categorie: List<PrizeGroup>)
+
+private object PrizeDefaults {
+    const val MONTE_PREMI = 1000
+    val FASCE_ELO = listOf(
+        PrizeFascia("Over 2000", 2000, null),
+        PrizeFascia("1800–1999", 1800, 1999),
+        PrizeFascia("1600–1799", 1600, 1799),
+        PrizeFascia("1400–1599", 1400, 1599),
+        PrizeFascia("Under 1400", null, 1399),
+    )
+    const val ASSOLUTI_COUNT = 3
+    const val FASCE_COUNT = 3
+    const val CATEGORIE_COUNT = 3
+    val ASSOLUTI_RANKS = listOf(PrizeRankConfig(true, 25), PrizeRankConfig(true, 15), PrizeRankConfig(true, 10))
+    val FASCE_RANKS = listOf(PrizeRankConfig(false, 40), PrizeRankConfig(false, 25), PrizeRankConfig(false, 15))
+    val CATEGORIE_RANKS = listOf(PrizeRankConfig(false, 30), PrizeRankConfig(false, 20), PrizeRankConfig(false, 10))
+}
+
+private val CATEGORY_ORDER = listOf("GM", "IM", "FM", "CM", "1N", "2N", "3N", "NC")
+
+private fun categoryFor(title: String?, rating: Int?): String {
+    if (!title.isNullOrBlank()) return title
+    val elo = rating ?: 0
+    return when {
+        elo >= 1800 -> "1N"
+        elo >= 1600 -> "2N"
+        elo >= 1400 -> "3N"
+        else -> "NC"
+    }
+}
+
+private fun prizeAmount(rank: PrizeRankConfig?): Int {
+    if (rank == null) return 0
+    val raw = if (rank.percent) PrizeDefaults.MONTE_PREMI * rank.value / 100.0 else rank.value.toDouble()
+    return (Math.round(raw / 5.0) * 5).toInt()
+}
+
+private fun computePrizeSections(standings: List<StandingsRow>, titleByEntrantId: Map<Int, String?>): PrizeSections {
+    fun toRow(r: StandingsRow, rank: Int, rankConfig: PrizeRankConfig?) =
+        PrizeRow(r.entrantId, rank, r.name, titleByEntrantId[r.entrantId], r.rating, prizeAmount(rankConfig))
+
+    val awarded = mutableSetOf<Int>()
+
+    val assoluti = standings.take(PrizeDefaults.ASSOLUTI_COUNT)
+        .mapIndexed { i, r -> toRow(r, i + 1, PrizeDefaults.ASSOLUTI_RANKS.getOrNull(i)) }
+    assoluti.forEach { awarded += it.entrantId }
+
+    var remaining = standings.filter { it.entrantId !in awarded }
+    val fasce = PrizeDefaults.FASCE_ELO.mapNotNull { f ->
+        val min = f.min ?: Int.MIN_VALUE
+        val max = f.max ?: Int.MAX_VALUE
+        val source = remaining.filter { (it.rating ?: 0) in min..max }.take(PrizeDefaults.FASCE_COUNT)
+        if (source.isEmpty()) return@mapNotNull null
+        PrizeGroup(f.label, source.mapIndexed { i, r -> toRow(r, i + 1, PrizeDefaults.FASCE_RANKS.getOrNull(i)) })
+    }
+    fasce.forEach { g -> g.rows.forEach { awarded += it.entrantId } }
+
+    remaining = standings.filter { it.entrantId !in awarded }
+    val byCategory = remaining.groupBy { categoryFor(titleByEntrantId[it.entrantId], it.rating) }
+    val categorie = CATEGORY_ORDER.mapNotNull { cat ->
+        val source = byCategory[cat] ?: return@mapNotNull null
+        PrizeGroup(cat, source.take(PrizeDefaults.CATEGORIE_COUNT).mapIndexed { i, r -> toRow(r, i + 1, PrizeDefaults.CATEGORIE_RANKS.getOrNull(i)) })
+    }
+
+    return PrizeSections(assoluti, fasce, categorie)
+}
+
+private fun formatEuro(n: Int): String = "€ $n"
+
+@Composable
+private fun PremiazioneContent(sections: PrizeSections, modifier: Modifier = Modifier) {
+    LazyColumn(modifier = modifier.fillMaxWidth().padding(16.dp)) {
+        item {
+            Text("Premiazione", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 16.dp))
+        }
+        item { PrizeSectionTitle("Assoluti") }
+        if (sections.assoluti.isEmpty()) {
+            item { Text("Nessun dato disponibile.", style = MaterialTheme.typography.bodySmall) }
+        } else {
+            items(sections.assoluti, key = { "a-${it.entrantId}" }) { PrizeRowCard(it) }
+        }
+        if (sections.fasce.isNotEmpty()) {
+            item { PrizeSectionTitle("Fasce Elo") }
+            sections.fasce.forEach { group ->
+                item { PrizeGroupLabel(group) }
+                items(group.rows, key = { "f-${group.label}-${it.entrantId}" }) { PrizeRowCard(it) }
+            }
+        }
+        if (sections.categorie.isNotEmpty()) {
+            item { PrizeSectionTitle("Categorie") }
+            sections.categorie.forEach { group ->
+                item { PrizeGroupLabel(group) }
+                items(group.rows, key = { "c-${group.label}-${it.entrantId}" }) { PrizeRowCard(it) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PrizeSectionTitle(title: String) {
+    Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 12.dp, bottom = 6.dp))
+}
+
+@Composable
+private fun PrizeGroupLabel(group: PrizeGroup) {
+    Text(
+        "${group.label} (${group.rows.size})",
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
+    )
+}
+
+@Composable
+private fun PrizeRowCard(row: PrizeRow) {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+        colors = if (row.rank <= 3) CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer) else CardDefaults.cardColors(),
+    ) {
+        Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text("${row.rank}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(end = 12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    row.name + (row.title?.takeIf { it.isNotBlank() }?.let { " ($it)" } ?: ""),
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text("Elo ${row.rating ?: "—"}", style = MaterialTheme.typography.bodySmall)
+            }
+            Text(formatEuro(row.amount), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        }
+    }
+}
 
 @Composable
 private fun ResultDialog(pairing: Pairing, onDismiss: () -> Unit, onSelect: (String?) -> Unit) {

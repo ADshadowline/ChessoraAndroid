@@ -74,8 +74,11 @@ object ChessoraDestinations {
     const val TOURNAMENT_MANAGER_LIST = "gestione-tornei"
     /** Turni/scacchiere/risultati di un singolo torneo, lato organizzatore - genera/
      * pubblica turni e inserisce risultati (a differenza di TOURNAMENT_PAIRINGS, che è
-     * sola lettura per un giocatore preiscritto). */
-    const val TOURNAMENT_MANAGER_ROUNDS = "gestione-tornei/{idTournament}"
+     * sola lettura per un giocatore preiscritto). [turni] (TournamentSummary.turni,
+     * portato dalla lista invece di rifare una fetch qui) serve per sapere quando l'ultimo
+     * turno generato è anche l'ultimo del torneo (mostra "Premiazione" invece di "Genera
+     * turno successivo"). */
+    const val TOURNAMENT_MANAGER_ROUNDS = "gestione-tornei/{idTournament}/{turni}"
 
     const val NEW_MESSAGE = "messaging/new"
 
@@ -95,7 +98,7 @@ object ChessoraDestinations {
 
     fun tournamentPairings(idTournament: Int) = "tornei/$idTournament/abbinamenti"
 
-    fun tournamentManagerRounds(idTournament: Int) = "gestione-tornei/$idTournament"
+    fun tournamentManagerRounds(idTournament: Int, turni: Int) = "gestione-tornei/$idTournament/$turni"
 
     fun bandoViewer(url: String) = "bando-viewer/${java.net.URLEncoder.encode(url, "UTF-8")}"
 

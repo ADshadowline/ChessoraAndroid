@@ -56,6 +56,23 @@ data class StandingsRow(
     val buchholz: Double = 0.0,
 )
 
+/** Specchio di Chessora.Contracts.Tournaments.EntrantDto (GET
+ * api/tornei/admin/{id}/entrants, organizzatore) - un iscritto EFFETTIVO al torneo,
+ * mostrato in ui/tournamentmanager/ prima che venga generato il primo turno (quando non
+ * c'è ancora nessuna scacchiera da vedere). */
+@Serializable
+data class EntrantDto(
+    val id: Int,
+    val name: String,
+    val idFide: String? = null,
+    val idPlayer: Int? = null,
+    val rating: Int? = null,
+    val title: String? = null,
+    val federation: String? = null,
+    val tpn: Int = 0,
+    val active: Boolean = true,
+)
+
 /** Specchio di Chessora.Contracts.Tournaments.SubmitResultRequest - corpo di PUT
  * api/tornei/admin/{id}/pairings/{pairingId}/result (organizzatore, vedi
  * ui/tournamentmanager/). result=null annulla un risultato già inserito. */

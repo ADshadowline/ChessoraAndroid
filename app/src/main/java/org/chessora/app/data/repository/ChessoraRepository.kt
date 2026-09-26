@@ -15,6 +15,7 @@ import org.chessora.app.data.remote.dto.ClubSearchResult
 import org.chessora.app.data.remote.dto.ClubStats
 import org.chessora.app.data.remote.dto.CompletePlayerProfileRequestDto
 import org.chessora.app.data.remote.dto.ConversationSummary
+import org.chessora.app.data.remote.dto.EntrantDto
 import org.chessora.app.data.remote.dto.EventType
 import org.chessora.app.data.remote.dto.EventoBandoInfo
 import org.chessora.app.data.remote.dto.FidePlayerSearchResultDto
@@ -215,6 +216,9 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun getOrganizerRounds(id: Int): Result<List<TournamentRound>> =
         withOrganizerAuth { auth -> api.getOrganizerRounds(auth, id) }
+
+    suspend fun getEntrants(id: Int): Result<List<EntrantDto>> =
+        withOrganizerAuth { auth -> api.getEntrants(auth, id) }
 
     suspend fun generateRound(id: Int): Result<TournamentRound> =
         withOrganizerAuth { auth -> api.generateRound(auth, id) }

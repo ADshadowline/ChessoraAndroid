@@ -507,15 +507,19 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
             }
             composable(ChessoraDestinations.TOURNAMENT_MANAGER_LIST) {
                 TournamentManagerListScreen(
-                    onOpenTournament = { idTournament -> navController.navigate(ChessoraDestinations.tournamentManagerRounds(idTournament)) },
+                    onOpenTournament = { idTournament, turni -> navController.navigate(ChessoraDestinations.tournamentManagerRounds(idTournament, turni)) },
                 )
             }
             composable(
                 ChessoraDestinations.TOURNAMENT_MANAGER_ROUNDS,
-                arguments = listOf(navArgument("idTournament") { type = NavType.IntType }),
+                arguments = listOf(
+                    navArgument("idTournament") { type = NavType.IntType },
+                    navArgument("turni") { type = NavType.IntType },
+                ),
             ) { backStack ->
                 val idTournament = backStack.arguments?.getInt("idTournament") ?: return@composable
-                TournamentManagerRoundsScreen(idTournament = idTournament)
+                val turni = backStack.arguments?.getInt("turni") ?: 0
+                TournamentManagerRoundsScreen(idTournament = idTournament, totalRounds = turni)
             }
             composable(ChessoraDestinations.RANKING) {
                 RankingScreen(club = selectedClub?.takeIf { it != ClubPreferences.PLATFORM_CLUB_CODE })

@@ -12,6 +12,7 @@ import org.chessora.app.data.remote.dto.CompletePlayerProfileRequestDto
 import org.chessora.app.data.remote.dto.ConversationSummary
 import org.chessora.app.data.remote.dto.EventType
 import org.chessora.app.data.remote.dto.EmptyRequestBody
+import org.chessora.app.data.remote.dto.EntrantDto
 import org.chessora.app.data.remote.dto.EventoBandoInfo
 import org.chessora.app.data.remote.dto.FidePlayerSearchResultDto
 import org.chessora.app.data.remote.dto.ForgotPasswordRequestDto
@@ -366,6 +367,11 @@ interface ChessoraApi {
      * Pending ancora in bozza, non solo i Published. */
     @GET("api/tornei/admin/{id}/rounds")
     suspend fun getOrganizerRounds(@Header("Authorization") auth: String, @Path("id") id: Int): List<TournamentRound>
+
+    /** Iscritti effettivi - mostrati quando non c'è ancora nessun turno generato (vedi
+     * ui/tournamentmanager/TournamentManagerRoundsScreen). */
+    @GET("api/tornei/admin/{id}/entrants")
+    suspend fun getEntrants(@Header("Authorization") auth: String, @Path("id") id: Int): List<EntrantDto>
 
     @POST("api/tornei/admin/{id}/rounds/generate")
     suspend fun generateRound(@Header("Authorization") auth: String, @Path("id") id: Int, @Body body: EmptyRequestBody = EmptyRequestBody()): TournamentRound

@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.chessora.app.data.remote.apiErrorMessage
+import org.chessora.app.data.remote.dto.EntrantDto
 import org.chessora.app.data.remote.dto.StandingsRow
 import org.chessora.app.data.remote.dto.TournamentRound
 import org.chessora.app.data.remote.dto.TournamentViewMode
@@ -23,6 +24,12 @@ class TournamentManagerRoundsViewModel(private val repository: ChessoraRepositor
 
     private val _standings = MutableStateFlow<List<StandingsRow>>(emptyList())
     val standings: StateFlow<List<StandingsRow>> = _standings.asStateFlow()
+
+    /** Iscritti effettivi - servono solo quando non c'è ancora nessun turno generato (vedi
+     * TournamentManagerRoundsScreen), ma vengono comunque ricaricati a ogni giro insieme al
+     * resto: sono pochi e cambiano raramente, non vale la pena una fetch condizionale. */
+    private val _entrants = MutableStateFlow<List<EntrantDto>>(emptyList())
+    val entrants: StateFlow<List<EntrantDto>> = _entrants.asStateFlow()
 
     /** Abbinamenti o classifica provvisoria - condivisa col sito (vedi
      * ChessoraRepository.getTournamentViewState/setTournamentViewState): [load] la rilegge
@@ -42,6 +49,7 @@ class TournamentManagerRoundsViewModel(private val repository: ChessoraRepositor
             _state.value = repository.getOrganizerRounds(idTournament).toUiState()
             repository.getTournamentStandings(idTournament).onSuccess { _standings.value = it }
             repository.getTournamentViewState(idTournament).onSuccess { remote -> _viewMode.value = remote }
+            repository.getEntrants(idTournament).onSuccess { _entrants.value = it }
         }
     }
 
