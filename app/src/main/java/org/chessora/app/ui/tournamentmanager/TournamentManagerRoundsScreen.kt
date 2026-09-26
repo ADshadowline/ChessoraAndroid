@@ -131,6 +131,14 @@ fun TournamentManagerRoundsScreen(idTournament: Int) {
                     }
                 }
             }
+            // "Classifica provvisoria" (sulla vista abbinamenti) e "Genera turno
+            // successivo" non compaiono mai insieme: finché l'ultimo turno non è completo
+            // ha senso solo generare (anche se ancora disabilitato), una volta completo si
+            // passa PRIMA alla classifica - "Genera turno" ricompare lì (insieme a "Torna
+            // agli abbinamenti", un pulsante diverso, mai in conflitto con "Classifica
+            // provvisoria" perché quell'etichetta non esiste più in quella vista).
+            val showStandingsToggle = viewMode == TournamentViewMode.STANDINGS || (!hasPendingRound && latestRoundComplete)
+            val showGenerate = !hasPendingRound && (viewMode == TournamentViewMode.STANDINGS || !latestRoundComplete)
             Row(
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -138,29 +146,30 @@ fun TournamentManagerRoundsScreen(idTournament: Int) {
                 // Condivisa col sito (vedi TournamentManagerRoundsViewModel.setViewMode): se
                 // sposti la vista da qui, tourn.chessora.org la segue entro pochi secondi, e
                 // viceversa.
-                OutlinedButton(
-                    onClick = {
-                        val next = if (viewMode == TournamentViewMode.PAIRINGS) TournamentViewMode.STANDINGS else TournamentViewMode.PAIRINGS
-                        viewModel.setViewMode(idTournament, next)
-                    },
-                    modifier = Modifier.weight(1f),
-                ) { Text(if (viewMode == TournamentViewMode.PAIRINGS) "Classifica provvisoria" else "Torna agli abbinamenti") }
+                if (showStandingsToggle) {
+                    OutlinedButton(
+                        onClick = {
+                            val next = if (viewMode == TournamentViewMode.PAIRINGS) TournamentViewMode.STANDINGS else TournamentViewMode.PAIRINGS
+                            viewModel.setViewMode(idTournament, next)
+                        },
+                        modifier = Modifier.weight(1f),
+                    ) { Text(if (viewMode == TournamentViewMode.PAIRINGS) "Classifica provvisoria" else "Torna agli abbinamenti") }
+                }
 
-                if (viewMode == TournamentViewMode.PAIRINGS) {
-                    if (!hasPendingRound) {
-                        Button(
-                            onClick = { viewModel.generateRound(idTournament, onError = ::showError) },
-                            enabled = !busy && latestRoundComplete,
-                            modifier = Modifier.weight(1f),
-                        ) { Text("Genera turno successivo") }
-                    }
-                    if (round?.status == "Pending") {
-                        Button(
-                            onClick = { viewModel.publishRound(idTournament, round.id, onError = ::showError) },
-                            enabled = !busy,
-                            modifier = Modifier.weight(1f),
-                        ) { Text("Pubblica turno") }
-                    }
+                if (showGenerate) {
+                    Button(
+                        onClick = { viewModel.generateRound(idTournament, onError = ::showError) },
+                        enabled = !busy && latestRoundComplete,
+                        modifier = Modifier.weight(1f),
+                    ) { Text("Genera turno successivo") }
+                }
+
+                if (viewMode == TournamentViewMode.PAIRINGS && round?.status == "Pending") {
+                    Button(
+                        onClick = { viewModel.publishRound(idTournament, round.id, onError = ::showError) },
+                        enabled = !busy,
+                        modifier = Modifier.weight(1f),
+                    ) { Text("Pubblica turno") }
                 }
             }
         }
