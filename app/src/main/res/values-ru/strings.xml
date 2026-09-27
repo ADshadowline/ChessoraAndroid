@@ -169,6 +169,10 @@
     <string name="desktop_icon_shop">Магазин</string>
     <string name="desktop_icon_video">Видео</string>
     <string name="video_empty">Нет доступных видео.</string>
+    <string name="video_search_hint">Поиск видео…</string>
+    <string name="video_folder_all">Все</string>
+    <string name="video_settings_title">Видеоканалы</string>
+    <string name="video_settings_hint">Выберите, какие каналы вы хотите видеть в разделе Видео. По умолчанию выбраны все.</string>
     <string name="language_tile_label">Язык</string>
     <string name="icon_settings_title">Значки главного экрана</string>
     <string name="icon_settings_subtitle">Удерживайте ручку и перетаскивайте, чтобы изменить порядок. Используйте переключатель, чтобы скрыть значок с главного экрана.</string>

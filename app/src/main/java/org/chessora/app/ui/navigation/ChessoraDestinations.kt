@@ -49,6 +49,9 @@ object ChessoraDestinations {
     /** Elenco riordinabile/attivabile delle icone della Home desktop - vedi
      * ui/settings/IconSettingsScreen.kt, raggiungibile solo da Impostazioni. */
     const val ICON_SETTINGS = "icon-settings"
+    /** Canali YouTube spuntabili per la sezione Video - vedi
+     * ui/settings/VideoChannelSettingsScreen.kt, raggiungibile solo da Impostazioni. */
+    const val VIDEO_CHANNEL_SETTINGS = "video-channel-settings"
     // Non più in bottom bar (spostati dentro "Altro") - raggiungibili solo da lì,
     // come Direttivo/Negozio.
     const val CALENDAR = "calendar"

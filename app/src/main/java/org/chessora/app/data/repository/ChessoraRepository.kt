@@ -53,6 +53,9 @@ import org.chessora.app.data.remote.dto.TournamentViewStateDto
 import org.chessora.app.data.remote.dto.TournamentPreRegistrationResult
 import org.chessora.app.data.remote.dto.TournamentRound
 import org.chessora.app.data.remote.dto.TournamentSummary
+import org.chessora.app.data.remote.dto.SetVideoChannelPreferencesRequest
+import org.chessora.app.data.remote.dto.VideoChannelPreference
+import org.chessora.app.data.remote.dto.VideoFeedItem
 import org.chessora.app.data.remote.dto.VideoNewsItem
 import org.chessora.app.data.remote.dto.VideoRow
 
@@ -268,6 +271,15 @@ class ChessoraRepository(private val api: ChessoraApi) {
         safeCall { api.getGoogleReviews(club) }
 
     suspend fun getVideoRows(club: String): Result<List<VideoRow>> = safeCall { api.getVideoRows(club) }
+
+    suspend fun getVideoFeed(club: String, idPlayer: Int?): Result<List<VideoFeedItem>> =
+        safeCall { api.getVideoFeed(club, idPlayer) }
+
+    suspend fun getVideoChannelPreferences(idPlayer: Int?): Result<List<VideoChannelPreference>> =
+        safeCall { api.getVideoChannelPreferences(idPlayer) }
+
+    suspend fun setVideoChannelPreferences(idPlayer: Int, selectedChannelIds: List<Int>): Result<Unit> =
+        safeCall { api.setVideoChannelPreferences(SetVideoChannelPreferencesRequest(idPlayer, selectedChannelIds)) }
 
     suspend fun getVideoNews(club: String, limit: Int = 20): Result<List<VideoNewsItem>> =
         safeCall { api.getVideoNews(club, limit) }

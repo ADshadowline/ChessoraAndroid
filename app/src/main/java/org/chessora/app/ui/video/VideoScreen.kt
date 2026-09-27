@@ -3,27 +3,36 @@ package org.chessora.app.ui.video
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayCircle
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,30 +43,69 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import org.chessora.app.R
-import org.chessora.app.data.remote.dto.VideoItem
+import org.chessora.app.data.remote.dto.VideoFeedItem
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
 
 /** Elenco video del circolo (YouTube, gestiti dal wizard) - sola consultazione, il tocco
  * apre il video nell'app YouTube/browser (stesso meccanismo di bando/sito web nel
- * dettaglio torneo), nessuna riproduzione incorporata. */
+ * dettaglio torneo), nessuna riproduzione incorporata. Mostra solo i canali selezionati
+ * in Impostazioni > Video (vedi VideoChannelSettingsScreen) più gli eventuali video locali
+ * del circolo - ricerca testuale e "cartelle" per canale sotto il campo di ricerca. */
 @Composable
 fun VideoScreen(club: String) {
-    val viewModel = chessoraViewModel { app -> VideoViewModel(app.repository) }
+    val viewModel = chessoraViewModel { app -> VideoViewModel(app.repository, app.clubPreferences) }
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
+    var query by remember { mutableStateOf("") }
+    var selectedFolder by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(club) { viewModel.load(club) }
 
     UiStateContent(state = state, onRetry = { viewModel.load(club) }) { videos ->
-        if (videos.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(stringResource(R.string.video_empty))
+        // "Cartelle" = i canali (YouTubeChannel.Description) effettivamente presenti tra i
+        // video caricati, non l'intero catalogo - un canale senza video da mostrare non
+        // avrebbe senso come filtro. I video locali del circolo (channelDescription null)
+        // restano raggiungibili solo dalla cartella "Tutti".
+        val folders = remember(videos) { videos.mapNotNull { it.channelDescription }.distinct().sorted() }
+        val filtered = remember(videos, query, selectedFolder) {
+            videos
+                .filter { selectedFolder == null || it.channelDescription == selectedFolder }
+                .filter { query.isBlank() || it.title.contains(query, ignoreCase = true) }
+        }
+
+        Column(modifier = Modifier.fillMaxSize()) {
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                modifier = Modifier.fillMaxWidth().padding(16.dp, 16.dp, 16.dp, 8.dp),
+                placeholder = { Text(stringResource(R.string.video_search_hint)) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                singleLine = true,
+            )
+            if (folders.isNotEmpty()) {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                ) {
+                    item {
+                        FilterChip(selected = selectedFolder == null, onClick = { selectedFolder = null }, label = { Text(stringResource(R.string.video_folder_all)) })
+                    }
+                    items(folders, key = { it }) { folder ->
+                        FilterChip(selected = selectedFolder == folder, onClick = { selectedFolder = if (selectedFolder == folder) null else folder }, label = { Text(folder) })
+                    }
+                }
             }
-        } else {
-            LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                items(videos, key = { it.id }) { video ->
-                    VideoCard(video, onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(video.link))) })
+            if (filtered.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(if (videos.isEmpty()) stringResource(R.string.video_empty) else stringResource(R.string.home_no_results))
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+                    items(filtered, key = { it.id }) { video ->
+                        VideoCard(video, onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(video.link))) })
+                    }
                 }
             }
         }
@@ -65,7 +113,7 @@ fun VideoScreen(club: String) {
 }
 
 @Composable
-private fun VideoCard(video: VideoItem, onClick: () -> Unit) {
+private fun VideoCard(video: VideoFeedItem, onClick: () -> Unit) {
     Card(onClick = onClick, modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)) {
         Column(modifier = Modifier.padding(12.dp)) {
             val thumbnailUrl = youTubeThumbnailUrl(video.link)
@@ -86,11 +134,10 @@ private fun VideoCard(video: VideoItem, onClick: () -> Unit) {
                     modifier = Modifier.padding(start = 8.dp),
                 )
             }
-            if (video.description.isNotBlank()) {
+            if (video.channelDescription != null) {
                 Text(
-                    video.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 3,
+                    video.channelDescription,
+                    style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(top = 4.dp),
                 )
             }

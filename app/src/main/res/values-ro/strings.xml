@@ -169,6 +169,10 @@
     <string name="desktop_icon_shop">Magazin</string>
     <string name="desktop_icon_video">Video</string>
     <string name="video_empty">Niciun video disponibil.</string>
+    <string name="video_search_hint">Caută un video…</string>
+    <string name="video_folder_all">Toate</string>
+    <string name="video_settings_title">Canale video</string>
+    <string name="video_settings_hint">Alege ce canale vrei să vezi în secțiunea Video. Implicit sunt toate selectate.</string>
     <string name="language_tile_label">Limbă</string>
     <string name="icon_settings_title">Pictograme de pe Acasă</string>
     <string name="icon_settings_subtitle">Ține apăsat mânerul și trage pentru a schimba ordinea. Folosește comutatorul pentru a ascunde o pictogramă de pe Acasă.</string>

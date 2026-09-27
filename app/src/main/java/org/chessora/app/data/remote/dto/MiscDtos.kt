@@ -45,6 +45,38 @@ data class VideoRow(
     val items: List<VideoItem> = emptyList(),
 )
 
+/** Specchio di Chessora.Contracts.Video.VideoFeedItemDto (GET /api/video-feed) - un video
+ * già filtrato per i canali selezionati in Impostazioni (o tutti, di default) più gli
+ * eventuali video locali del circolo. channelDescription è null per un video locale (nessun
+ * canale collegato), altrimenti il nome del canale - usato per raggruppare in "cartelle"
+ * sotto il campo di ricerca in VideoScreen. */
+@Serializable
+data class VideoFeedItem(
+    val id: Int,
+    val title: String,
+    val channelDescription: String? = null,
+    val publishedAt: String? = null,
+    val createdAt: String,
+    val link: String,
+)
+
+/** Specchio di Chessora.Contracts.Video.VideoChannelPreferenceDto (GET
+ * /api/video-channel-preferences) - un canale spuntabile in Impostazioni > Video. */
+@Serializable
+data class VideoChannelPreference(
+    val id: Int,
+    val description: String,
+    val selected: Boolean,
+)
+
+/** Specchio di Chessora.Contracts.Video.SetVideoChannelPreferencesRequest (PUT
+ * /api/video-channel-preferences). */
+@Serializable
+data class SetVideoChannelPreferencesRequest(
+    val idPlayer: Int,
+    val selectedChannelIds: List<Int>,
+)
+
 /** Specchio di Chessora.Contracts.VideoPublishing.VideoNewsItemDto (GET /api/video-news). */
 @Serializable
 data class VideoNewsItem(

@@ -95,6 +95,7 @@ import org.chessora.app.ui.registrations.RegistrationsScreen
 import org.chessora.app.ui.session.SessionViewModel
 import org.chessora.app.ui.settings.IconSettingsScreen
 import org.chessora.app.ui.settings.SettingsScreen
+import org.chessora.app.ui.settings.VideoChannelSettingsScreen
 import org.chessora.app.ui.shop.ShopScreen
 import org.chessora.app.ui.splash.SplashScreen
 import org.chessora.app.ui.theme.ChessoraGold
@@ -213,6 +214,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
     val registeredTournamentsCount by sessionViewModel.registeredTournamentsCount.collectAsState()
     val registeredTournamentStartingSoon by sessionViewModel.registeredTournamentStartingSoon.collectAsState()
     val hasTournamentInProgress by sessionViewModel.hasTournamentInProgress.collectAsState()
+    val hasManageableTournaments by sessionViewModel.hasManageableTournaments.collectAsState()
     val unreadMessagesCount by sessionViewModel.unreadMessagesCount.collectAsState()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -225,6 +227,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
     LaunchedEffect(currentRoute) {
         sessionViewModel.refreshRegisteredTournamentsCount()
         sessionViewModel.refreshUnreadMessagesCount()
+        sessionViewModel.refreshManageableTournaments()
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -406,6 +409,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                         unreadMessagesCount = unreadMessagesCount,
                         registeredTournamentStartingSoon = registeredTournamentStartingSoon,
                         hasTournamentInProgress = hasTournamentInProgress,
+                        hasManageableTournaments = hasManageableTournaments,
                         desktop = DesktopHomeCallbacks(
                             onOpenEvents = { navController.navigate(ChessoraDestinations.EVENTS) },
                             onOpenCalendar = { navController.navigate(ChessoraDestinations.CALENDAR) },
@@ -616,10 +620,14 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                     },
                     onOpenProfilePhoto = { navController.navigate(ChessoraDestinations.PROFILE_PHOTO) },
                     onOpenIconSettings = { navController.navigate(ChessoraDestinations.ICON_SETTINGS) },
+                    onOpenVideoChannelSettings = { navController.navigate(ChessoraDestinations.VIDEO_CHANNEL_SETTINGS) },
                 )
             }
             composable(ChessoraDestinations.ICON_SETTINGS) {
                 IconSettingsScreen(isPlatformMode = selectedClub == ClubPreferences.PLATFORM_CLUB_CODE)
+            }
+            composable(ChessoraDestinations.VIDEO_CHANNEL_SETTINGS) {
+                VideoChannelSettingsScreen()
             }
         }
     }

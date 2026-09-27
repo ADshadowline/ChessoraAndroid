@@ -189,6 +189,25 @@ class SessionViewModel(
     private val _unreadMessagesCount = MutableStateFlow(0)
     val unreadMessagesCount: StateFlow<Int> = _unreadMessagesCount
 
+    /** True se l'organizzatore self-service (claim automatica, vedi
+     * ChessoraRepository.ensureOrganizerAuth) ha almeno un torneo InCorso
+     * (LifecycleStatus=1) da gestire - nasconde l'icona "Gestione tornei" in Home quando
+     * non c'è nulla da gestire, invece di mostrarla sempre e lasciare che
+     * TournamentManagerListScreen risulti vuota. */
+    private val _hasManageableTournaments = MutableStateFlow(false)
+    val hasManageableTournaments: StateFlow<Boolean> = _hasManageableTournaments
+
+    fun refreshManageableTournaments() {
+        if (!_isLoggedIn.value) {
+            _hasManageableTournaments.value = false
+            return
+        }
+        viewModelScope.launch {
+            val tournaments = repository.getOrganizedTournaments().getOrNull() ?: emptyList()
+            _hasManageableTournaments.value = tournaments.any { it.lifecycleStatus == 1 }
+        }
+    }
+
     fun refreshUnreadMessagesCount() {
         if (!_isLoggedIn.value) {
             _unreadMessagesCount.value = 0

@@ -169,6 +169,10 @@
     <string name="desktop_icon_shop">Boutique</string>
     <string name="desktop_icon_video">Vidéo</string>
     <string name="video_empty">Aucune vidéo disponible.</string>
+    <string name="video_search_hint">Rechercher une vidéo…</string>
+    <string name="video_folder_all">Toutes</string>
+    <string name="video_settings_title">Chaînes vidéo</string>
+    <string name="video_settings_hint">Choisissez les chaînes à afficher dans la section Vidéo. Toutes sont sélectionnées par défaut.</string>
     <string name="language_tile_label">Langue</string>
     <string name="icon_settings_title">Icônes de l\'accueil</string>
     <string name="icon_settings_subtitle">Maintenez la poignée enfoncée et faites glisser pour changer l\'ordre. Utilisez l\'interrupteur pour masquer une icône de l\'accueil.</string>

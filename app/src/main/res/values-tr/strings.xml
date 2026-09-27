@@ -169,6 +169,10 @@
     <string name="desktop_icon_shop">Mağaza</string>
     <string name="desktop_icon_video">Video</string>
     <string name="video_empty">Kullanılabilir video yok.</string>
+    <string name="video_search_hint">Video ara…</string>
+    <string name="video_folder_all">Tümü</string>
+    <string name="video_settings_title">Video kanalları</string>
+    <string name="video_settings_hint">Video bölümünde görmek istediğiniz kanalları seçin. Varsayılan olarak hepsi seçilidir.</string>
     <string name="language_tile_label">Dil</string>
     <string name="icon_settings_title">Ana ekran simgeleri</string>
     <string name="icon_settings_subtitle">Sırayı değiştirmek için tutamacı basılı tutup sürükleyin. Bir simgeyi ana ekrandan gizlemek için anahtarı kullanın.</string>

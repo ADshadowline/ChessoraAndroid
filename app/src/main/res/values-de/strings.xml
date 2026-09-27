@@ -169,6 +169,10 @@
     <string name="desktop_icon_shop">Shop</string>
     <string name="desktop_icon_video">Video</string>
     <string name="video_empty">Keine Videos verfügbar.</string>
+    <string name="video_search_hint">Video suchen…</string>
+    <string name="video_folder_all">Alle</string>
+    <string name="video_settings_title">Videokanäle</string>
+    <string name="video_settings_hint">Wähle, welche Kanäle im Bereich Video angezeigt werden sollen. Standardmäßig sind alle ausgewählt.</string>
     <string name="language_tile_label">Sprache</string>
     <string name="icon_settings_title">Start-Symbole</string>
     <string name="icon_settings_subtitle">Halte den Griff gedrückt und ziehe, um die Reihenfolge zu ändern. Nutze den Schalter, um ein Symbol auf der Startseite auszublenden.</string>

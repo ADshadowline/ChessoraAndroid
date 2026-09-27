@@ -59,6 +59,7 @@ fun SettingsScreen(
     onResetSettings: () -> Unit,
     onOpenProfilePhoto: () -> Unit,
     onOpenIconSettings: () -> Unit,
+    onOpenVideoChannelSettings: () -> Unit,
 ) {
     val viewModel = chessoraViewModel { app -> SettingsViewModel(app.repository, app.clubPreferences) }
     val notificationsEnabled by viewModel.notificationsEnabled.collectAsState()
@@ -138,6 +139,9 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            OutlinedButton(onClick = onOpenVideoChannelSettings, modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
+                Text(stringResource(R.string.video_settings_title))
+            }
         }
 
         Text(

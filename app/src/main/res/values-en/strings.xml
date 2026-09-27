@@ -169,6 +169,10 @@
     <string name="desktop_icon_shop">Shop</string>
     <string name="desktop_icon_video">Video</string>
     <string name="video_empty">No videos available.</string>
+    <string name="video_search_hint">Search a video…</string>
+    <string name="video_folder_all">All</string>
+    <string name="video_settings_title">Video channels</string>
+    <string name="video_settings_hint">Choose which channels you want to see in the Video section. All are selected by default.</string>
     <string name="language_tile_label">Language</string>
     <string name="icon_settings_title">Home icons</string>
     <string name="icon_settings_subtitle">Press and hold the handle and drag to change the order. Use the switch to hide an icon from Home.</string>

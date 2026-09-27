@@ -176,6 +176,10 @@
     <string name="desktop_icon_shop">Negozio</string>
     <string name="desktop_icon_video">Video</string>
     <string name="video_empty">Nessun video disponibile.</string>
+    <string name="video_search_hint">Cerca un video…</string>
+    <string name="video_folder_all">Tutti</string>
+    <string name="video_settings_title">Canali video</string>
+    <string name="video_settings_hint">Scegli quali canali vuoi vedere nella sezione Video. Di default sono tutti selezionati.</string>
     <string name="language_tile_label">Lingua</string>
     <string name="icon_settings_title">Icone della Home</string>
     <string name="icon_settings_subtitle">Tieni premuta la maniglia e trascina per cambiare l\'ordine. Usa l\'interruttore per nascondere un\'icona dalla Home.</string>

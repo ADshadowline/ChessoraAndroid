@@ -51,6 +51,9 @@ import org.chessora.app.data.remote.dto.RegisteredPlayer
 import org.chessora.app.data.remote.dto.TournamentRound
 import org.chessora.app.data.remote.dto.TournamentSummary
 import org.chessora.app.data.remote.dto.VideoNewsItem
+import org.chessora.app.data.remote.dto.SetVideoChannelPreferencesRequest
+import org.chessora.app.data.remote.dto.VideoChannelPreference
+import org.chessora.app.data.remote.dto.VideoFeedItem
 import org.chessora.app.data.remote.dto.VideoRow
 import okhttp3.MultipartBody
 import retrofit2.http.Body
@@ -226,6 +229,18 @@ interface ChessoraApi {
 
     @GET("api/video-rows")
     suspend fun getVideoRows(@Query("club") club: String): List<VideoRow>
+
+    /** Elenco unico per la sezione Video ridisegnata (ricerca + cartelle) - vedi
+     * VideoFeedItem. [idPlayer] null (non ancora identificato) = nessuna preferenza
+     * salvata, quindi tutti i canali. */
+    @GET("api/video-feed")
+    suspend fun getVideoFeed(@Query("club") club: String, @Query("idPlayer") idPlayer: Int?): List<VideoFeedItem>
+
+    @GET("api/video-channel-preferences")
+    suspend fun getVideoChannelPreferences(@Query("idPlayer") idPlayer: Int?): List<VideoChannelPreference>
+
+    @PUT("api/video-channel-preferences")
+    suspend fun setVideoChannelPreferences(@Body request: SetVideoChannelPreferencesRequest)
 
     @GET("api/video-news")
     suspend fun getVideoNews(@Query("club") club: String, @Query("limit") limit: Int = 20): List<VideoNewsItem>

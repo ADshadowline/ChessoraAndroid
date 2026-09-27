@@ -169,6 +169,10 @@
     <string name="desktop_icon_shop">Tienda</string>
     <string name="desktop_icon_video">Vídeo</string>
     <string name="video_empty">No hay vídeos disponibles.</string>
+    <string name="video_search_hint">Buscar un vídeo…</string>
+    <string name="video_folder_all">Todos</string>
+    <string name="video_settings_title">Canales de vídeo</string>
+    <string name="video_settings_hint">Elige qué canales quieres ver en la sección Vídeo. Por defecto están todos seleccionados.</string>
     <string name="language_tile_label">Idioma</string>
     <string name="icon_settings_title">Iconos de Inicio</string>
     <string name="icon_settings_subtitle">Mantén pulsado el asa y arrastra para cambiar el orden. Usa el interruptor para ocultar un icono de Inicio.</string>
