@@ -14,6 +14,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // Solo per com.github.bhlangonijr:chesslib (motore/parser PGN per "Scacchi
+        // Online", vedi ui/lichess/) - non distribuito su Maven Central.
+        maven { url = uri("https://jitpack.io") }
     }
 }
 

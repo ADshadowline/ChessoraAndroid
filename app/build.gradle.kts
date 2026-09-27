@@ -33,8 +33,8 @@ android {
         // valerne la pena su un'app di sola consultazione.
         minSdk = 26
         targetSdk = 35
-        versionCode = 74
-        versionName = "1.35.0"
+        versionCode = 75
+        versionName = "1.36.0"
 
         // URL base dell'Api Chessora in produzione: iniettato come BuildConfig
         // string invece che hard-codato nel client Retrofit, cosi' un domani un
@@ -149,6 +149,13 @@ dependencies {
     // serve e complicherebbe l'informativa privacy) ---
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
     implementation("com.google.firebase:firebase-messaging-ktx")
+
+    // --- Motore/parser di scacchi (ui/lichess/): valida le mosse SAN scaricate da
+    // Lichess e ricostruisce la posizione FEN dopo ogni mossa - la scacchiera vera e
+    // propria resta disegnata a mano su Canvas (stessa filosofia "nessuna libreria UI
+    // pesante" già usata per il grafico Elo in ui/performance/), solo la logica di
+    // gioco viene da una libreria dedicata invece di essere reinventata. ---
+    implementation("com.github.bhlangonijr:chesslib:1.3.4")
 
     // --- Login Google (ui/auth/): Credential Manager (API moderna raccomandata da
     // Google, sostituisce la vecchia GoogleSignInClient) - restituisce l'ID token

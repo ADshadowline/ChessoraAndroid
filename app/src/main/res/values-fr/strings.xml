@@ -57,6 +57,10 @@
     <string name="messaging_status_read">Lu</string>
     <string name="settings_hide_read_receipts">Masquer les accusés de réception et de lecture</string>
     <string name="settings_hide_read_receipts_hint">Les autres ne verront plus si ni quand vous avez reçu ou lu leurs messages.</string>
+    <string name="settings_lichess_title">Compte Lichess</string>
+    <string name="settings_lichess_hint">Configurez votre nom d\'utilisateur Lichess pour voir vos parties en ligne dans Mes performances &gt; Échecs en ligne. Aucun mot de passe requis : les parties d\'un utilisateur Lichess sont publiques.</string>
+    <string name="settings_lichess_placeholder">Nom d\'utilisateur Lichess</string>
+    <string name="settings_lichess_save">Enregistrer</string>
 
     <!-- More menu -->
     <string name="more_calendar">Calendrier</string>
@@ -70,6 +74,8 @@
     <string name="update_available_dismiss">Plus tard</string>
 
     <!-- My performance (Elo history) -->
+    <string name="performance_tab_elo">Évolution du classement Elo</string>
+    <string name="performance_tab_online">Échecs en ligne</string>
     <string name="performance_title">Évolution du classement Elo</string>
     <string name="performance_standard">Standard</string>
     <string name="performance_rapid">Rapide</string>
@@ -79,6 +85,19 @@
     <string name="performance_empty">Aucun historique de classement disponible pour votre profil FIDE.</string>
     <string name="performance_zoom_hint">Pincez pour zoomer, faites glisser pour défiler, touchez un point pour voir la valeur exacte.</string>
     <string name="performance_reset_zoom">Réinitialiser le zoom</string>
+    <string name="lichess_not_configured">Configurez votre nom d\'utilisateur Lichess dans Paramètres pour voir ici vos parties en ligne.</string>
+    <string name="lichess_games_empty">Aucune partie trouvée pour ce nom d\'utilisateur Lichess.</string>
+    <string name="lichess_game_vs">contre %1$s</string>
+    <string name="lichess_result_win">G</string>
+    <string name="lichess_result_loss">P</string>
+    <string name="lichess_result_draw">=</string>
+    <string name="lichess_variant_unsupported">Cette variante n\'est pas prise en charge par l\'échiquier intégré.</string>
+    <string name="lichess_open_on_lichess">Ouvrir sur Lichess</string>
+    <string name="lichess_move_of">Coup %1$d sur %2$d</string>
+    <string name="lichess_move_first">Premier coup</string>
+    <string name="lichess_move_prev">Coup précédent</string>
+    <string name="lichess_move_next">Coup suivant</string>
+    <string name="lichess_move_last">Dernier coup</string>
     <string name="performance_period_6m">6 mois</string>
     <string name="performance_period_1y">1 an</string>
     <string name="performance_period_5y">5 ans</string>
@@ -171,6 +190,7 @@
     <string name="video_empty">Aucune vidéo disponible.</string>
     <string name="video_search_hint">Rechercher une vidéo…</string>
     <string name="video_folder_all">Toutes</string>
+    <string name="video_count">%1$d vidéos</string>
     <string name="video_settings_title">Chaînes vidéo</string>
     <string name="video_settings_hint">Choisissez les chaînes à afficher dans la section Vidéo. Toutes sont sélectionnées par défaut.</string>
     <string name="language_tile_label">Langue</string>

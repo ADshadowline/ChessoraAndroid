@@ -21,6 +21,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -67,10 +68,14 @@ fun SettingsScreen(
     val splashBackgroundUri by viewModel.splashBackgroundUri.collectAsState()
     val desktopBackgroundUri by viewModel.desktopBackgroundUri.collectAsState()
     val hideReadReceipts by viewModel.hideReadReceipts.collectAsState()
+    val lichessUsername by viewModel.lichessUsername.collectAsState()
     val context = LocalContext.current
     var showResetConfirmation by remember { mutableStateOf(false) }
 
-    LaunchedEffect(identifiedPlayerName) { viewModel.loadHideReadReceipts() }
+    LaunchedEffect(identifiedPlayerName) {
+        viewModel.loadHideReadReceipts()
+        viewModel.loadLichessUsername()
+    }
 
     val splashPickerLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia(),
@@ -141,6 +146,32 @@ fun SettingsScreen(
             )
             OutlinedButton(onClick = onOpenVideoChannelSettings, modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
                 Text(stringResource(R.string.video_settings_title))
+            }
+
+            var lichessInput by remember(lichessUsername) { mutableStateOf(lichessUsername ?: "") }
+            Text(
+                stringResource(R.string.settings_lichess_title),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(top = 20.dp),
+            )
+            Text(
+                stringResource(R.string.settings_lichess_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 2.dp, bottom = 8.dp),
+            )
+            OutlinedTextField(
+                value = lichessInput,
+                onValueChange = { lichessInput = it },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text(stringResource(R.string.settings_lichess_placeholder)) },
+                singleLine = true,
+            )
+            OutlinedButton(
+                onClick = { viewModel.setLichessUsername(lichessInput) },
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+            ) {
+                Text(stringResource(R.string.settings_lichess_save))
             }
         }
 

@@ -57,6 +57,10 @@
     <string name="messaging_status_read">Okundu</string>
     <string name="settings_hide_read_receipts">Teslim ve okundu onaylarını gizle</string>
     <string name="settings_hide_read_receipts_hint">Diğer kişiler artık mesajlarını alıp almadığınızı veya ne zaman okuduğunuzu göremeyecek.</string>
+    <string name="settings_lichess_title">Lichess hesabı</string>
+    <string name="settings_lichess_hint">Performanslarım &gt; Çevrimiçi Satranç bölümünde çevrimiçi partilerini görmek için Lichess kullanıcı adını ayarla. Şifreye gerek yok: bir Lichess kullanıcısının partileri herkese açıktır.</string>
+    <string name="settings_lichess_placeholder">Lichess kullanıcı adı</string>
+    <string name="settings_lichess_save">Kaydet</string>
 
     <!-- More menu -->
     <string name="more_calendar">Takvim</string>
@@ -70,6 +74,8 @@
     <string name="update_available_dismiss">Daha sonra</string>
 
     <!-- My performance (Elo history) -->
+    <string name="performance_tab_elo">Elo gelişimi</string>
+    <string name="performance_tab_online">Çevrimiçi Satranç</string>
     <string name="performance_title">Elo gelişimi</string>
     <string name="performance_standard">Standart</string>
     <string name="performance_rapid">Hızlı</string>
@@ -79,6 +85,19 @@
     <string name="performance_empty">FIDE profiliniz için reyting geçmişi bulunmuyor.</string>
     <string name="performance_zoom_hint">Yakınlaştırmak için sıkıştırın, kaydırmak için sürükleyin, tam değeri görmek için bir noktaya dokunun.</string>
     <string name="performance_reset_zoom">Yakınlaştırmayı sıfırla</string>
+    <string name="lichess_not_configured">Buradaki çevrimiçi partilerini görmek için Ayarlar\'dan Lichess kullanıcı adını ayarla.</string>
+    <string name="lichess_games_empty">Bu Lichess kullanıcı adı için parti bulunamadı.</string>
+    <string name="lichess_game_vs">%1$s\'e karşı</string>
+    <string name="lichess_result_win">G</string>
+    <string name="lichess_result_loss">M</string>
+    <string name="lichess_result_draw">=</string>
+    <string name="lichess_variant_unsupported">Bu varyant, uygulama içi satranç tahtası tarafından desteklenmiyor.</string>
+    <string name="lichess_open_on_lichess">Lichess\'te aç</string>
+    <string name="lichess_move_of">Hamle %1$d / %2$d</string>
+    <string name="lichess_move_first">İlk hamle</string>
+    <string name="lichess_move_prev">Önceki hamle</string>
+    <string name="lichess_move_next">Sonraki hamle</string>
+    <string name="lichess_move_last">Son hamle</string>
     <string name="performance_period_6m">6 ay</string>
     <string name="performance_period_1y">1 yıl</string>
     <string name="performance_period_5y">5 yıl</string>
@@ -171,6 +190,7 @@
     <string name="video_empty">Kullanılabilir video yok.</string>
     <string name="video_search_hint">Video ara…</string>
     <string name="video_folder_all">Tümü</string>
+    <string name="video_count">%1$d video</string>
     <string name="video_settings_title">Video kanalları</string>
     <string name="video_settings_hint">Video bölümünde görmek istediğiniz kanalları seçin. Varsayılan olarak hepsi seçilidir.</string>
     <string name="language_tile_label">Dil</string>

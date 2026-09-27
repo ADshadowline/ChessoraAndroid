@@ -89,6 +89,7 @@ import org.chessora.app.push.RoundPublishedEvent
 import org.chessora.app.push.TournamentRoundEvents
 import org.chessora.app.ui.performance.EloRatingType
 import org.chessora.app.ui.performance.PerformanceScreen
+import org.chessora.app.ui.performance.lichess.LichessGameViewerScreen
 import org.chessora.app.ui.profile.ProfilePhotoScreen
 import org.chessora.app.ui.ranking.RankingScreen
 import org.chessora.app.ui.registrations.RegistrationsScreen
@@ -483,7 +484,19 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                 arguments = listOf(navArgument("focus") { type = NavType.StringType; nullable = true; defaultValue = null }),
             ) { backStack ->
                 val focus = EloRatingType.fromRouteValue(backStack.arguments?.getString("focus"))
-                PerformanceScreen(onIdentify = { navController.navigate(ChessoraDestinations.AUTH_LOGIN) }, focus = focus)
+                PerformanceScreen(
+                    onIdentify = { navController.navigate(ChessoraDestinations.AUTH_LOGIN) },
+                    focus = focus,
+                    onOpenSettings = { navController.navigate(ChessoraDestinations.SETTINGS) },
+                    onOpenLichessGame = { gameId -> navController.navigate(ChessoraDestinations.lichessGameViewer(gameId)) },
+                )
+            }
+            composable(
+                ChessoraDestinations.LICHESS_GAME_VIEWER,
+                arguments = listOf(navArgument("gameId") { type = NavType.StringType }),
+            ) { backStack ->
+                val gameId = backStack.arguments?.getString("gameId") ?: return@composable
+                LichessGameViewerScreen(gameId = gameId)
             }
             composable(ChessoraDestinations.PROFILE_PHOTO) {
                 ProfilePhotoScreen(onIdentify = { navController.navigate(ChessoraDestinations.AUTH_LOGIN) })

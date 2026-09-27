@@ -51,6 +51,8 @@ import org.chessora.app.data.remote.dto.RegisteredPlayer
 import org.chessora.app.data.remote.dto.TournamentRound
 import org.chessora.app.data.remote.dto.TournamentSummary
 import org.chessora.app.data.remote.dto.VideoNewsItem
+import org.chessora.app.data.remote.dto.LichessSettings
+import org.chessora.app.data.remote.dto.SetLichessSettingsRequest
 import org.chessora.app.data.remote.dto.SetVideoChannelPreferencesRequest
 import org.chessora.app.data.remote.dto.VideoChannelPreference
 import org.chessora.app.data.remote.dto.VideoFeedItem
@@ -241,6 +243,15 @@ interface ChessoraApi {
 
     @PUT("api/video-channel-preferences")
     suspend fun setVideoChannelPreferences(@Body request: SetVideoChannelPreferencesRequest)
+
+    /** Username Lichess configurato per "Scacchi Online" (vedi ui/performance/,
+     * ui/settings/) - mai una password, Lichess non ne prevede una per app di terze
+     * parti. */
+    @GET("api/lichess-settings")
+    suspend fun getLichessSettings(@Query("idPlayer") idPlayer: Int): LichessSettings
+
+    @PUT("api/lichess-settings")
+    suspend fun setLichessSettings(@Body request: SetLichessSettingsRequest)
 
     @GET("api/video-news")
     suspend fun getVideoNews(@Query("club") club: String, @Query("limit") limit: Int = 20): List<VideoNewsItem>

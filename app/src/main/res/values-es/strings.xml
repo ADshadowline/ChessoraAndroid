@@ -57,6 +57,10 @@
     <string name="messaging_status_read">Leído</string>
     <string name="settings_hide_read_receipts">Ocultar confirmaciones de recepción y lectura</string>
     <string name="settings_hide_read_receipts_hint">Los demás ya no verán si ni cuándo has recibido o leído sus mensajes.</string>
+    <string name="settings_lichess_title">Cuenta de Lichess</string>
+    <string name="settings_lichess_hint">Configura tu usuario de Lichess para ver tus partidas online en Mi rendimiento &gt; Ajedrez Online. No necesitas ninguna contraseña: las partidas de un usuario de Lichess son públicas.</string>
+    <string name="settings_lichess_placeholder">Usuario de Lichess</string>
+    <string name="settings_lichess_save">Guardar</string>
 
     <!-- More menu -->
     <string name="more_calendar">Calendario</string>
@@ -70,6 +74,8 @@
     <string name="update_available_dismiss">Más tarde</string>
 
     <!-- My performance (Elo history) -->
+    <string name="performance_tab_elo">Evolución del Elo</string>
+    <string name="performance_tab_online">Ajedrez Online</string>
     <string name="performance_title">Evolución del Elo</string>
     <string name="performance_standard">Estándar</string>
     <string name="performance_rapid">Rápidas</string>
@@ -79,6 +85,19 @@
     <string name="performance_empty">No hay historial de rating disponible para tu perfil FIDE.</string>
     <string name="performance_zoom_hint">Pellizca para ampliar, arrastra para desplazarte, toca un punto para ver el valor exacto.</string>
     <string name="performance_reset_zoom">Restablecer zoom</string>
+    <string name="lichess_not_configured">Configura tu usuario de Lichess en Ajustes para ver aquí tus partidas online.</string>
+    <string name="lichess_games_empty">No se han encontrado partidas para este usuario de Lichess.</string>
+    <string name="lichess_game_vs">vs %1$s</string>
+    <string name="lichess_result_win">V</string>
+    <string name="lichess_result_loss">D</string>
+    <string name="lichess_result_draw">=</string>
+    <string name="lichess_variant_unsupported">Esta variante no está soportada por el tablero integrado.</string>
+    <string name="lichess_open_on_lichess">Abrir en Lichess</string>
+    <string name="lichess_move_of">Jugada %1$d de %2$d</string>
+    <string name="lichess_move_first">Primera jugada</string>
+    <string name="lichess_move_prev">Jugada anterior</string>
+    <string name="lichess_move_next">Jugada siguiente</string>
+    <string name="lichess_move_last">Última jugada</string>
     <string name="performance_period_6m">6 meses</string>
     <string name="performance_period_1y">1 año</string>
     <string name="performance_period_5y">5 años</string>
@@ -171,6 +190,7 @@
     <string name="video_empty">No hay vídeos disponibles.</string>
     <string name="video_search_hint">Buscar un vídeo…</string>
     <string name="video_folder_all">Todos</string>
+    <string name="video_count">%1$d vídeos</string>
     <string name="video_settings_title">Canales de vídeo</string>
     <string name="video_settings_hint">Elige qué canales quieres ver en la sección Vídeo. Por defecto están todos seleccionados.</string>
     <string name="language_tile_label">Idioma</string>

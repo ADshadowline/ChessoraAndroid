@@ -77,6 +77,22 @@ data class SetVideoChannelPreferencesRequest(
     val selectedChannelIds: List<Int>,
 )
 
+/** Specchio di Chessora.Contracts.Lichess.LichessSettingsDto (GET
+ * /api/lichess-settings) - lichessUsername null se il socio non ha ancora configurato
+ * nulla in Impostazioni. */
+@Serializable
+data class LichessSettings(
+    val lichessUsername: String? = null,
+)
+
+/** Specchio di Chessora.Contracts.Lichess.SetLichessSettingsRequest (PUT
+ * /api/lichess-settings). */
+@Serializable
+data class SetLichessSettingsRequest(
+    val idPlayer: Int,
+    val lichessUsername: String?,
+)
+
 /** Specchio di Chessora.Contracts.VideoPublishing.VideoNewsItemDto (GET /api/video-news). */
 @Serializable
 data class VideoNewsItem(

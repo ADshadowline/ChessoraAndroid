@@ -57,6 +57,10 @@
     <string name="messaging_status_read">Citit</string>
     <string name="settings_hide_read_receipts">Ascunde confirmările de primire și citire</string>
     <string name="settings_hide_read_receipts_hint">Ceilalți nu vor mai vedea dacă și când le-ai primit sau citit mesajele.</string>
+    <string name="settings_lichess_title">Cont Lichess</string>
+    <string name="settings_lichess_hint">Configurează numele tău de utilizator Lichess pentru a-ți vedea partidele online în Performanțele mele &gt; Șah Online. Nu este nevoie de nicio parolă: partidele unui utilizator Lichess sunt publice.</string>
+    <string name="settings_lichess_placeholder">Nume de utilizator Lichess</string>
+    <string name="settings_lichess_save">Salvează</string>
 
     <!-- More menu -->
     <string name="more_calendar">Calendar</string>
@@ -70,6 +74,8 @@
     <string name="update_available_dismiss">Mai târziu</string>
 
     <!-- My performance (Elo history) -->
+    <string name="performance_tab_elo">Evoluția ratingului Elo</string>
+    <string name="performance_tab_online">Șah Online</string>
     <string name="performance_title">Evoluția ratingului Elo</string>
     <string name="performance_standard">Standard</string>
     <string name="performance_rapid">Rapid</string>
@@ -79,6 +85,19 @@
     <string name="performance_empty">Niciun istoric de rating disponibil pentru profilul tău FIDE.</string>
     <string name="performance_zoom_hint">Ciupește pentru a mări, trage pentru a derula, atinge un punct pentru a vedea valoarea exactă.</string>
     <string name="performance_reset_zoom">Resetează zoomul</string>
+    <string name="lichess_not_configured">Configurează numele tău de utilizator Lichess din Setări pentru a vedea aici partidele tale online.</string>
+    <string name="lichess_games_empty">Nu s-a găsit nicio partidă pentru acest nume de utilizator Lichess.</string>
+    <string name="lichess_game_vs">vs %1$s</string>
+    <string name="lichess_result_win">V</string>
+    <string name="lichess_result_loss">Î</string>
+    <string name="lichess_result_draw">=</string>
+    <string name="lichess_variant_unsupported">Această variantă nu este acceptată de tabla încorporată.</string>
+    <string name="lichess_open_on_lichess">Deschide pe Lichess</string>
+    <string name="lichess_move_of">Mutarea %1$d din %2$d</string>
+    <string name="lichess_move_first">Prima mutare</string>
+    <string name="lichess_move_prev">Mutarea anterioară</string>
+    <string name="lichess_move_next">Mutarea următoare</string>
+    <string name="lichess_move_last">Ultima mutare</string>
     <string name="performance_period_6m">6 luni</string>
     <string name="performance_period_1y">1 an</string>
     <string name="performance_period_5y">5 ani</string>
@@ -171,6 +190,7 @@
     <string name="video_empty">Niciun video disponibil.</string>
     <string name="video_search_hint">Caută un video…</string>
     <string name="video_folder_all">Toate</string>
+    <string name="video_count">%1$d videoclipuri</string>
     <string name="video_settings_title">Canale video</string>
     <string name="video_settings_hint">Alege ce canale vrei să vezi în secțiunea Video. Implicit sunt toate selectate.</string>
     <string name="language_tile_label">Limbă</string>

@@ -137,4 +137,45 @@ object NetworkModule {
             destination.outputStream().use { out -> body.byteStream().copyTo(out) }
         }
     }
+
+    /** Client HTTP SEPARATO da [okHttpClient] apposta: quello sopra allega in automatico
+     * il Bearer del giocatore (vedi il suo interceptor) a OGNI richiesta priva di un
+     * header Authorization esplicito - un token dell'Api Chessora non deve mai arrivare
+     * a un host di terze parti come lichess.org. Nessun interceptor di autenticazione
+     * qui: le partite pubbliche di un utente Lichess si leggono senza credenziali. */
+    private val lichessHttpClient: OkHttpClient by lazy {
+        OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .apply {
+                if (BuildConfig.DEBUG) {
+                    addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC })
+                }
+            }
+            .build()
+    }
+
+    /** Le ultime [max] partite pubbliche di [username] su Lichess, più recenti prima
+     * (comportamento di default dell'endpoint) - NDJSON, un oggetto JSON per riga, non
+     * un array: vedi LichessRepository.fetchGames per il parsing riga per riga. */
+    suspend fun fetchLichessGamesNdjson(username: String, max: Int = 50): String = withContext(Dispatchers.IO) {
+        val url = "https://lichess.org/api/games/user/$username?max=$max&moves=true&opening=true"
+        val request = Request.Builder().url(url).header("Accept", "application/x-ndjson").build()
+        lichessHttpClient.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) throw IOException("HTTP ${response.code}")
+            response.body?.string() ?: ""
+        }
+    }
+
+    /** Una singola partita (JSON, non NDJSON) - usata da LichessGameViewerScreen per
+     * ricaricare solo la partita aperta invece di portarsi dietro l'intero elenco tra le
+     * schermate. */
+    suspend fun fetchLichessGameJson(gameId: String): String = withContext(Dispatchers.IO) {
+        val url = "https://lichess.org/api/game/export/$gameId?moves=true&opening=true"
+        val request = Request.Builder().url(url).header("Accept", "application/json").build()
+        lichessHttpClient.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) throw IOException("HTTP ${response.code}")
+            response.body?.string() ?: ""
+        }
+    }
 }

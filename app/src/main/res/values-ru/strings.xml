@@ -57,6 +57,10 @@
     <string name="messaging_status_read">Прочитано</string>
     <string name="settings_hide_read_receipts">Скрыть подтверждения доставки и прочтения</string>
     <string name="settings_hide_read_receipts_hint">Другие больше не будут видеть, получили и прочитали ли вы их сообщения.</string>
+    <string name="settings_lichess_title">Аккаунт Lichess</string>
+    <string name="settings_lichess_hint">Укажите свой ник на Lichess, чтобы видеть свои онлайн-партии в разделе Мои результаты &gt; Шахматы онлайн. Пароль не нужен: партии пользователя Lichess доступны публично.</string>
+    <string name="settings_lichess_placeholder">Ник на Lichess</string>
+    <string name="settings_lichess_save">Сохранить</string>
 
     <!-- More menu -->
     <string name="more_calendar">Календарь</string>
@@ -70,6 +74,8 @@
     <string name="update_available_dismiss">Позже</string>
 
     <!-- My performance (Elo history) -->
+    <string name="performance_tab_elo">Динамика рейтинга Эло</string>
+    <string name="performance_tab_online">Шахматы онлайн</string>
     <string name="performance_title">Динамика рейтинга Эло</string>
     <string name="performance_standard">Классика</string>
     <string name="performance_rapid">Рапид</string>
@@ -79,6 +85,19 @@
     <string name="performance_empty">История рейтинга для вашего профиля ФИДЕ недоступна.</string>
     <string name="performance_zoom_hint">Сведите пальцы для масштабирования, проведите пальцем для прокрутки, коснитесь точки, чтобы увидеть точное значение.</string>
     <string name="performance_reset_zoom">Сбросить масштаб</string>
+    <string name="lichess_not_configured">Укажите свой ник на Lichess в Настройках, чтобы видеть здесь свои онлайн-партии.</string>
+    <string name="lichess_games_empty">Партии для этого ника Lichess не найдены.</string>
+    <string name="lichess_game_vs">против %1$s</string>
+    <string name="lichess_result_win">В</string>
+    <string name="lichess_result_loss">П</string>
+    <string name="lichess_result_draw">=</string>
+    <string name="lichess_variant_unsupported">Этот вариант не поддерживается встроенной доской.</string>
+    <string name="lichess_open_on_lichess">Открыть на Lichess</string>
+    <string name="lichess_move_of">Ход %1$d из %2$d</string>
+    <string name="lichess_move_first">Первый ход</string>
+    <string name="lichess_move_prev">Предыдущий ход</string>
+    <string name="lichess_move_next">Следующий ход</string>
+    <string name="lichess_move_last">Последний ход</string>
     <string name="performance_period_6m">6 месяцев</string>
     <string name="performance_period_1y">1 год</string>
     <string name="performance_period_5y">5 лет</string>
@@ -171,6 +190,7 @@
     <string name="video_empty">Нет доступных видео.</string>
     <string name="video_search_hint">Поиск видео…</string>
     <string name="video_folder_all">Все</string>
+    <string name="video_count">Видео: %1$d</string>
     <string name="video_settings_title">Видеоканалы</string>
     <string name="video_settings_hint">Выберите, какие каналы вы хотите видеть в разделе Видео. По умолчанию выбраны все.</string>
     <string name="language_tile_label">Язык</string>

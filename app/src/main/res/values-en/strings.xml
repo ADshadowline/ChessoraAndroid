@@ -57,6 +57,10 @@
     <string name="messaging_status_read">Read</string>
     <string name="settings_hide_read_receipts">Hide delivery and read receipts</string>
     <string name="settings_hide_read_receipts_hint">Others will no longer see if or when you\'ve received or read their messages.</string>
+    <string name="settings_lichess_title">Lichess account</string>
+    <string name="settings_lichess_hint">Set your Lichess username to see your online games in My performance &gt; Online Chess. No password needed: a Lichess user\'s games are public.</string>
+    <string name="settings_lichess_placeholder">Lichess username</string>
+    <string name="settings_lichess_save">Save</string>
 
     <!-- More menu -->
     <string name="more_calendar">Calendar</string>
@@ -70,6 +74,8 @@
     <string name="update_available_dismiss">Later</string>
 
     <!-- My performance (Elo history) -->
+    <string name="performance_tab_elo">Elo progress</string>
+    <string name="performance_tab_online">Online Chess</string>
     <string name="performance_title">Elo progress</string>
     <string name="performance_standard">Standard</string>
     <string name="performance_rapid">Rapid</string>
@@ -79,6 +85,19 @@
     <string name="performance_empty">No rating history available for your FIDE profile.</string>
     <string name="performance_zoom_hint">Pinch to zoom, drag to scroll, tap a point to see the exact value.</string>
     <string name="performance_reset_zoom">Reset zoom</string>
+    <string name="lichess_not_configured">Set your Lichess username in Settings to see your online games here.</string>
+    <string name="lichess_games_empty">No games found for this Lichess username.</string>
+    <string name="lichess_game_vs">vs %1$s</string>
+    <string name="lichess_result_win">W</string>
+    <string name="lichess_result_loss">L</string>
+    <string name="lichess_result_draw">=</string>
+    <string name="lichess_variant_unsupported">This variant isn\'t supported by the built-in board.</string>
+    <string name="lichess_open_on_lichess">Open on Lichess</string>
+    <string name="lichess_move_of">Move %1$d of %2$d</string>
+    <string name="lichess_move_first">First move</string>
+    <string name="lichess_move_prev">Previous move</string>
+    <string name="lichess_move_next">Next move</string>
+    <string name="lichess_move_last">Last move</string>
     <string name="performance_period_6m">6 months</string>
     <string name="performance_period_1y">1 year</string>
     <string name="performance_period_5y">5 years</string>
@@ -171,6 +190,7 @@
     <string name="video_empty">No videos available.</string>
     <string name="video_search_hint">Search a video…</string>
     <string name="video_folder_all">All</string>
+    <string name="video_count">%1$d videos</string>
     <string name="video_settings_title">Video channels</string>
     <string name="video_settings_hint">Choose which channels you want to see in the Video section. All are selected by default.</string>
     <string name="language_tile_label">Language</string>

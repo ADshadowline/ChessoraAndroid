@@ -75,4 +75,27 @@ class SettingsViewModel(
             repository.setMessagingSettings(idPlayer, hide)
         }
     }
+
+    /** Username Lichess per "Scacchi Online" in Le mie performance (vedi
+     * ui/performance/) - mai una password, Lichess non ne prevede una per app di terze
+     * parti (le partite di un utente sono pubbliche). Null finché non caricato/mai
+     * configurato. */
+    private val _lichessUsername = MutableStateFlow<String?>(null)
+    val lichessUsername: StateFlow<String?> = _lichessUsername.asStateFlow()
+
+    fun loadLichessUsername() {
+        viewModelScope.launch {
+            val idPlayer = clubPreferences.identifiedPlayerId.first() ?: return@launch
+            repository.getLichessSettings(idPlayer).onSuccess { _lichessUsername.value = it.lichessUsername }
+        }
+    }
+
+    fun setLichessUsername(username: String?) {
+        val trimmed = username?.trim()?.takeIf { it.isNotEmpty() }
+        _lichessUsername.value = trimmed
+        viewModelScope.launch {
+            val idPlayer = clubPreferences.identifiedPlayerId.first() ?: return@launch
+            repository.setLichessUsername(idPlayer, trimmed)
+        }
+    }
 }

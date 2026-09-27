@@ -29,6 +29,8 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -57,6 +59,7 @@ import org.chessora.app.data.remote.dto.PerformanceHistoryDto
 import org.chessora.app.data.remote.dto.PerformancePointDto
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
+import org.chessora.app.ui.performance.lichess.LichessGamesScreen
 import org.chessora.app.ui.theme.ChessoraCream
 import org.chessora.app.ui.theme.ChessoraError
 import org.chessora.app.ui.theme.ChessoraGold
@@ -136,8 +139,42 @@ private fun filterByPeriod(points: List<PerformancePointDto>, period: Performanc
     return points.filter { it.year * 12 + it.month > cutoff }
 }
 
+/** Due schede: l'andamento Elo storico (comportamento preesistente, invariato) e
+ * "Scacchi Online" (partite Lichess, vedi LichessGamesScreen) - schede indipendenti,
+ * nessun dato condiviso tra le due. */
+private enum class PerformanceTab { ELO, ONLINE }
+
 @Composable
-fun PerformanceScreen(onIdentify: () -> Unit, focus: EloRatingType? = null) {
+fun PerformanceScreen(
+    onIdentify: () -> Unit,
+    focus: EloRatingType? = null,
+    onOpenSettings: () -> Unit = {},
+    onOpenLichessGame: (String) -> Unit = {},
+) {
+    var tab by remember { mutableStateOf(PerformanceTab.ELO) }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        TabRow(selectedTabIndex = tab.ordinal) {
+            Tab(
+                selected = tab == PerformanceTab.ELO,
+                onClick = { tab = PerformanceTab.ELO },
+                text = { Text(stringResource(R.string.performance_tab_elo)) },
+            )
+            Tab(
+                selected = tab == PerformanceTab.ONLINE,
+                onClick = { tab = PerformanceTab.ONLINE },
+                text = { Text(stringResource(R.string.performance_tab_online)) },
+            )
+        }
+        when (tab) {
+            PerformanceTab.ELO -> EloPerformanceTab(onIdentify, focus)
+            PerformanceTab.ONLINE -> LichessGamesScreen(onOpenSettings = onOpenSettings, onOpenGame = onOpenLichessGame)
+        }
+    }
+}
+
+@Composable
+private fun EloPerformanceTab(onIdentify: () -> Unit, focus: EloRatingType?) {
     val viewModel = chessoraViewModel { app -> PerformanceViewModel(app.repository, app.clubPreferences) }
     val state by viewModel.state.collectAsState()
 
@@ -158,7 +195,7 @@ fun PerformanceScreen(onIdentify: () -> Unit, focus: EloRatingType? = null) {
 }
 
 @Composable
-private fun CenteredMessage(message: String, actionLabel: String? = null, onAction: () -> Unit = {}) {
+fun CenteredMessage(message: String, actionLabel: String? = null, onAction: () -> Unit = {}) {
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,

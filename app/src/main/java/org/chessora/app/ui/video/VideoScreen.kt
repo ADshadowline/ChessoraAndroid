@@ -42,6 +42,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import org.chessora.app.R
 import org.chessora.app.data.remote.dto.VideoFeedItem
 import org.chessora.app.ui.common.UiStateContent
@@ -102,6 +105,12 @@ fun VideoScreen(club: String) {
                     Text(if (videos.isEmpty()) stringResource(R.string.video_empty) else stringResource(R.string.home_no_results))
                 }
             } else {
+                Text(
+                    stringResource(R.string.video_count, filtered.size),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                )
                 LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
                     items(filtered, key = { it.id }) { video ->
                         VideoCard(video, onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(video.link))) })
@@ -141,8 +150,25 @@ private fun VideoCard(video: VideoFeedItem, onClick: () -> Unit) {
                     modifier = Modifier.padding(top = 4.dp),
                 )
             }
+            Text(
+                formatVideoDate(video),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 2.dp),
+            )
         }
     }
+}
+
+private val videoDateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ITALIAN)
+
+/** publishedAt non è mai valorizzato sui dati reali (vedi VideoFeedService lato server) -
+ * si mostra sempre createdAt, ma il nome del campo lato utente resta "data di
+ * pubblicazione" perché è così che viene percepito (quando il video è stato importato
+ * nell'app coincide di fatto con quando è stato pubblicato/reso disponibile). */
+private fun formatVideoDate(video: VideoFeedItem): String {
+    val date = video.publishedAt ?: video.createdAt
+    return runCatching { LocalDateTime.parse(date).format(videoDateFormatter) }.getOrDefault(date)
 }
 
 /** Stessi pattern usati dal sito (Chessora.Web Index.cshtml, extractYouTubeId) per
