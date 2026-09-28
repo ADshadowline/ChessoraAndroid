@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -621,15 +622,17 @@ private fun DesktopIconTile(entry: DesktopIcon, modifier: Modifier = Modifier, c
 private fun TileIcon(entry: DesktopIcon, size: androidx.compose.ui.unit.Dp) {
     if (entry.iconUrl != null) {
         // Il logo del circolo (icona "Il Circolo") si vede meglio grande - più delle
-        // icone vettoriali generiche, su richiesta esplicita. Un padding negativo in
-        // alto lo sposta verso l'alto nel riquadro, lasciando spazio sotto per la
-        // scritta (che altrimenti, con un'icona così grande, finiva tagliata fuori dal
-        // riquadro - vedi anche il padding ridotto sopra la Text in DesktopIconTile).
+        // icone vettoriali generiche, su richiesta esplicita. offset() (non padding:
+        // padding non ammette valori negativi, va in crash - BUG REALE trovato in
+        // produzione il 28/09/2026, l'app non partiva più) lo sposta verso l'alto nel
+        // riquadro, lasciando spazio sotto per la scritta (che altrimenti, con
+        // un'icona così grande, finiva tagliata fuori dal riquadro - vedi anche il
+        // padding ridotto sopra la Text in DesktopIconTile).
         AsyncImage(
             model = entry.iconUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.padding(top = (-6).dp).size(size * 1.6f).clip(CircleShape),
+            modifier = Modifier.offset(y = (-6).dp).size(size * 1.6f).clip(CircleShape),
         )
     } else {
         Icon(entry.icon, contentDescription = null, modifier = Modifier.size(size))
