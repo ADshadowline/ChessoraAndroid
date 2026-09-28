@@ -185,6 +185,16 @@
     <!-- Desktop Home icons (ui/home/HomeScreen.kt DesktopHomeGrid,
          ui/settings/IconSettingsScreen.kt) -->
     <string name="desktop_icon_board">Conducere</string>
+    <string name="nav_club">Clubul</string>
+    <string name="club_menu_statuto">Statut</string>
+    <string name="club_menu_statuto_empty">Niciun statut încărcat încă.</string>
+    <string name="club_menu_contacts">Contacte</string>
+    <string name="club_menu_location">Cum ne găsești</string>
+    <string name="club_contacts_empty">Nicio informație de contact disponibilă.</string>
+    <string name="club_contacts_call">Sună</string>
+    <string name="club_contacts_email">Trimite un e-mail</string>
+    <string name="club_location_address_missing">Adresă indisponibilă.</string>
+    <string name="club_location_open_maps">Deschide în Maps</string>
     <string name="desktop_icon_shop">Magazin</string>
     <string name="desktop_icon_video">Video</string>
     <string name="video_empty">Niciun video disponibil.</string>

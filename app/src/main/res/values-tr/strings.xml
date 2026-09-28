@@ -185,6 +185,16 @@
     <!-- Desktop Home icons (ui/home/HomeScreen.kt DesktopHomeGrid,
          ui/settings/IconSettingsScreen.kt) -->
     <string name="desktop_icon_board">Yönetim kurulu</string>
+    <string name="nav_club">Kulüp</string>
+    <string name="club_menu_statuto">Tüzük</string>
+    <string name="club_menu_statuto_empty">Henüz tüzük yüklenmedi.</string>
+    <string name="club_menu_contacts">İletişim</string>
+    <string name="club_menu_location">Bize nasıl ulaşırsınız</string>
+    <string name="club_contacts_empty">Herhangi bir iletişim bilgisi yok.</string>
+    <string name="club_contacts_call">Ara</string>
+    <string name="club_contacts_email">E-posta gönder</string>
+    <string name="club_location_address_missing">Adres mevcut değil.</string>
+    <string name="club_location_open_maps">Maps\'te aç</string>
     <string name="desktop_icon_shop">Mağaza</string>
     <string name="desktop_icon_video">Video</string>
     <string name="video_empty">Kullanılabilir video yok.</string>

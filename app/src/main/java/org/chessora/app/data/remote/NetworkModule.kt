@@ -142,11 +142,21 @@ object NetworkModule {
      * il Bearer del giocatore (vedi il suo interceptor) a OGNI richiesta priva di un
      * header Authorization esplicito - un token dell'Api Chessora non deve mai arrivare
      * a un host di terze parti come lichess.org. Nessun interceptor di autenticazione
-     * qui: le partite pubbliche di un utente Lichess si leggono senza credenziali. */
+     * qui: le partite pubbliche di un utente Lichess si leggono senza credenziali.
+     *
+     * BUG REALE trovato in produzione (28/09/2026): lo User-Agent di default di OkHttp
+     * ("okhttp/4.x") viene riconosciuto e bloccato dalla protezione anti-scraping di
+     * Lichess, che risponde con un 404 "Not found" indistinguibile da uno username
+     * inesistente (verificato replicando esattamente lo stesso User-Agent via curl:
+     * stesso errore) - da qui lo User-Agent "da browser" esplicito sotto, che invece
+     * passa. */
     private val lichessHttpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor { chain ->
+                chain.proceed(chain.request().newBuilder().header("User-Agent", LICHESS_USER_AGENT).build())
+            }
             .apply {
                 if (BuildConfig.DEBUG) {
                     addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC })
@@ -154,6 +164,9 @@ object NetworkModule {
             }
             .build()
     }
+
+    private const val LICHESS_USER_AGENT =
+        "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Mobile Safari/537.36"
 
     /** Le ultime [max] partite pubbliche di [username] su Lichess, più recenti prima
      * (comportamento di default dell'endpoint) - NDJSON, un oggetto JSON per riga, non

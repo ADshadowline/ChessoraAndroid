@@ -39,6 +39,7 @@ import androidx.compose.material.icons.filled.HowToReg
 import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Newspaper
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Search
@@ -61,6 +62,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -116,7 +118,7 @@ data class DesktopHomeCallbacks(
     val onOpenMessaging: () -> Unit,
     val onOpenRanking: () -> Unit,
     val onOpenPerformance: () -> Unit,
-    val onOpenBoard: () -> Unit,
+    val onOpenClub: () -> Unit,
     val onOpenShop: () -> Unit,
     val onOpenVideo: () -> Unit,
     val onOpenSettings: () -> Unit,
@@ -137,6 +139,9 @@ fun HomeScreen(
      * l'icona "Gestione tornei" quando l'organizzatore self-service non ha nessun torneo
      * InCorso da gestire. */
     hasManageableTournaments: Boolean = false,
+    /** Logo del circolo (già risolto in URL assoluto) mostrato sull'icona "Il Circolo"
+     * al posto di un'icona generica - null finché il circolo non ne ha caricato uno. */
+    clubLogoUrl: String? = null,
 ) {
     val viewModel = chessoraViewModel { app -> HomeViewModel(app.repository, app.clubPreferences) }
     val displayMode by viewModel.displayMode.collectAsState()
@@ -175,6 +180,7 @@ fun HomeScreen(
                 hasTournamentInProgress = hasTournamentInProgress,
                 hasManageableTournaments = hasManageableTournaments,
                 nextEventStart = nextEventStart,
+                clubLogoUrl = clubLogoUrl,
             )
         }
     } else {
@@ -268,6 +274,9 @@ private data class DesktopIcon(
      * pallino verde lampeggiante (vedi ui/pairings/LiveTournamentDot), stesso linguaggio
      * visivo di tourn.chessora.org per un torneo live. */
     val showLiveDot: Boolean = false,
+    /** Se non null, mostrata al posto di [icon] (usata solo per "Il Circolo": il logo
+     * del circolo invece di un'icona generica, vedi DesktopIconTile). */
+    val iconUrl: String? = null,
 )
 
 /**
@@ -294,7 +303,7 @@ val DESKTOP_ICON_DESCRIPTORS = listOf(
     DesktopIconDescriptor("registrations", R.string.nav_registrations, Icons.Default.HowToReg),
     DesktopIconDescriptor("ranking", R.string.nav_ranking, Icons.Default.Leaderboard),
     DesktopIconDescriptor("performance", R.string.more_performance, Icons.AutoMirrored.Filled.ShowChart),
-    DesktopIconDescriptor("board", R.string.desktop_icon_board, Icons.Default.People, hiddenInPlatformMode = true),
+    DesktopIconDescriptor("board", R.string.nav_club, Icons.Default.Groups, hiddenInPlatformMode = true),
     DesktopIconDescriptor("shop", R.string.desktop_icon_shop, Icons.Default.ShoppingCart, hiddenInPlatformMode = true),
     DesktopIconDescriptor("video", R.string.desktop_icon_video, Icons.Default.PlayCircle, hiddenInPlatformMode = true),
     // Self-service (claim automatica al primo apertura, vedi ChessoraRepository.
@@ -325,7 +334,7 @@ private fun callbackFor(id: String, desktop: DesktopHomeCallbacks): (() -> Unit)
     "registrations" -> desktop.onOpenRegistrations
     "ranking" -> desktop.onOpenRanking
     "performance" -> desktop.onOpenPerformance
-    "board" -> desktop.onOpenBoard
+    "board" -> desktop.onOpenClub
     "shop" -> desktop.onOpenShop
     "video" -> desktop.onOpenVideo
     "tournamentManager" -> desktop.onOpenTournamentManager
@@ -374,11 +383,14 @@ private fun DesktopHomeGrid(
      * differenza di hiddenInPlatformMode, questo dipende da un dato caricato, non da una
      * modalità fissa). */
     hasManageableTournaments: Boolean = false,
+    /** Vedi HomeScreen - il logo del circolo mostrato sull'icona "Il Circolo" (id
+     * "board") al posto di un'icona generica. */
+    clubLogoUrl: String? = null,
 ) {
     // Messaggi e Impostazioni sono ancorate agli angoli in basso (sinistra/destra), non
     // parte della griglia scorrevole - posizione fissa richiesta esplicitamente, non
     // riordinabili/nascondibili da Impostazioni > Icone Home.
-    val baseIcons = remember(desktop, isPlatformMode, iconOrder, hiddenIcons, registeredTournamentsCount, registeredTournamentStartingSoon, hasTournamentInProgress, nextEventStart, hasManageableTournaments) {
+    val baseIcons = remember(desktop, isPlatformMode, iconOrder, hiddenIcons, registeredTournamentsCount, registeredTournamentStartingSoon, hasTournamentInProgress, nextEventStart, hasManageableTournaments, clubLogoUrl) {
         val defaults = DESKTOP_ICON_DESCRIPTORS
             .filter { !(isPlatformMode && it.hiddenInPlatformMode) }
             .filter { it.id != "tournamentManager" || hasManageableTournaments }
@@ -391,7 +403,8 @@ private fun DesktopHomeGrid(
                     else -> null
                 }
                 val showLiveDot = descriptor.id == "registrations" && hasTournamentInProgress
-                DesktopIcon(descriptor.id, descriptor.labelRes, descriptor.icon, onClick, badgeCount, countdownTarget, showLiveDot)
+                val iconUrl = if (descriptor.id == "board") clubLogoUrl else null
+                DesktopIcon(descriptor.id, descriptor.labelRes, descriptor.icon, onClick, badgeCount, countdownTarget, showLiveDot, iconUrl)
             }
         }
     }
@@ -568,14 +581,14 @@ private fun DesktopIconTile(entry: DesktopIcon, modifier: Modifier = Modifier, c
             // classifica), più urgente di un numero statico.
             if (entry.showLiveDot) {
                 BadgedBox(badge = { LiveTournamentDot(size = 10.dp) }) {
-                    Icon(entry.icon, contentDescription = null, modifier = Modifier.size(iconSize))
+                    TileIcon(entry, iconSize)
                 }
             } else if (entry.badgeCount > 0) {
                 BadgedBox(badge = { ChessoraCountBadge(entry.badgeCount) }) {
-                    Icon(entry.icon, contentDescription = null, modifier = Modifier.size(iconSize))
+                    TileIcon(entry, iconSize)
                 }
             } else {
-                Icon(entry.icon, contentDescription = null, modifier = Modifier.size(iconSize))
+                TileIcon(entry, iconSize)
             }
             entry.countdownTarget?.let { target ->
                 val countdownText = rememberIconCountdownText(target)
@@ -595,6 +608,20 @@ private fun DesktopIconTile(entry: DesktopIcon, modifier: Modifier = Modifier, c
                 modifier = Modifier.padding(top = 8.dp),
             )
         }
+    }
+}
+
+@Composable
+private fun TileIcon(entry: DesktopIcon, size: androidx.compose.ui.unit.Dp) {
+    if (entry.iconUrl != null) {
+        AsyncImage(
+            model = entry.iconUrl,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.size(size).clip(CircleShape),
+        )
+    } else {
+        Icon(entry.icon, contentDescription = null, modifier = Modifier.size(size))
     }
 }
 

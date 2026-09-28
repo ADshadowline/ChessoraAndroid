@@ -43,6 +43,12 @@ object ChessoraDestinations {
     const val MORE = "more"
 
     const val NEWS_DETAIL = "news/{idNews}"
+    /** Sotto-menu "Il Circolo" (Direttivo/Statuto/Contatti/Dove raggiungerlo) - vedi
+     * ui/club/ClubScreen.kt. Prima l'icona apriva direttamente BOARD; ora apre questo
+     * menu, da cui "Direttivo" apre BOARD invariato. */
+    const val CLUB = "club"
+    const val CLUB_CONTACTS = "club-contacts"
+    const val CLUB_LOCATION = "club-location"
     const val BOARD = "board"
     const val SHOP = "shop"
     const val SETTINGS = "settings"

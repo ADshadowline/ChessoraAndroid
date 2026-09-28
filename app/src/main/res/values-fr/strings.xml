@@ -185,6 +185,16 @@
     <!-- Desktop Home icons (ui/home/HomeScreen.kt DesktopHomeGrid,
          ui/settings/IconSettingsScreen.kt) -->
     <string name="desktop_icon_board">Comité directeur</string>
+    <string name="nav_club">Le Club</string>
+    <string name="club_menu_statuto">Statuts</string>
+    <string name="club_menu_statuto_empty">Aucun statut téléversé pour l\'instant.</string>
+    <string name="club_menu_contacts">Contacts</string>
+    <string name="club_menu_location">Comment nous trouver</string>
+    <string name="club_contacts_empty">Aucune coordonnée disponible.</string>
+    <string name="club_contacts_call">Appeler</string>
+    <string name="club_contacts_email">Envoyer un e-mail</string>
+    <string name="club_location_address_missing">Adresse non disponible.</string>
+    <string name="club_location_open_maps">Ouvrir dans Maps</string>
     <string name="desktop_icon_shop">Boutique</string>
     <string name="desktop_icon_video">Vidéo</string>
     <string name="video_empty">Aucune vidéo disponible.</string>

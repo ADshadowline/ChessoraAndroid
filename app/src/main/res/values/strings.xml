@@ -191,9 +191,24 @@
 
     <!-- Icone della Home desktop (ui/home/HomeScreen.kt DesktopHomeGrid,
          ui/settings/IconSettingsScreen.kt) -->
+    <!-- "Direttivo" resta il nome della schermata dei membri del direttivo
+         (ui/board/BoardScreen.kt), riusato come voce del sotto-menu "Il Circolo" -
+         nav_club è la voce di primo livello (Home/Altro) che apre quel sotto-menu. -->
     <string name="desktop_icon_board">Direttivo</string>
+    <string name="nav_club">Il Circolo</string>
     <string name="desktop_icon_shop">Negozio</string>
     <string name="desktop_icon_video">Video</string>
+    <!-- ui/club/ - sotto-menu "Il Circolo": Direttivo (desktop_icon_board sopra),
+         Statuto, Contatti, Dove raggiungerlo. -->
+    <string name="club_menu_statuto">Statuto</string>
+    <string name="club_menu_statuto_empty">Nessuno statuto caricato ancora.</string>
+    <string name="club_menu_contacts">Contatti</string>
+    <string name="club_menu_location">Dove raggiungerlo</string>
+    <string name="club_contacts_empty">Nessun contatto disponibile.</string>
+    <string name="club_contacts_call">Chiama</string>
+    <string name="club_contacts_email">Scrivi un\'email</string>
+    <string name="club_location_address_missing">Indirizzo non disponibile.</string>
+    <string name="club_location_open_maps">Apri in Maps</string>
     <string name="video_empty">Nessun video disponibile.</string>
     <string name="video_search_hint">Cerca un video…</string>
     <string name="video_folder_all">Tutti</string>

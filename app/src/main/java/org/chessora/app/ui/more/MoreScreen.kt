@@ -1,15 +1,18 @@
 package org.chessora.app.ui.more
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Leaderboard
-import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -18,8 +21,11 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
 import org.chessora.app.R
 
 /**
@@ -35,11 +41,15 @@ fun MoreScreen(
     onCalendarClick: () -> Unit,
     onRankingClick: () -> Unit,
     onPerformanceClick: () -> Unit,
-    onBoardClick: () -> Unit,
+    onClubClick: () -> Unit,
     onShopClick: () -> Unit,
     onVideoClick: () -> Unit,
     onSettingsClick: () -> Unit,
     isPlatformMode: Boolean = false,
+    /** Logo del circolo (già risolto in URL assoluto, vedi NetworkModule.resolveAssetUrl)
+     * mostrato come icona della voce "Il Circolo" al posto di un'icona generica - null
+     * finché il circolo non ne ha caricato uno. */
+    clubLogoUrl: String? = null,
 ) {
     Column(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
         // Calendario/Direttivo/Negozio sono concetti di UN circolo: nessun senso in
@@ -67,10 +77,21 @@ fun MoreScreen(
         )
         if (!isPlatformMode) {
             ListItem(
-                headlineContent = { Text(stringResource(R.string.desktop_icon_board)) },
-                leadingContent = { Icon(Icons.Default.People, contentDescription = null) },
+                headlineContent = { Text(stringResource(R.string.nav_club)) },
+                leadingContent = {
+                    if (clubLogoUrl != null) {
+                        Image(
+                            painter = rememberAsyncImagePainter(clubLogoUrl),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.size(24.dp).clip(CircleShape),
+                        )
+                    } else {
+                        Icon(Icons.Default.Groups, contentDescription = null)
+                    }
+                },
                 trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
-                modifier = Modifier.clickable(onClick = onBoardClick),
+                modifier = Modifier.clickable(onClick = onClubClick),
             )
             ListItem(
                 headlineContent = { Text(stringResource(R.string.desktop_icon_shop)) },

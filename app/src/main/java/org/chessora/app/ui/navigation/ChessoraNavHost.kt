@@ -58,8 +58,12 @@ import org.chessora.app.data.local.ClubPreferences
 import org.chessora.app.data.remote.NetworkModule
 import org.chessora.app.data.remote.dto.SiteBranding
 import org.chessora.app.ui.board.BoardScreen
+import org.chessora.app.ui.club.ClubContactsScreen
+import org.chessora.app.ui.club.ClubLocationScreen
+import org.chessora.app.ui.club.ClubScreen
 import org.chessora.app.ui.calendar.BandoViewerScreen
 import org.chessora.app.ui.calendar.CalendarScreen
+import org.chessora.app.ui.common.AutoSizeText
 import org.chessora.app.ui.common.ChessoraCountBadge
 import org.chessora.app.ui.common.chessoraViewModel
 import org.chessora.app.ui.home.DesktopHomeCallbacks
@@ -239,7 +243,6 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                     branding = branding,
                     identifiedPlayerName = identifiedPlayerName,
                     membersCount = membersCount,
-                    isPlatformMode = selectedClub == ClubPreferences.PLATFORM_CLUB_CODE,
                     isTournamentManager = isTournamentManager,
                     // Nessun login/gestione nativa in app (nessun account con password
                     // esiste qui) - apre il wizard nel browser, dove il gestore usa le sue
@@ -419,12 +422,13 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                             onOpenMessaging = { navController.navigate(ChessoraDestinations.MESSAGING) },
                             onOpenRanking = { navController.navigate(ChessoraDestinations.RANKING) },
                             onOpenPerformance = { navController.navigate(ChessoraDestinations.performance()) },
-                            onOpenBoard = { navController.navigate(ChessoraDestinations.BOARD) },
+                            onOpenClub = { navController.navigate(ChessoraDestinations.CLUB) },
                             onOpenShop = { navController.navigate(ChessoraDestinations.SHOP) },
                             onOpenVideo = { navController.navigate(ChessoraDestinations.VIDEO) },
                             onOpenSettings = { navController.navigate(ChessoraDestinations.SETTINGS) },
                             onOpenTournamentManager = { navController.navigate(ChessoraDestinations.TOURNAMENT_MANAGER_LIST) },
                         ),
+                        clubLogoUrl = NetworkModule.resolveAssetUrl(branding?.logoImage),
                     )
                 }
             }
@@ -587,12 +591,30 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                     onCalendarClick = { navController.navigate(ChessoraDestinations.CALENDAR) },
                     onRankingClick = { navController.navigate(ChessoraDestinations.RANKING) },
                     onPerformanceClick = { navController.navigate(ChessoraDestinations.performance()) },
-                    onBoardClick = { navController.navigate(ChessoraDestinations.BOARD) },
+                    onClubClick = { navController.navigate(ChessoraDestinations.CLUB) },
                     onShopClick = { navController.navigate(ChessoraDestinations.SHOP) },
                     onVideoClick = { navController.navigate(ChessoraDestinations.VIDEO) },
                     onSettingsClick = { navController.navigate(ChessoraDestinations.SETTINGS) },
                     isPlatformMode = selectedClub == ClubPreferences.PLATFORM_CLUB_CODE,
+                    clubLogoUrl = NetworkModule.resolveAssetUrl(branding?.logoImage),
                 )
+            }
+            composable(ChessoraDestinations.CLUB) {
+                RequireClub(selectedClub) { club ->
+                    ClubScreen(
+                        club = club,
+                        onOpenDirettivo = { navController.navigate(ChessoraDestinations.BOARD) },
+                        onOpenStatuto = { url -> navController.navigate(ChessoraDestinations.bandoViewer(url)) },
+                        onOpenContatti = { navController.navigate(ChessoraDestinations.CLUB_CONTACTS) },
+                        onOpenLocation = { navController.navigate(ChessoraDestinations.CLUB_LOCATION) },
+                    )
+                }
+            }
+            composable(ChessoraDestinations.CLUB_CONTACTS) {
+                RequireClub(selectedClub) { club -> ClubContactsScreen(club = club) }
+            }
+            composable(ChessoraDestinations.CLUB_LOCATION) {
+                RequireClub(selectedClub) { club -> ClubLocationScreen(club = club) }
             }
             composable(ChessoraDestinations.BOARD) {
                 RequireClub(selectedClub) { club ->
@@ -697,7 +719,6 @@ private fun ClubBrandingTopBar(
     branding: SiteBranding?,
     identifiedPlayerName: String? = null,
     membersCount: Int? = null,
-    isPlatformMode: Boolean = false,
     isTournamentManager: Boolean = false,
     onManageTournamentsClick: () -> Unit = {},
 ) {
@@ -711,25 +732,11 @@ private fun ClubBrandingTopBar(
                 } else {
                     title
                 }
-                Text(withCount)
-            },
-            navigationIcon = {
-                val logoUrl = NetworkModule.resolveAssetUrl(branding?.logoImage)
-                if (logoUrl != null) {
-                    AsyncImage(
-                        model = logoUrl,
-                        contentDescription = null,
-                        modifier = Modifier.padding(start = 12.dp).size(32.dp),
-                    )
-                } else if (isPlatformMode) {
-                    // Nessun circolo scelto (vedi MembershipQuestionScreen): mostra il
-                    // logo di Chessora stessa invece di quello di un circolo.
-                    androidx.compose.foundation.Image(
-                        painter = androidx.compose.ui.res.painterResource(R.drawable.ic_launcher_foreground),
-                        contentDescription = null,
-                        modifier = Modifier.padding(start = 12.dp).size(32.dp),
-                    )
-                }
+                // Mai a capo su due righe (vedi AutoSizeText): un nome circolo lungo si
+                // restringe invece di spezzarsi. Niente più icona/logo davanti al nome
+                // (rimosso su richiesta esplicita, era il navigationIcon di questo
+                // TopAppBar).
+                AutoSizeText(withCount)
             },
         )
         if (identifiedPlayerName != null) {

@@ -185,6 +185,16 @@
     <!-- Desktop Home icons (ui/home/HomeScreen.kt DesktopHomeGrid,
          ui/settings/IconSettingsScreen.kt) -->
     <string name="desktop_icon_board">Board</string>
+    <string name="nav_club">The Club</string>
+    <string name="club_menu_statuto">Bylaws</string>
+    <string name="club_menu_statuto_empty">No bylaws uploaded yet.</string>
+    <string name="club_menu_contacts">Contacts</string>
+    <string name="club_menu_location">How to reach us</string>
+    <string name="club_contacts_empty">No contact info available.</string>
+    <string name="club_contacts_call">Call</string>
+    <string name="club_contacts_email">Send an email</string>
+    <string name="club_location_address_missing">Address not available.</string>
+    <string name="club_location_open_maps">Open in Maps</string>
     <string name="desktop_icon_shop">Shop</string>
     <string name="desktop_icon_video">Video</string>
     <string name="video_empty">No videos available.</string>
