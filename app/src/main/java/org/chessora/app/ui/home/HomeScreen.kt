@@ -78,6 +78,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -605,7 +606,12 @@ private fun DesktopIconTile(entry: DesktopIcon, modifier: Modifier = Modifier, c
             Text(
                 stringResource(entry.labelRes),
                 style = labelStyle,
-                modifier = Modifier.padding(top = 8.dp),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                // Meno spazio sopra quando l'icona è già grande (logo del circolo, vedi
+                // TileIcon) - lascia posto alla scritta invece di spingerla fuori dal
+                // riquadro.
+                modifier = Modifier.padding(top = if (entry.iconUrl != null) 2.dp else 8.dp),
             )
         }
     }
@@ -614,13 +620,16 @@ private fun DesktopIconTile(entry: DesktopIcon, modifier: Modifier = Modifier, c
 @Composable
 private fun TileIcon(entry: DesktopIcon, size: androidx.compose.ui.unit.Dp) {
     if (entry.iconUrl != null) {
-        // Il logo del circolo (icona "Il Circolo") si vede meglio grande - il doppio
-        // delle icone vettoriali generiche, su richiesta esplicita.
+        // Il logo del circolo (icona "Il Circolo") si vede meglio grande - più delle
+        // icone vettoriali generiche, su richiesta esplicita. Un padding negativo in
+        // alto lo sposta verso l'alto nel riquadro, lasciando spazio sotto per la
+        // scritta (che altrimenti, con un'icona così grande, finiva tagliata fuori dal
+        // riquadro - vedi anche il padding ridotto sopra la Text in DesktopIconTile).
         AsyncImage(
             model = entry.iconUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.size(size * 2).clip(CircleShape),
+            modifier = Modifier.padding(top = (-6).dp).size(size * 1.6f).clip(CircleShape),
         )
     } else {
         Icon(entry.icon, contentDescription = null, modifier = Modifier.size(size))

@@ -182,9 +182,14 @@ object NetworkModule {
 
     /** Una singola partita (JSON, non NDJSON) - usata da LichessGameViewerScreen per
      * ricaricare solo la partita aperta invece di portarsi dietro l'intero elenco tra le
-     * schermate. */
+     * schermate.
+     *
+     * BUG REALE trovato in produzione (28/09/2026): il percorso corretto per questo
+     * endpoint è "/game/export/{id}" SENZA il prefisso "/api/" (a differenza di
+     * fetchLichessGamesNdjson sopra, che invece usa "/api/games/user/..." - due famiglie
+     * di endpoint con convenzioni diverse, verificato sullo spec ufficiale di Lichess). */
     suspend fun fetchLichessGameJson(gameId: String): String = withContext(Dispatchers.IO) {
-        val url = "https://lichess.org/api/game/export/$gameId?moves=true&opening=true"
+        val url = "https://lichess.org/game/export/$gameId?moves=true&opening=true"
         val request = Request.Builder().url(url).header("Accept", "application/json").build()
         lichessHttpClient.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw IOException("HTTP ${response.code}")
