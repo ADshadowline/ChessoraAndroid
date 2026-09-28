@@ -178,7 +178,6 @@
     <string name="settings_choose_image">Alege imagine</string>
     <string name="settings_remove_image">Elimină</string>
     <string name="settings_icon_settings_button">Personalizează pictogramele de pe Acasă</string>
-    <string name="topbar_members_count">%1$d membri</string>
     <string name="manage_tournaments">Gestionare turnee</string>
     <string name="tournament_round_published_notification">Runda %1$d publicată</string>
 

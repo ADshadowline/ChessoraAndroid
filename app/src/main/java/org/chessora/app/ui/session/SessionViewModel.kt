@@ -69,7 +69,6 @@ class SessionViewModel(
         _isLoggedIn.value = false
         _selectedClub.value = null
         _branding.value = null
-        _membersCount.value = null
         _identityResolved.value = false
         _identifiedPlayerName.value = null
         _isTournamentManager.value = false
@@ -92,7 +91,6 @@ class SessionViewModel(
         _isLoggedIn.value = false
         _selectedClub.value = null
         _branding.value = null
-        _membersCount.value = null
         _identityResolved.value = false
         _identifiedPlayerName.value = null
         _isTournamentManager.value = false
@@ -129,12 +127,6 @@ class SessionViewModel(
 
     private val _identifiedPlayerName = MutableStateFlow<String?>(null)
     val identifiedPlayerName: StateFlow<String?> = _identifiedPlayerName
-
-    /** Numero di soci del circolo scelto, mostrato in barra accanto al nome del
-     * circolo (vedi ChessoraNavHost.ClubBrandingTopBar) - null finché non ancora
-     * caricato. */
-    private val _membersCount = MutableStateFlow<Int?>(null)
-    val membersCount: StateFlow<Int?> = _membersCount
 
     /** True se il socio identificato ha il ruolo pubblico "Responsabile dei tornei" nel
      * circolo scelto (vedi GET /api/players/{idPlayer}/roles, nessun login richiesto) -
@@ -284,7 +276,6 @@ class SessionViewModel(
     fun clearSelectedClub() {
         _selectedClub.value = null
         _branding.value = null
-        _membersCount.value = null
         _identityResolved.value = false
         _identifiedPlayerName.value = null
         _isTournamentManager.value = false
@@ -299,16 +290,12 @@ class SessionViewModel(
             // "Modalità piattaforma" (nessun circolo, vedi MembershipQuestionScreen):
             // nessuna chiamata di rete club-scoped, branding sintetico con il nome/logo
             // di Chessora stessa (strings.xml platform_branding_name) invece del nome
-            // di un circolo, nessun conteggio soci da mostrare.
+            // di un circolo.
             _branding.value = SiteBranding(namePrefix = "", nameHighlight = "Chessora Platform", logoImage = null)
-            _membersCount.value = null
             return
         }
         repository.getSiteSettings(club).onSuccess { settings ->
             _branding.value = settings.site
-        }
-        repository.getStats(club).onSuccess { stats ->
-            _membersCount.value = stats.membersCount
         }
     }
 

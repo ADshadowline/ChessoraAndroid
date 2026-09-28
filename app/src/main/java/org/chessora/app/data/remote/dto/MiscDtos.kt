@@ -2,13 +2,6 @@ package org.chessora.app.data.remote.dto
 
 import kotlinx.serialization.Serializable
 
-/** Specchio di Chessora.Contracts.Stats.ClubStatsDto (GET /api/stats). */
-@Serializable
-data class ClubStats(
-    val membersCount: Int,
-    val tournamentCount: Int,
-)
-
 /** Specchio di Chessora.Contracts.GoogleReviews.GoogleReviewDto. */
 @Serializable
 data class GoogleReview(

@@ -84,7 +84,7 @@ fun MoreScreen(
                             painter = rememberAsyncImagePainter(clubLogoUrl),
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
-                            modifier = Modifier.size(24.dp).clip(CircleShape),
+                            modifier = Modifier.size(48.dp).clip(CircleShape),
                         )
                     } else {
                         Icon(Icons.Default.Groups, contentDescription = null)

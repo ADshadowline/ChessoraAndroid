@@ -7,7 +7,6 @@ import org.chessora.app.data.remote.dto.CheckFideResultDto
 import org.chessora.app.data.remote.dto.ClubDirectoryItem
 import org.chessora.app.data.remote.dto.ClubRosterEntryDto
 import org.chessora.app.data.remote.dto.ClubSearchResult
-import org.chessora.app.data.remote.dto.ClubStats
 import org.chessora.app.data.remote.dto.CompletePlayerProfileRequestDto
 import org.chessora.app.data.remote.dto.ConversationSummary
 import org.chessora.app.data.remote.dto.EventType
@@ -222,9 +221,6 @@ interface ChessoraApi {
     suspend fun getShopProducts(@Query("club") club: String): List<ShopProduct>
 
     // ---------- Altro ----------
-
-    @GET("api/stats")
-    suspend fun getStats(@Query("club") club: String): ClubStats
 
     @GET("api/google-reviews")
     suspend fun getGoogleReviews(@Query("club") club: String): GoogleReviewsResponse

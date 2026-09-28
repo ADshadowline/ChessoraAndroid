@@ -178,7 +178,6 @@
     <string name="settings_choose_image">Выбрать изображение</string>
     <string name="settings_remove_image">Удалить</string>
     <string name="settings_icon_settings_button">Настроить значки главного экрана</string>
-    <string name="topbar_members_count">Участников: %1$d</string>
     <string name="manage_tournaments">Управление турнирами</string>
     <string name="tournament_round_published_notification">Тур %1$d опубликован</string>
 

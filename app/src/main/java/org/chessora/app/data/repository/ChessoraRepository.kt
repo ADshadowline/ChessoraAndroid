@@ -12,7 +12,6 @@ import org.chessora.app.data.remote.dto.CheckFideResultDto
 import org.chessora.app.data.remote.dto.ClubDirectoryItem
 import org.chessora.app.data.remote.dto.ClubRosterEntryDto
 import org.chessora.app.data.remote.dto.ClubSearchResult
-import org.chessora.app.data.remote.dto.ClubStats
 import org.chessora.app.data.remote.dto.CompletePlayerProfileRequestDto
 import org.chessora.app.data.remote.dto.ConversationSummary
 import org.chessora.app.data.remote.dto.EntrantDto
@@ -266,8 +265,6 @@ class ChessoraRepository(private val api: ChessoraApi) {
     suspend fun getShopProducts(club: String): Result<List<ShopProduct>> = safeCall { api.getShopProducts(club) }
 
     // ---------- Altro ----------
-
-    suspend fun getStats(club: String): Result<ClubStats> = safeCall { api.getStats(club) }
 
     suspend fun getGoogleReviews(club: String): Result<GoogleReviewsResponse> =
         safeCall { api.getGoogleReviews(club) }

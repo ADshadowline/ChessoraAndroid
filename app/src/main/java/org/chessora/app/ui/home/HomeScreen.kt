@@ -614,11 +614,13 @@ private fun DesktopIconTile(entry: DesktopIcon, modifier: Modifier = Modifier, c
 @Composable
 private fun TileIcon(entry: DesktopIcon, size: androidx.compose.ui.unit.Dp) {
     if (entry.iconUrl != null) {
+        // Il logo del circolo (icona "Il Circolo") si vede meglio grande - il doppio
+        // delle icone vettoriali generiche, su richiesta esplicita.
         AsyncImage(
             model = entry.iconUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.size(size).clip(CircleShape),
+            modifier = Modifier.size(size * 2).clip(CircleShape),
         )
     } else {
         Icon(entry.icon, contentDescription = null, modifier = Modifier.size(size))

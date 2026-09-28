@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -214,7 +213,6 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
 
     val branding by sessionViewModel.branding.collectAsState()
     val identifiedPlayerName by sessionViewModel.identifiedPlayerName.collectAsState()
-    val membersCount by sessionViewModel.membersCount.collectAsState()
     val isTournamentManager by sessionViewModel.isTournamentManager.collectAsState()
     val registeredTournamentsCount by sessionViewModel.registeredTournamentsCount.collectAsState()
     val registeredTournamentStartingSoon by sessionViewModel.registeredTournamentStartingSoon.collectAsState()
@@ -242,7 +240,6 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                 ClubBrandingTopBar(
                     branding = branding,
                     identifiedPlayerName = identifiedPlayerName,
-                    membersCount = membersCount,
                     isTournamentManager = isTournamentManager,
                     // Nessun login/gestione nativa in app (nessun account con password
                     // esiste qui) - apre il wizard nel browser, dove il gestore usa le sue
@@ -718,7 +715,6 @@ private fun openDirectConversation(
 private fun ClubBrandingTopBar(
     branding: SiteBranding?,
     identifiedPlayerName: String? = null,
-    membersCount: Int? = null,
     isTournamentManager: Boolean = false,
     onManageTournamentsClick: () -> Unit = {},
 ) {
@@ -727,24 +723,25 @@ private fun ClubBrandingTopBar(
             title = {
                 val clubName = branding?.let { "${it.namePrefix}${it.nameHighlight}" }?.takeIf { it.isNotBlank() }
                 val title = clubName ?: stringResource(R.string.app_name)
-                val withCount = if (clubName != null && membersCount != null) {
-                    "$title (${stringResource(R.string.topbar_members_count, membersCount)})"
-                } else {
-                    title
-                }
                 // Mai a capo su due righe (vedi AutoSizeText): un nome circolo lungo si
                 // restringe invece di spezzarsi. Niente più icona/logo davanti al nome
                 // (rimosso su richiesta esplicita, era il navigationIcon di questo
-                // TopAppBar).
-                AutoSizeText(withCount)
+                // TopAppBar), né il numero di soci (rimosso su richiesta esplicita).
+                AutoSizeText(title)
             },
         )
         if (identifiedPlayerName != null) {
+            // Barra a piena larghezza (da bordo a bordo, non più un chip arrotondato
+            // inserito con margini) alta poco più del testo che contiene - su
+            // richiesta esplicita.
             Row(
-                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 6.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .padding(start = 16.dp, end = 16.dp, top = 3.dp, bottom = 3.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                IdentifiedBadge(name = identifiedPlayerName)
+                IdentifiedBadgeContent(name = identifiedPlayerName, modifier = Modifier.weight(1f))
                 if (isTournamentManager) {
                     Icon(
                         imageVector = Icons.Default.EmojiEvents,
@@ -762,7 +759,7 @@ private fun ClubBrandingTopBar(
 }
 
 @Composable
-private fun IdentifiedBadge(name: String) {
+private fun IdentifiedBadgeContent(name: String, modifier: Modifier = Modifier) {
     // Il nome può arrivare in due formati (vedi AuthSessionPersister): "Cognome, Nome"
     // per un socio risolto da anagrafica FIDE, "Nome Cognome" per un amatoriale
     // (nome/cognome digitati alla registrazione) - senza distinguerli, il primo formato
@@ -773,13 +770,7 @@ private fun IdentifiedBadge(name: String) {
     } else {
         trimmed.substringBefore(' ')
     }
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .padding(end = 8.dp)
-            .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(50))
-            .padding(horizontal = 10.dp, vertical = 5.dp),
-    ) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
         Icon(
             imageVector = Icons.Default.CheckCircle,
             contentDescription = null,
