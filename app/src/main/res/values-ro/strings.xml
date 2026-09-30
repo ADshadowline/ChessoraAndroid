@@ -61,6 +61,9 @@
     <string name="settings_lichess_hint">Configurează numele tău de utilizator Lichess pentru a-ți vedea partidele online în Performanțele mele &gt; Șah Online. Nu este nevoie de nicio parolă: partidele unui utilizator Lichess sunt publice.</string>
     <string name="settings_lichess_placeholder">Nume de utilizator Lichess</string>
     <string name="settings_lichess_save">Salvează</string>
+    <string name="settings_chesscom_title">Cont Chess.com</string>
+    <string name="settings_chesscom_hint">Configurează numele tău de utilizator Chess.com pentru a-ți vedea partidele online în Performanțele mele &gt; Șah online, alături de cele de pe Lichess. Nu este nevoie de nicio parolă: partidele unui utilizator Chess.com sunt publice.</string>
+    <string name="settings_chesscom_placeholder">Nume de utilizator Chess.com</string>
 
     <!-- More menu -->
     <string name="more_calendar">Calendar</string>
@@ -87,12 +90,15 @@
     <string name="performance_reset_zoom">Resetează zoomul</string>
     <string name="lichess_not_configured">Configurează numele tău de utilizator Lichess din Setări pentru a vedea aici partidele tale online.</string>
     <string name="lichess_games_empty">Nu s-a găsit nicio partidă pentru acest nume de utilizator Lichess.</string>
+    <string name="online_games_not_configured">Configurează numele tău de utilizator Lichess sau Chess.com în Setări pentru a vedea aici partidele tale online.</string>
+    <string name="online_games_empty">Nu s-a găsit nicio partidă.</string>
     <string name="lichess_game_vs">vs %1$s</string>
     <string name="lichess_result_win">V</string>
     <string name="lichess_result_loss">Î</string>
     <string name="lichess_result_draw">=</string>
     <string name="lichess_variant_unsupported">Această variantă nu este acceptată de tabla încorporată.</string>
     <string name="lichess_open_on_lichess">Deschide pe Lichess</string>
+    <string name="chesscom_open_on_chesscom">Deschide pe Chess.com</string>
     <string name="lichess_move_of">Mutarea %1$d din %2$d</string>
     <string name="lichess_move_first">Prima mutare</string>
     <string name="lichess_move_prev">Mutarea anterioară</string>

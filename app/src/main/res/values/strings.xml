@@ -68,6 +68,9 @@
     <string name="settings_lichess_hint">Configura il tuo username Lichess per vedere le tue partite online in Le mie performance &gt; Scacchi Online. Non serve alcuna password: le partite di un utente Lichess sono pubbliche.</string>
     <string name="settings_lichess_placeholder">Username Lichess</string>
     <string name="settings_lichess_save">Salva</string>
+    <string name="settings_chesscom_title">Account Chess.com</string>
+    <string name="settings_chesscom_hint">Configura il tuo username Chess.com per vedere le tue partite online in Le mie performance &gt; Scacchi Online, insieme a quelle di Lichess. Non serve alcuna password: le partite di un utente Chess.com sono pubbliche.</string>
+    <string name="settings_chesscom_placeholder">Username Chess.com</string>
 
     <!-- Menu Altro -->
     <string name="more_calendar">Calendario</string>
@@ -94,12 +97,15 @@
     <string name="performance_reset_zoom">Reimposta zoom</string>
     <string name="lichess_not_configured">Configura il tuo username Lichess in Impostazioni per vedere qui le tue partite online.</string>
     <string name="lichess_games_empty">Nessuna partita trovata per questo username Lichess.</string>
+    <string name="online_games_not_configured">Configura il tuo username Lichess o Chess.com in Impostazioni per vedere qui le tue partite online.</string>
+    <string name="online_games_empty">Nessuna partita trovata.</string>
     <string name="lichess_game_vs">vs %1$s</string>
     <string name="lichess_result_win">V</string>
     <string name="lichess_result_loss">P</string>
     <string name="lichess_result_draw">=</string>
     <string name="lichess_variant_unsupported">Questa variante non è supportata dalla scacchiera incorporata.</string>
     <string name="lichess_open_on_lichess">Apri su Lichess</string>
+    <string name="chesscom_open_on_chesscom">Apri su Chess.com</string>
     <string name="lichess_move_of">Mossa %1$d di %2$d</string>
     <string name="lichess_move_first">Prima mossa</string>
     <string name="lichess_move_prev">Mossa precedente</string>

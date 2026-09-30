@@ -69,12 +69,13 @@ fun SettingsScreen(
     val desktopBackgroundUri by viewModel.desktopBackgroundUri.collectAsState()
     val hideReadReceipts by viewModel.hideReadReceipts.collectAsState()
     val lichessUsername by viewModel.lichessUsername.collectAsState()
+    val chessComUsername by viewModel.chessComUsername.collectAsState()
     val context = LocalContext.current
     var showResetConfirmation by remember { mutableStateOf(false) }
 
     LaunchedEffect(identifiedPlayerName) {
         viewModel.loadHideReadReceipts()
-        viewModel.loadLichessUsername()
+        viewModel.loadOnlineChessUsernames()
     }
 
     val splashPickerLauncher = rememberLauncherForActivityResult(
@@ -169,6 +170,32 @@ fun SettingsScreen(
             )
             OutlinedButton(
                 onClick = { viewModel.setLichessUsername(lichessInput) },
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+            ) {
+                Text(stringResource(R.string.settings_lichess_save))
+            }
+
+            var chessComInput by remember(chessComUsername) { mutableStateOf(chessComUsername ?: "") }
+            Text(
+                stringResource(R.string.settings_chesscom_title),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(top = 20.dp),
+            )
+            Text(
+                stringResource(R.string.settings_chesscom_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 2.dp, bottom = 8.dp),
+            )
+            OutlinedTextField(
+                value = chessComInput,
+                onValueChange = { chessComInput = it },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text(stringResource(R.string.settings_chesscom_placeholder)) },
+                singleLine = true,
+            )
+            OutlinedButton(
+                onClick = { viewModel.setChessComUsername(chessComInput) },
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
             ) {
                 Text(stringResource(R.string.settings_lichess_save))

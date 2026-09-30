@@ -61,6 +61,9 @@
     <string name="settings_lichess_hint">Performanslarım &gt; Çevrimiçi Satranç bölümünde çevrimiçi partilerini görmek için Lichess kullanıcı adını ayarla. Şifreye gerek yok: bir Lichess kullanıcısının partileri herkese açıktır.</string>
     <string name="settings_lichess_placeholder">Lichess kullanıcı adı</string>
     <string name="settings_lichess_save">Kaydet</string>
+    <string name="settings_chesscom_title">Chess.com hesabı</string>
+    <string name="settings_chesscom_hint">Lichess\'e ek olarak Chess.com\'daki çevrimiçi partilerini de Performansım &gt; Çevrimiçi Satranç bölümünde görmek için Chess.com kullanıcı adını ayarla. Şifre gerekmez: bir Chess.com kullanıcısının partileri herkese açıktır.</string>
+    <string name="settings_chesscom_placeholder">Chess.com kullanıcı adı</string>
 
     <!-- More menu -->
     <string name="more_calendar">Takvim</string>
@@ -87,12 +90,15 @@
     <string name="performance_reset_zoom">Yakınlaştırmayı sıfırla</string>
     <string name="lichess_not_configured">Buradaki çevrimiçi partilerini görmek için Ayarlar\'dan Lichess kullanıcı adını ayarla.</string>
     <string name="lichess_games_empty">Bu Lichess kullanıcı adı için parti bulunamadı.</string>
+    <string name="online_games_not_configured">Çevrimiçi partilerini burada görmek için Ayarlar\'da Lichess veya Chess.com kullanıcı adını ayarla.</string>
+    <string name="online_games_empty">Parti bulunamadı.</string>
     <string name="lichess_game_vs">%1$s\'e karşı</string>
     <string name="lichess_result_win">G</string>
     <string name="lichess_result_loss">M</string>
     <string name="lichess_result_draw">=</string>
     <string name="lichess_variant_unsupported">Bu varyant, uygulama içi satranç tahtası tarafından desteklenmiyor.</string>
     <string name="lichess_open_on_lichess">Lichess\'te aç</string>
+    <string name="chesscom_open_on_chesscom">Chess.com\'da aç</string>
     <string name="lichess_move_of">Hamle %1$d / %2$d</string>
     <string name="lichess_move_first">İlk hamle</string>
     <string name="lichess_move_prev">Önceki hamle</string>

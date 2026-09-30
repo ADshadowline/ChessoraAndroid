@@ -59,7 +59,7 @@ import org.chessora.app.data.remote.dto.PerformanceHistoryDto
 import org.chessora.app.data.remote.dto.PerformancePointDto
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
-import org.chessora.app.ui.performance.lichess.LichessGamesScreen
+import org.chessora.app.ui.performance.online.OnlineGamesScreen
 import org.chessora.app.ui.theme.ChessoraCream
 import org.chessora.app.ui.theme.ChessoraError
 import org.chessora.app.ui.theme.ChessoraGold
@@ -140,8 +140,8 @@ private fun filterByPeriod(points: List<PerformancePointDto>, period: Performanc
 }
 
 /** Due schede: l'andamento Elo storico (comportamento preesistente, invariato) e
- * "Scacchi Online" (partite Lichess, vedi LichessGamesScreen) - schede indipendenti,
- * nessun dato condiviso tra le due. */
+ * "Scacchi Online" (partite Lichess+Chess.com mescolate, vedi OnlineGamesScreen) - schede
+ * indipendenti, nessun dato condiviso tra le due. */
 private enum class PerformanceTab { ELO, ONLINE }
 
 @Composable
@@ -150,6 +150,7 @@ fun PerformanceScreen(
     focus: EloRatingType? = null,
     onOpenSettings: () -> Unit = {},
     onOpenLichessGame: (String) -> Unit = {},
+    onOpenChessComGame: (String) -> Unit = {},
 ) {
     var tab by remember { mutableStateOf(PerformanceTab.ELO) }
 
@@ -168,7 +169,11 @@ fun PerformanceScreen(
         }
         when (tab) {
             PerformanceTab.ELO -> EloPerformanceTab(onIdentify, focus)
-            PerformanceTab.ONLINE -> LichessGamesScreen(onOpenSettings = onOpenSettings, onOpenGame = onOpenLichessGame)
+            PerformanceTab.ONLINE -> OnlineGamesScreen(
+                onOpenSettings = onOpenSettings,
+                onOpenLichessGame = onOpenLichessGame,
+                onOpenChessComGame = onOpenChessComGame,
+            )
         }
     }
 }

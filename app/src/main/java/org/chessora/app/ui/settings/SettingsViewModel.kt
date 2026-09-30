@@ -76,17 +76,24 @@ class SettingsViewModel(
         }
     }
 
-    /** Username Lichess per "Scacchi Online" in Le mie performance (vedi
-     * ui/performance/) - mai una password, Lichess non ne prevede una per app di terze
+    /** Username Lichess/Chess.com per "Scacchi Online" in Le mie performance (vedi
+     * ui/performance/) - mai una password, nessuno dei due la prevede per app di terze
      * parti (le partite di un utente sono pubbliche). Null finché non caricato/mai
-     * configurato. */
+     * configurato. Un'unica chiamata (GET api/lichess-settings) restituisce entrambi, vedi
+     * loadOnlineChessUsernames. */
     private val _lichessUsername = MutableStateFlow<String?>(null)
     val lichessUsername: StateFlow<String?> = _lichessUsername.asStateFlow()
 
-    fun loadLichessUsername() {
+    private val _chessComUsername = MutableStateFlow<String?>(null)
+    val chessComUsername: StateFlow<String?> = _chessComUsername.asStateFlow()
+
+    fun loadOnlineChessUsernames() {
         viewModelScope.launch {
             val idPlayer = clubPreferences.identifiedPlayerId.first() ?: return@launch
-            repository.getLichessSettings(idPlayer).onSuccess { _lichessUsername.value = it.lichessUsername }
+            repository.getLichessSettings(idPlayer).onSuccess {
+                _lichessUsername.value = it.lichessUsername
+                _chessComUsername.value = it.chessComUsername
+            }
         }
     }
 
@@ -96,6 +103,15 @@ class SettingsViewModel(
         viewModelScope.launch {
             val idPlayer = clubPreferences.identifiedPlayerId.first() ?: return@launch
             repository.setLichessUsername(idPlayer, trimmed)
+        }
+    }
+
+    fun setChessComUsername(username: String?) {
+        val trimmed = username?.trim()?.takeIf { it.isNotEmpty() }
+        _chessComUsername.value = trimmed
+        viewModelScope.launch {
+            val idPlayer = clubPreferences.identifiedPlayerId.first() ?: return@launch
+            repository.setChessComUsername(idPlayer, trimmed)
         }
     }
 }

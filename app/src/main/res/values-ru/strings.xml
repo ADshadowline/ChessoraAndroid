@@ -61,6 +61,9 @@
     <string name="settings_lichess_hint">Укажите свой ник на Lichess, чтобы видеть свои онлайн-партии в разделе Мои результаты &gt; Шахматы онлайн. Пароль не нужен: партии пользователя Lichess доступны публично.</string>
     <string name="settings_lichess_placeholder">Ник на Lichess</string>
     <string name="settings_lichess_save">Сохранить</string>
+    <string name="settings_chesscom_title">Аккаунт Chess.com</string>
+    <string name="settings_chesscom_hint">Укажите свой ник Chess.com, чтобы видеть свои онлайн-партии в разделе Моя статистика &gt; Онлайн-шахматы вместе с партиями Lichess. Пароль не нужен: партии пользователя Chess.com общедоступны.</string>
+    <string name="settings_chesscom_placeholder">Ник Chess.com</string>
 
     <!-- More menu -->
     <string name="more_calendar">Календарь</string>
@@ -87,12 +90,15 @@
     <string name="performance_reset_zoom">Сбросить масштаб</string>
     <string name="lichess_not_configured">Укажите свой ник на Lichess в Настройках, чтобы видеть здесь свои онлайн-партии.</string>
     <string name="lichess_games_empty">Партии для этого ника Lichess не найдены.</string>
+    <string name="online_games_not_configured">Укажите свой ник Lichess или Chess.com в настройках, чтобы видеть здесь свои онлайн-партии.</string>
+    <string name="online_games_empty">Партии не найдены.</string>
     <string name="lichess_game_vs">против %1$s</string>
     <string name="lichess_result_win">В</string>
     <string name="lichess_result_loss">П</string>
     <string name="lichess_result_draw">=</string>
     <string name="lichess_variant_unsupported">Этот вариант не поддерживается встроенной доской.</string>
     <string name="lichess_open_on_lichess">Открыть на Lichess</string>
+    <string name="chesscom_open_on_chesscom">Открыть на Chess.com</string>
     <string name="lichess_move_of">Ход %1$d из %2$d</string>
     <string name="lichess_move_first">Первый ход</string>
     <string name="lichess_move_prev">Предыдущий ход</string>

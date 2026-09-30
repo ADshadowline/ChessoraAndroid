@@ -32,4 +32,23 @@ object ChessPositions {
             positions
         }
     }
+
+    /** Come [fromMoves] ma a partire da un PGN COMPLETO (intestazioni + mosse numerate +
+     * eventuali commenti/orologio tra parentesi graffe + simbolo di risultato finale - es. il
+     * campo "pgn" dell'export di Chess.com, che include sempre l'orologio tra parentesi
+     * graffe per ogni mossa). chesslib gestisce già da sé i numeri di turno ("1.", "12...")
+     * token per token, ma non le intestazioni tra parentesi quadre né i commenti tra
+     * parentesi graffe: un solo token malformato manda in errore l'INTERO parsing (nessuna
+     * mossa buona verrebbe applicata, a differenza di un errore a metà partita), quindi
+     * vanno ripuliti qui PRIMA di passare a [fromMoves]. */
+    fun fromPgn(pgn: String?): List<String> {
+        if (pgn.isNullOrBlank()) return fromMoves(null)
+        val movetext = pgn.lineSequence()
+            .filterNot { it.trim().startsWith("[") }
+            .joinToString(" ")
+            .replace(Regex("\\{[^}]*}"), " ")
+            .replace(Regex("\\([^)]*\\)"), " ")
+            .replace(Regex("(1-0|0-1|1/2-1/2|\\*)\\s*$"), "")
+        return fromMoves(movetext)
+    }
 }

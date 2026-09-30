@@ -51,6 +51,7 @@ import org.chessora.app.data.remote.dto.TournamentRound
 import org.chessora.app.data.remote.dto.TournamentSummary
 import org.chessora.app.data.remote.dto.VideoNewsItem
 import org.chessora.app.data.remote.dto.LichessSettings
+import org.chessora.app.data.remote.dto.SetChessComSettingsRequest
 import org.chessora.app.data.remote.dto.SetLichessSettingsRequest
 import org.chessora.app.data.remote.dto.SetVideoChannelPreferencesRequest
 import org.chessora.app.data.remote.dto.VideoChannelPreference
@@ -252,6 +253,9 @@ interface ChessoraApi {
 
     @PUT("api/lichess-settings")
     suspend fun setLichessSettings(@Body request: SetLichessSettingsRequest)
+
+    @PUT("api/lichess-settings/chesscom")
+    suspend fun setChessComSettings(@Body request: SetChessComSettingsRequest)
 
     @GET("api/video-news")
     suspend fun getVideoNews(@Query("club") club: String, @Query("limit") limit: Int = 20): List<VideoNewsItem>

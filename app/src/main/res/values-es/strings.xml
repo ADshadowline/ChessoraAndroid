@@ -61,6 +61,9 @@
     <string name="settings_lichess_hint">Configura tu usuario de Lichess para ver tus partidas online en Mi rendimiento &gt; Ajedrez Online. No necesitas ninguna contraseña: las partidas de un usuario de Lichess son públicas.</string>
     <string name="settings_lichess_placeholder">Usuario de Lichess</string>
     <string name="settings_lichess_save">Guardar</string>
+    <string name="settings_chesscom_title">Cuenta de Chess.com</string>
+    <string name="settings_chesscom_hint">Configura tu usuario de Chess.com para ver tus partidas online en Mi rendimiento &gt; Ajedrez online, junto a las de Lichess. No hace falta contraseña: las partidas de un usuario de Chess.com son públicas.</string>
+    <string name="settings_chesscom_placeholder">Usuario de Chess.com</string>
 
     <!-- More menu -->
     <string name="more_calendar">Calendario</string>
@@ -87,12 +90,15 @@
     <string name="performance_reset_zoom">Restablecer zoom</string>
     <string name="lichess_not_configured">Configura tu usuario de Lichess en Ajustes para ver aquí tus partidas online.</string>
     <string name="lichess_games_empty">No se han encontrado partidas para este usuario de Lichess.</string>
+    <string name="online_games_not_configured">Configura tu usuario de Lichess o Chess.com en Ajustes para ver aquí tus partidas online.</string>
+    <string name="online_games_empty">No se han encontrado partidas.</string>
     <string name="lichess_game_vs">vs %1$s</string>
     <string name="lichess_result_win">V</string>
     <string name="lichess_result_loss">D</string>
     <string name="lichess_result_draw">=</string>
     <string name="lichess_variant_unsupported">Esta variante no está soportada por el tablero integrado.</string>
     <string name="lichess_open_on_lichess">Abrir en Lichess</string>
+    <string name="chesscom_open_on_chesscom">Abrir en Chess.com</string>
     <string name="lichess_move_of">Jugada %1$d de %2$d</string>
     <string name="lichess_move_first">Primera jugada</string>
     <string name="lichess_move_prev">Jugada anterior</string>

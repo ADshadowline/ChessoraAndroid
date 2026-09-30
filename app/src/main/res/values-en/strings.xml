@@ -61,6 +61,9 @@
     <string name="settings_lichess_hint">Set your Lichess username to see your online games in My performance &gt; Online Chess. No password needed: a Lichess user\'s games are public.</string>
     <string name="settings_lichess_placeholder">Lichess username</string>
     <string name="settings_lichess_save">Save</string>
+    <string name="settings_chesscom_title">Chess.com account</string>
+    <string name="settings_chesscom_hint">Set your Chess.com username to see your online games in My performance &gt; Online Chess, alongside your Lichess ones. No password needed: a Chess.com user\'s games are public.</string>
+    <string name="settings_chesscom_placeholder">Chess.com username</string>
 
     <!-- More menu -->
     <string name="more_calendar">Calendar</string>
@@ -87,12 +90,15 @@
     <string name="performance_reset_zoom">Reset zoom</string>
     <string name="lichess_not_configured">Set your Lichess username in Settings to see your online games here.</string>
     <string name="lichess_games_empty">No games found for this Lichess username.</string>
+    <string name="online_games_not_configured">Set your Lichess or Chess.com username in Settings to see your online games here.</string>
+    <string name="online_games_empty">No games found.</string>
     <string name="lichess_game_vs">vs %1$s</string>
     <string name="lichess_result_win">W</string>
     <string name="lichess_result_loss">L</string>
     <string name="lichess_result_draw">=</string>
     <string name="lichess_variant_unsupported">This variant isn\'t supported by the built-in board.</string>
     <string name="lichess_open_on_lichess">Open on Lichess</string>
+    <string name="chesscom_open_on_chesscom">Open on Chess.com</string>
     <string name="lichess_move_of">Move %1$d of %2$d</string>
     <string name="lichess_move_first">First move</string>
     <string name="lichess_move_prev">Previous move</string>

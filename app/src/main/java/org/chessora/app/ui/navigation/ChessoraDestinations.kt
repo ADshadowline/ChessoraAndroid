@@ -82,9 +82,12 @@ object ChessoraDestinations {
     // vuota di default (non null: NavType.StringType non ammette argomenti opzionali
     // nulli) equivale a "mostra tutte e tre le cadenze", il comportamento preesistente.
     const val PERFORMANCE = "performance?focus={focus}"
-    /** Scacchiera di una partita Lichess aperta dalla scheda "Scacchi Online" di
-     * Le mie performance - vedi ui/performance/LichessGameViewerScreen.kt. */
+    /** Scacchiera di una partita Lichess/Chess.com aperta dalla scheda "Scacchi Online" di
+     * Le mie performance - vedi ui/performance/online/OnlineGamesScreen.kt e
+     * ui/performance/lichess/LichessGameViewerScreen.kt /
+     * ui/performance/chesscom/ChessComGameViewerScreen.kt. */
     const val LICHESS_GAME_VIEWER = "lichess-game/{gameId}"
+    const val CHESSCOM_GAME_VIEWER = "chesscom-game/{gameId}"
     const val PROFILE_PHOTO = "profile-photo"
     const val TOURNAMENT_DETAIL = "tornei/{idTournament}"
     /** Abbinamenti/classifica di un torneo AVVIATO (LifecycleStatus InCorso/Concluso) -
@@ -123,6 +126,8 @@ object ChessoraDestinations {
     fun performance(focus: String? = null) = if (focus != null) "performance?focus=$focus" else "performance"
 
     fun lichessGameViewer(gameId: String) = "lichess-game/${java.net.URLEncoder.encode(gameId, "UTF-8")}"
+
+    fun chessComGameViewer(gameId: String) = "chesscom-game/${java.net.URLEncoder.encode(gameId, "UTF-8")}"
 
     fun tournamentDetail(idTournament: Int) = "tornei/$idTournament"
 

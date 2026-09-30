@@ -1,4 +1,4 @@
-package org.chessora.app.ui.performance.lichess
+package org.chessora.app.ui.performance.online
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -30,7 +30,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import org.chessora.app.R
-import org.chessora.app.data.remote.dto.LichessGame
+import org.chessora.app.data.repository.ChessComRepository
 import org.chessora.app.data.repository.LichessRepository
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
@@ -38,29 +38,37 @@ import org.chessora.app.ui.performance.CenteredMessage
 import org.chessora.app.ui.theme.ChessoraError
 import org.chessora.app.ui.theme.ChessoraGreen
 
-private enum class LichessResult { WIN, LOSS, DRAW }
-
-/** Partite pubbliche giocate online su Lichess dal socio (username configurato in
- * Impostazioni, vedi SettingsScreen) - GET diretto verso lichess.org, nessun dato passa
- * dal server Chessora (vedi LichessRepository). */
+/** Partite pubbliche giocate online dal socio, su Lichess e/o Chess.com (username
+ * configurati in Impostazioni, vedi SettingsScreen), mescolate in un solo elenco ordinato
+ * per data - ciascuna riga porta un piccolo badge di provenienza (vedi SourceBadge). GET
+ * diretto verso lichess.org/api.chess.com, nessun dato passa dal server Chessora (vedi
+ * LichessRepository/ChessComRepository). */
 @Composable
-fun LichessGamesScreen(onOpenSettings: () -> Unit, onOpenGame: (String) -> Unit) {
-    val viewModel = chessoraViewModel { app -> LichessGamesViewModel(app.repository, LichessRepository(), app.clubPreferences) }
+fun OnlineGamesScreen(onOpenSettings: () -> Unit, onOpenLichessGame: (String) -> Unit, onOpenChessComGame: (String) -> Unit) {
+    val viewModel = chessoraViewModel { app -> OnlineGamesViewModel(app.repository, LichessRepository(), ChessComRepository(), app.clubPreferences) }
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) { viewModel.load() }
 
     UiStateContent(state = state, onRetry = { viewModel.load() }) { data ->
         when {
-            data.username == null -> CenteredMessage(
-                message = stringResource(R.string.lichess_not_configured),
-                actionLabel = stringResource(R.string.settings_lichess_title),
+            data.lichessUsername == null && data.chessComUsername == null -> CenteredMessage(
+                message = stringResource(R.string.online_games_not_configured),
+                actionLabel = stringResource(R.string.settings_title),
                 onAction = onOpenSettings,
             )
-            data.games.isEmpty() -> CenteredMessage(message = stringResource(R.string.lichess_games_empty))
+            data.games.isEmpty() -> CenteredMessage(message = stringResource(R.string.online_games_empty))
             else -> LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                items(data.games, key = { it.id }) { game ->
-                    LichessGameRow(game, data.username, onClick = { onOpenGame(game.id) })
+                items(data.games, key = { "${it.source}:${it.id}" }) { game ->
+                    OnlineGameRow(
+                        game,
+                        onClick = {
+                            when (game.source) {
+                                OnlineGameSource.LICHESS -> onOpenLichessGame(game.id)
+                                OnlineGameSource.CHESSCOM -> onOpenChessComGame(game.id)
+                            }
+                        },
+                    )
                 }
             }
         }
@@ -68,44 +76,57 @@ fun LichessGamesScreen(onOpenSettings: () -> Unit, onOpenGame: (String) -> Unit)
 }
 
 @Composable
-private fun LichessGameRow(game: LichessGame, myUsername: String, onClick: () -> Unit) {
-    val amIWhite = game.players.white.user?.name.equals(myUsername, ignoreCase = true)
-    val me = if (amIWhite) game.players.white else game.players.black
-    val opponent = if (amIWhite) game.players.black else game.players.white
-    val result = when {
-        game.winner == null -> LichessResult.DRAW
-        (game.winner == "white") == amIWhite -> LichessResult.WIN
-        else -> LichessResult.LOSS
-    }
-
+private fun OnlineGameRow(game: OnlineGameSummary, onClick: () -> Unit) {
     Card(onClick = onClick, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
         Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            ResultBadge(result)
+            ResultBadge(game.result)
+            SourceBadge(game.source, modifier = Modifier.padding(start = 6.dp))
             Column(modifier = Modifier.weight(1f).padding(start = 12.dp)) {
                 Text(
-                    stringResource(R.string.lichess_game_vs, opponent.displayName()),
+                    stringResource(R.string.lichess_game_vs, game.opponentName),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
-                    "${game.speed.replaceFirstChar { it.uppercase() }} · ${formatEpochMillis(game.createdAt)}",
+                    "${game.speedLabel} · ${formatEpochMillis(game.createdAt)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            me.rating?.let {
+            game.myRating?.let {
                 Text(it.toString(), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
             }
         }
     }
 }
 
+/** Colori reali di ciascun sito (Lichess: verde oliva del loro tema; Chess.com: verde del
+ * loro tema) - un piccolo badge testuale ("Li"/"CC"), non i loro loghi ufficiali (Chess.com
+ * non è open source, non c'è un asset da riusare legittimamente come per il set di pezzi
+ * cburnett di Lichess) - sufficiente per distinguere la provenienza a colpo d'occhio. */
+private val LichessBadgeColor = Color(0xFF759900)
+private val ChessComBadgeColor = Color(0xFF81B64C)
+
 @Composable
-private fun ResultBadge(result: LichessResult) {
+private fun SourceBadge(source: OnlineGameSource, modifier: Modifier = Modifier) {
+    val (label, color) = when (source) {
+        OnlineGameSource.LICHESS -> "Li" to LichessBadgeColor
+        OnlineGameSource.CHESSCOM -> "CC" to ChessComBadgeColor
+    }
+    Box(
+        modifier = modifier.size(22.dp).clip(CircleShape).background(color),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(label, color = Color.White, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
+    }
+}
+
+@Composable
+private fun ResultBadge(result: OnlineGameResult) {
     val (label, color) = when (result) {
-        LichessResult.WIN -> stringResource(R.string.lichess_result_win) to ChessoraGreen
-        LichessResult.LOSS -> stringResource(R.string.lichess_result_loss) to ChessoraError
-        LichessResult.DRAW -> stringResource(R.string.lichess_result_draw) to Color.Gray
+        OnlineGameResult.WIN -> stringResource(R.string.lichess_result_win) to ChessoraGreen
+        OnlineGameResult.LOSS -> stringResource(R.string.lichess_result_loss) to ChessoraError
+        OnlineGameResult.DRAW -> stringResource(R.string.lichess_result_draw) to Color.Gray
     }
     Box(
         modifier = Modifier.size(36.dp).clip(CircleShape).background(color),

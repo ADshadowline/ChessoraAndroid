@@ -196,4 +196,43 @@ object NetworkModule {
             response.body?.string() ?: ""
         }
     }
+
+    /** Client HTTP separato per Chess.com, stesso motivo del [lichessHttpClient] sopra (mai
+     * il Bearer Chessora verso un host terzo). A differenza di Lichess, Chess.com non blocca
+     * lo User-Agent di default - i loro stessi documenti chiedono solo uno User-Agent
+     * "riconoscibile" per poter contattare chi genera traffico da moderare, quindi qui non
+     * serve spacciarsi per un browser: basta identificare onestamente l'app. */
+    private val chessComHttpClient: OkHttpClient by lazy {
+        OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor { chain ->
+                chain.proceed(chain.request().newBuilder().header("User-Agent", CHESSCOM_USER_AGENT).build())
+            }
+            .apply {
+                if (BuildConfig.DEBUG) {
+                    addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC })
+                }
+            }
+            .build()
+    }
+
+    private const val CHESSCOM_USER_AGENT = "Chessora-Android/${BuildConfig.VERSION_NAME} (+https://chessora.org)"
+
+    private suspend fun fetchChessComJson(url: String): String = withContext(Dispatchers.IO) {
+        val request = Request.Builder().url(url).header("Accept", "application/json").build()
+        chessComHttpClient.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) throw IOException("HTTP ${response.code}")
+            response.body?.string() ?: ""
+        }
+    }
+
+    /** Elenco (URL completi) dei mesi con partite di [username] - Chess.com non pagina per
+     * numero di partite come Lichess, solo per mese: vedi ChessComRepository.fetchGames. */
+    suspend fun fetchChessComArchivesJson(username: String): String =
+        fetchChessComJson("https://api.chess.com/pub/player/${username.trim()}/games/archives")
+
+    /** Le partite di un singolo mese (URL preso da [fetchChessComArchivesJson]) - già
+     * ordinate ascendenti per orario all'interno del mese. */
+    suspend fun fetchChessComMonthJson(monthUrl: String): String = fetchChessComJson(monthUrl)
 }
