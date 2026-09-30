@@ -166,6 +166,7 @@
     <string name="settings_change_club">Сменить клуб</string>
     <string name="settings_notifications">Push-уведомления</string>
     <string name="settings_about">О приложении</string>
+    <string name="settings_piece_set_credit">Набор шахматных фигур "cburnett" от Colin M. L. Burnett (Wikimedia Commons), лицензия CC BY-SA 3.0.</string>
     <string name="settings_identity_none">Не идентифицирован</string>
     <string name="settings_identity_as">Вы вошли как %1$s</string>
     <string name="settings_identity_button">Войти</string>

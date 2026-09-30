@@ -223,7 +223,16 @@ fun SettingsScreen(
         Text(
             "${stringResource(R.string.settings_about)}: Chessora ${BuildConfig.VERSION_NAME}",
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
+            modifier = Modifier.padding(top = 16.dp),
+        )
+        // Attribuzione richiesta dalla licenza CC BY-SA 3.0 del set di pezzi
+        // "cburnett" (Colin M.L. Burnett, Wikimedia Commons) usato nella scacchiera di
+        // Scacchi Online - vedi ui/chessboard/ChessBoardView.kt.
+        Text(
+            stringResource(R.string.settings_piece_set_credit),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 4.dp, bottom = 16.dp),
         )
     }
 

@@ -166,6 +166,7 @@
     <string name="settings_change_club">Cambiar de club</string>
     <string name="settings_notifications">Notificaciones push</string>
     <string name="settings_about">Acerca de la app</string>
+    <string name="settings_piece_set_credit">Set de piezas de ajedrez "cburnett" de Colin M. L. Burnett (Wikimedia Commons), licencia CC BY-SA 3.0.</string>
     <string name="settings_identity_none">No identificado</string>
     <string name="settings_identity_as">Identificado como %1$s</string>
     <string name="settings_identity_button">Iniciar sesión</string>

@@ -173,6 +173,7 @@
     <string name="settings_change_club">Cambia circolo</string>
     <string name="settings_notifications">Notifiche push</string>
     <string name="settings_about">Informazioni sull\'app</string>
+    <string name="settings_piece_set_credit">Set di pezzi scacchistici "cburnett" di Colin M. L. Burnett (Wikimedia Commons), licenza CC BY-SA 3.0.</string>
     <string name="settings_identity_none">Non identificato</string>
     <string name="settings_identity_as">Identificato come %1$s</string>
     <string name="settings_identity_button">Accedi</string>

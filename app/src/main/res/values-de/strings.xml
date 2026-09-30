@@ -166,6 +166,7 @@
     <string name="settings_change_club">Verein wechseln</string>
     <string name="settings_notifications">Push-Benachrichtigungen</string>
     <string name="settings_about">Über die App</string>
+    <string name="settings_piece_set_credit">Schachfigurensatz "cburnett" von Colin M. L. Burnett (Wikimedia Commons), Lizenz CC BY-SA 3.0.</string>
     <string name="settings_identity_none">Nicht identifiziert</string>
     <string name="settings_identity_as">Identifiziert als %1$s</string>
     <string name="settings_identity_button">Anmelden</string>

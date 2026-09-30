@@ -1,19 +1,23 @@
 package org.chessora.app.ui.chessboard
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import org.chessora.app.R
 
 private val LightSquare = Color(0xFFEEDDB0)
 private val DarkSquare = Color(0xFFB4794F)
@@ -23,7 +27,10 @@ private val DarkSquare = Color(0xFFB4794F)
  * coerente con la filosofia di dipendenze minime già seguita per il grafico Elo in
  * ui/performance/PerformanceScreen.kt ("nessuna libreria di grafici... disegnato a
  * mano"). Solo la LOGICA (validare le mosse, sapere dove sono i pezzi) viene da una
- * libreria dedicata, vedi ChessPositions. [flipped] mostra la scacchiera dal punto di
+ * libreria dedicata, vedi ChessPositions. I pezzi sono il set open source "cburnett"
+ * (lo stesso usato da Lichess/Wikipedia, CC BY-SA 3.0 - Colin M.L. Burnett), convertito
+ * da SVG a vector drawable Android (vedi PIECE_DRAWABLES), non più semplici glifi
+ * Unicode: molto più leggibili e curati. [flipped] mostra la scacchiera dal punto di
  * vista del Nero (usato quando il socio ha giocato con i pezzi neri). */
 @Composable
 fun ChessBoardView(fen: String, modifier: Modifier = Modifier, flipped: Boolean = false) {
@@ -43,8 +50,12 @@ fun ChessBoardView(fen: String, modifier: Modifier = Modifier, flipped: Boolean 
                             .background(if (isLight) LightSquare else DarkSquare),
                         contentAlignment = Alignment.Center,
                     ) {
-                        PIECE_GLYPHS[piece]?.let { glyph ->
-                            Text(glyph, fontSize = 28.sp, color = if (piece.isUpperCase()) Color.White else Color.Black)
+                        PIECE_DRAWABLES[piece]?.let { drawableRes ->
+                            Image(
+                                painter = painterResource(drawableRes),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize().padding(2.dp),
+                            )
                         }
                     }
                 }
@@ -75,7 +86,9 @@ private fun parseFenPlacement(fen: String): Array<CharArray> {
     return board
 }
 
-private val PIECE_GLYPHS = mapOf(
-    'K' to "♔", 'Q' to "♕", 'R' to "♖", 'B' to "♗", 'N' to "♘", 'P' to "♙",
-    'k' to "♚", 'q' to "♛", 'r' to "♜", 'b' to "♝", 'n' to "♞", 'p' to "♟",
+private val PIECE_DRAWABLES = mapOf(
+    'K' to R.drawable.piece_wk, 'Q' to R.drawable.piece_wq, 'R' to R.drawable.piece_wr,
+    'B' to R.drawable.piece_wb, 'N' to R.drawable.piece_wn, 'P' to R.drawable.piece_wp,
+    'k' to R.drawable.piece_bk, 'q' to R.drawable.piece_bq, 'r' to R.drawable.piece_br,
+    'b' to R.drawable.piece_bb, 'n' to R.drawable.piece_bn, 'p' to R.drawable.piece_bp,
 )

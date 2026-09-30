@@ -166,6 +166,7 @@
     <string name="settings_change_club">Change club</string>
     <string name="settings_notifications">Push notifications</string>
     <string name="settings_about">About this app</string>
+    <string name="settings_piece_set_credit">Chess piece set "cburnett" by Colin M. L. Burnett (Wikimedia Commons), CC BY-SA 3.0 license.</string>
     <string name="settings_identity_none">Not identified</string>
     <string name="settings_identity_as">Identified as %1$s</string>
     <string name="settings_identity_button">Sign in</string>
