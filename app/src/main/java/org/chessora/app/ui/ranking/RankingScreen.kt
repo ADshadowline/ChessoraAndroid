@@ -41,24 +41,31 @@ import org.chessora.app.data.remote.dto.RankingResponse
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
 
-private val SCOPES = listOf(RankingScope.CIRCOLO to "Circolo", RankingScope.NAZIONALE to "Nazionale", RankingScope.ASSOLUTA to "Assoluta")
+private val SCOPE_LABELS = mapOf(RankingScope.CIRCOLO to "Circolo", RankingScope.NAZIONALE to "Nazionale", RankingScope.ASSOLUTA to "Assoluta")
+private val ALL_SCOPES = listOf(RankingScope.CIRCOLO, RankingScope.NAZIONALE, RankingScope.ASSOLUTA)
 private val CADENCES = listOf("Standard", "Rapid", "Blitz")
 
+/** [scopes] quali tab di ambito mostrare - una sola (es. solo CIRCOLO dentro "Il Circolo")
+ * nasconde del tutto la riga di tab, non ha senso scegliere tra un'unica opzione. Il
+ * "Classifica" del desktop passa invece solo NAZIONALE/ASSOLUTA: quella di circolo si
+ * trova ora dentro "Il Circolo", non più duplicata qui. */
 @Composable
-fun RankingScreen(club: String?) {
+fun RankingScreen(club: String?, scopes: List<RankingScope> = ALL_SCOPES) {
     val viewModel = chessoraViewModel { app -> RankingViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
 
     var scopeIndex by remember { mutableIntStateOf(0) }
     var cadenceIndex by remember { mutableIntStateOf(0) }
-    val scope = SCOPES[scopeIndex].first
+    val scope = scopes[scopeIndex]
 
     LaunchedEffect(scope, club) { viewModel.load(scope, club) }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TabRow(selectedTabIndex = scopeIndex) {
-            SCOPES.forEachIndexed { index, (_, label) ->
-                Tab(selected = scopeIndex == index, onClick = { scopeIndex = index }, text = { Text(label) })
+        if (scopes.size > 1) {
+            TabRow(selectedTabIndex = scopeIndex) {
+                scopes.forEachIndexed { index, s ->
+                    Tab(selected = scopeIndex == index, onClick = { scopeIndex = index }, text = { Text(SCOPE_LABELS.getValue(s)) })
+                }
             }
         }
         TabRow(selectedTabIndex = cadenceIndex) {

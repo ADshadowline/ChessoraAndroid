@@ -7,10 +7,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.EventNote
 import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.ContactPhone
 import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Newspaper
+import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
@@ -38,6 +43,11 @@ fun ClubScreen(
     onOpenStatuto: (url: String) -> Unit,
     onOpenContatti: () -> Unit,
     onOpenLocation: () -> Unit,
+    onOpenEvents: () -> Unit,
+    onOpenCalendar: () -> Unit,
+    onOpenVideo: () -> Unit,
+    onOpenNews: () -> Unit,
+    onOpenRanking: () -> Unit,
 ) {
     val viewModel = chessoraViewModel { app -> ClubViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
@@ -77,6 +87,36 @@ fun ClubScreen(
                 leadingContent = { Icon(Icons.Default.LocationOn, contentDescription = null) },
                 trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
                 modifier = Modifier.clickable(onClick = onOpenLocation),
+            )
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.nav_home)) },
+                leadingContent = { Icon(Icons.AutoMirrored.Filled.EventNote, contentDescription = null) },
+                trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
+                modifier = Modifier.clickable(onClick = onOpenEvents),
+            )
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.more_calendar)) },
+                leadingContent = { Icon(Icons.Default.CalendarMonth, contentDescription = null) },
+                trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
+                modifier = Modifier.clickable(onClick = onOpenCalendar),
+            )
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.desktop_icon_video)) },
+                leadingContent = { Icon(Icons.Default.PlayCircle, contentDescription = null) },
+                trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
+                modifier = Modifier.clickable(onClick = onOpenVideo),
+            )
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.nav_news)) },
+                leadingContent = { Icon(Icons.Default.Newspaper, contentDescription = null) },
+                trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
+                modifier = Modifier.clickable(onClick = onOpenNews),
+            )
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.nav_ranking)) },
+                leadingContent = { Icon(Icons.Default.Leaderboard, contentDescription = null) },
+                trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
+                modifier = Modifier.clickable(onClick = onOpenRanking),
             )
         }
     }

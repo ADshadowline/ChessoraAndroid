@@ -66,7 +66,7 @@ private val ISO_DATE = DateTimeFormatter.ISO_LOCAL_DATE
 /** [onOpenBando] apre il bando DENTRO l'app (BandoViewerScreen) - nessuna iscrizione
  * possibile da qui, solo consultazione (vedi ChessoraNavHost). */
 @Composable
-fun CalendarScreen(club: String, onOpenBando: (url: String) -> Unit) {
+fun CalendarScreen(club: String?, onOpenBando: (url: String) -> Unit) {
     val viewModel = chessoraViewModel { app -> CalendarViewModel(app.repository, app.clubPreferences) }
     val state by viewModel.state.collectAsState()
     val month by viewModel.month.collectAsState()

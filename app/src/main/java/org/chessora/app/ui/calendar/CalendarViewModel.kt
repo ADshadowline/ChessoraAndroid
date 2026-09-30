@@ -41,9 +41,13 @@ class CalendarViewModel(
     val registeredTournamentIds: StateFlow<Set<Int>> = _registeredTournamentIds.asStateFlow()
 
     private var club: String? = null
+    private var loaded = false
 
-    fun load(club: String) {
-        if (this.club == club) return
+    /** [club] null = eventi di tutti i circoli attivi (sezione Calendario "nel desktop"),
+     * non null = solo quelli del circolo (sezione dentro "Il Circolo"). */
+    fun load(club: String?) {
+        if (loaded && this.club == club) return
+        loaded = true
         this.club = club
         fetchMonth(_month.value)
         viewModelScope.launch { _registeredTournamentIds.value = myPreRegisteredTournamentIds() }
@@ -67,10 +71,10 @@ class CalendarViewModel(
     /** Url assoluto del bando dell'evento, se ne ha uno - stessa logica di
      * HomeViewModel.resolveBandoUrl: quello di un torneo è già nella riga di
      * calendario, quello di un evento richiede una fetch dedicata. */
-    suspend fun resolveBandoUrl(event: CalendarEvent, club: String): String? {
+    suspend fun resolveBandoUrl(event: CalendarEvent, club: String?): String? {
         event.tournamentBandoPath?.let { return NetworkModule.resolveAssetUrl(it) }
         val idEvento = event.idEvento ?: return null
-        val bandoPath = repository.getEventoBando(idEvento, club).getOrNull()?.bandoPath ?: return null
+        val bandoPath = club?.let { repository.getEventoBando(idEvento, it).getOrNull()?.bandoPath } ?: return null
         return NetworkModule.resolveAssetUrl(bandoPath)
     }
 
@@ -80,12 +84,12 @@ class CalendarViewModel(
     }
 
     private fun fetchMonth(yearMonth: YearMonth) {
-        val c = club ?: return
+        val c = club
         viewModelScope.launch {
             _state.value = UiState.Loading
             val from = yearMonth.atDay(1).format(isoDate)
             val to = yearMonth.plusMonths(1).atDay(1).format(isoDate)
-            _state.value = repository.getCalendar(c, from, to)
+            _state.value = (if (c != null) repository.getCalendar(c, from, to) else repository.getCalendarAllClubs(from, to))
                 .map { events -> events.sortedBy { it.eventDateTime } }
                 .toUiState()
         }

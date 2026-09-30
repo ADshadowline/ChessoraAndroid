@@ -17,17 +17,18 @@ import org.chessora.app.ui.common.toUiState
  * che questo giocatore ha selezionato in Impostazioni (default: tutti) più gli eventuali
  * video locali del circolo - dal più recente al più vecchio. Ricerca e "cartelle" per
  * canale (vedi VideoScreen) restano un filtro puramente locale sull'elenco già caricato,
- * nessuna nuova chiamata di rete. */
+ * nessuna nuova chiamata di rete. [club] null = video di tutti i circoli attivi (sezione
+ * Video "nel desktop"), non null = solo quelli del circolo (sezione dentro "Il Circolo"). */
 class VideoViewModel(private val repository: ChessoraRepository, private val clubPreferences: ClubPreferences) : ViewModel() {
 
     private val _state = MutableStateFlow<UiState<List<VideoFeedItem>>>(UiState.Loading)
     val state: StateFlow<UiState<List<VideoFeedItem>>> = _state.asStateFlow()
 
-    fun load(club: String) {
+    fun load(club: String?) {
         viewModelScope.launch {
             _state.value = UiState.Loading
             val idPlayer = clubPreferences.identifiedPlayerId.first()
-            _state.value = repository.getVideoFeed(club, idPlayer).toUiState()
+            _state.value = (if (club != null) repository.getVideoFeed(club, idPlayer) else repository.getVideoFeedAllClubs(idPlayer)).toUiState()
         }
     }
 }

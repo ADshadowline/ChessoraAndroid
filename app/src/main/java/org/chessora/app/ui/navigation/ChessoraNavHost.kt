@@ -94,6 +94,7 @@ import org.chessora.app.ui.performance.EloRatingType
 import org.chessora.app.ui.performance.PerformanceScreen
 import org.chessora.app.ui.performance.lichess.LichessGameViewerScreen
 import org.chessora.app.ui.profile.ProfilePhotoScreen
+import org.chessora.app.ui.ranking.RankingScope
 import org.chessora.app.ui.ranking.RankingScreen
 import org.chessora.app.ui.registrations.RegistrationsScreen
 import org.chessora.app.ui.session.SessionViewModel
@@ -403,7 +404,11 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
             composable(ChessoraDestinations.HOME) {
                 RequireClub(selectedClub) {
                     HomeScreen(
-                        club = selectedClub?.takeIf { it != ClubPreferences.PLATFORM_CLUB_CODE },
+                        // null = eventi di tutti i circoli attivi, non solo del circolo
+                        // scelto - "Eventi"/Home classica mostrano sempre tutti i circoli,
+                        // quelli del solo circolo selezionato sono ora dentro "Il Circolo"
+                        // (vedi CLUB_EVENTS).
+                        club = null,
                         onOpenTournament = { idTournament -> navController.navigate(ChessoraDestinations.tournamentDetail(idTournament)) },
                         isPlatformMode = selectedClub == ClubPreferences.PLATFORM_CLUB_CODE,
                         registeredTournamentsCount = registeredTournamentsCount,
@@ -432,7 +437,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
             composable(ChessoraDestinations.EVENTS) {
                 RequireClub(selectedClub) {
                     EventsListScreen(
-                        club = selectedClub?.takeIf { it != ClubPreferences.PLATFORM_CLUB_CODE },
+                        club = null, // Sempre tutti i circoli - vedi CLUB_EVENTS per quelli del solo circolo.
                         onOpenTournament = { idTournament -> navController.navigate(ChessoraDestinations.tournamentDetail(idTournament)) },
                     )
                 }
@@ -451,24 +456,26 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
             composable(ChessoraDestinations.NEWS_LIST) {
                 RequireClub(selectedClub) {
                     NewsListScreen(
-                        club = selectedClub?.takeIf { it != ClubPreferences.PLATFORM_CLUB_CODE },
-                        onNewsClick = { navController.navigate(ChessoraDestinations.newsDetail(it)) },
+                        club = null, // Sempre tutti i circoli - vedi CLUB_NEWS per quelle del solo circolo.
+                        onNewsClick = { navController.navigate(ChessoraDestinations.newsDetail(it, club = null)) },
                     )
                 }
             }
             composable(
                 ChessoraDestinations.NEWS_DETAIL,
-                arguments = listOf(navArgument("idNews") { type = NavType.IntType }),
+                arguments = listOf(navArgument("idNews") { type = NavType.IntType }, navArgument("club") { type = NavType.StringType }),
             ) { backStack ->
                 val idNews = backStack.arguments?.getInt("idNews") ?: return@composable
+                val encodedClub = backStack.arguments?.getString("club")
+                val club = encodedClub?.takeIf { it != "_all_" }?.let { java.net.URLDecoder.decode(it, "UTF-8") }
                 RequireClub(selectedClub) {
-                    NewsDetailScreen(club = selectedClub?.takeIf { it != ClubPreferences.PLATFORM_CLUB_CODE }, idNews = idNews)
+                    NewsDetailScreen(club = club, idNews = idNews)
                 }
             }
             composable(ChessoraDestinations.CALENDAR) {
-                RequireClub(selectedClub) { club ->
+                RequireClub(selectedClub) {
                     CalendarScreen(
-                        club = club,
+                        club = null, // Sempre tutti i circoli - vedi CLUB_CALENDAR per quello del solo circolo.
                         onOpenBando = { url -> navController.navigate(ChessoraDestinations.bandoViewer(url)) },
                     )
                 }
@@ -540,7 +547,9 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                 TournamentManagerRoundsScreen(idTournament = idTournament, totalRounds = turni)
             }
             composable(ChessoraDestinations.RANKING) {
-                RankingScreen(club = selectedClub?.takeIf { it != ClubPreferences.PLATFORM_CLUB_CODE })
+                // Solo Nazionale/Assoluta - la classifica di Circolo è ora dentro "Il
+                // Circolo" (vedi CLUB_RANKING), non più duplicata qui.
+                RankingScreen(club = null, scopes = listOf(RankingScope.NAZIONALE, RankingScope.ASSOLUTA))
             }
             composable(ChessoraDestinations.MESSAGING) {
                 MessagingListScreen(
@@ -604,6 +613,11 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                         onOpenStatuto = { url -> navController.navigate(ChessoraDestinations.bandoViewer(url)) },
                         onOpenContatti = { navController.navigate(ChessoraDestinations.CLUB_CONTACTS) },
                         onOpenLocation = { navController.navigate(ChessoraDestinations.CLUB_LOCATION) },
+                        onOpenEvents = { navController.navigate(ChessoraDestinations.CLUB_EVENTS) },
+                        onOpenCalendar = { navController.navigate(ChessoraDestinations.CLUB_CALENDAR) },
+                        onOpenVideo = { navController.navigate(ChessoraDestinations.CLUB_VIDEO) },
+                        onOpenNews = { navController.navigate(ChessoraDestinations.CLUB_NEWS) },
+                        onOpenRanking = { navController.navigate(ChessoraDestinations.CLUB_RANKING) },
                     )
                 }
             }
@@ -612,6 +626,36 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
             }
             composable(ChessoraDestinations.CLUB_LOCATION) {
                 RequireClub(selectedClub) { club -> ClubLocationScreen(club = club) }
+            }
+            composable(ChessoraDestinations.CLUB_EVENTS) {
+                RequireClub(selectedClub) { club ->
+                    EventsListScreen(
+                        club = club,
+                        onOpenTournament = { idTournament -> navController.navigate(ChessoraDestinations.tournamentDetail(idTournament)) },
+                    )
+                }
+            }
+            composable(ChessoraDestinations.CLUB_CALENDAR) {
+                RequireClub(selectedClub) { club ->
+                    CalendarScreen(
+                        club = club,
+                        onOpenBando = { url -> navController.navigate(ChessoraDestinations.bandoViewer(url)) },
+                    )
+                }
+            }
+            composable(ChessoraDestinations.CLUB_VIDEO) {
+                RequireClub(selectedClub) { club -> VideoScreen(club = club) }
+            }
+            composable(ChessoraDestinations.CLUB_NEWS) {
+                RequireClub(selectedClub) { club ->
+                    NewsListScreen(
+                        club = club,
+                        onNewsClick = { navController.navigate(ChessoraDestinations.newsDetail(it, club = club)) },
+                    )
+                }
+            }
+            composable(ChessoraDestinations.CLUB_RANKING) {
+                RequireClub(selectedClub) { club -> RankingScreen(club = club, scopes = listOf(RankingScope.CIRCOLO)) }
             }
             composable(ChessoraDestinations.BOARD) {
                 RequireClub(selectedClub) { club ->
@@ -625,7 +669,8 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                 RequireClub(selectedClub) { club -> ShopScreen(club = club) }
             }
             composable(ChessoraDestinations.VIDEO) {
-                RequireClub(selectedClub) { club -> VideoScreen(club = club) }
+                // Sempre tutti i circoli - vedi CLUB_VIDEO per quelli del solo circolo.
+                RequireClub(selectedClub) { VideoScreen(club = null) }
             }
             composable(ChessoraDestinations.SETTINGS) {
                 SettingsScreen(

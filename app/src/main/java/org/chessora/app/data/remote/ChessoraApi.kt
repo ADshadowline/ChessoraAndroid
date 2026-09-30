@@ -234,6 +234,10 @@ interface ChessoraApi {
     @GET("api/video-feed")
     suspend fun getVideoFeed(@Query("club") club: String, @Query("idPlayer") idPlayer: Int?): List<VideoFeedItem>
 
+    /** Come getVideoFeed ma su tutti i circoli attivi - sezione Video "nel desktop". */
+    @GET("api/video-feed/all-clubs")
+    suspend fun getVideoFeedAllClubs(@Query("idPlayer") idPlayer: Int?): List<VideoFeedItem>
+
     @GET("api/video-channel-preferences")
     suspend fun getVideoChannelPreferences(@Query("idPlayer") idPlayer: Int?): List<VideoChannelPreference>
 

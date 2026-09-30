@@ -56,7 +56,7 @@ import org.chessora.app.ui.common.chessoraViewModel
  * in Impostazioni > Video (vedi VideoChannelSettingsScreen) più gli eventuali video locali
  * del circolo - ricerca testuale e "cartelle" per canale sotto il campo di ricerca. */
 @Composable
-fun VideoScreen(club: String) {
+fun VideoScreen(club: String?) {
     val viewModel = chessoraViewModel { app -> VideoViewModel(app.repository, app.clubPreferences) }
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current

@@ -274,6 +274,9 @@ class ChessoraRepository(private val api: ChessoraApi) {
     suspend fun getVideoFeed(club: String, idPlayer: Int?): Result<List<VideoFeedItem>> =
         safeCall { api.getVideoFeed(club, idPlayer) }
 
+    suspend fun getVideoFeedAllClubs(idPlayer: Int?): Result<List<VideoFeedItem>> =
+        safeCall { api.getVideoFeedAllClubs(idPlayer) }
+
     suspend fun getVideoChannelPreferences(idPlayer: Int?): Result<List<VideoChannelPreference>> =
         safeCall { api.getVideoChannelPreferences(idPlayer) }
 

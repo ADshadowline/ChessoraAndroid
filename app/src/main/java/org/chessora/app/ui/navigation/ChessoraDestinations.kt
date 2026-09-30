@@ -42,13 +42,27 @@ object ChessoraDestinations {
     const val MESSAGING = "messaging"
     const val MORE = "more"
 
-    const val NEWS_DETAIL = "news/{idNews}"
-    /** Sotto-menu "Il Circolo" (Direttivo/Statuto/Contatti/Dove raggiungerlo) - vedi
-     * ui/club/ClubScreen.kt. Prima l'icona apriva direttamente BOARD; ora apre questo
-     * menu, da cui "Direttivo" apre BOARD invariato. */
+    /** [club] è il publicCode di provenienza (o "_all_" se aperta dall'elenco "nel
+     * desktop", su tutti i circoli) - serve perché NewsDetailViewModel non ha un
+     * endpoint "singolo articolo per id" e deve rifare la stessa fetch di lista già usata
+     * per raggiungere questo articolo (vedi NewsDetailViewModel). */
+    const val NEWS_DETAIL = "news/{idNews}/{club}"
+    /** Sotto-menu "Il Circolo" (Direttivo/Statuto/Contatti/Dove raggiungerlo, più
+     * Eventi/Calendario/Video/News/Classifica filtrati sul solo circolo selezionato) -
+     * vedi ui/club/ClubScreen.kt. Prima l'icona apriva direttamente BOARD; ora apre
+     * questo menu, da cui "Direttivo" apre BOARD invariato. */
     const val CLUB = "club"
     const val CLUB_CONTACTS = "club-contacts"
     const val CLUB_LOCATION = "club-location"
+    /** Eventi/Calendario/Video/News/Classifica del solo circolo selezionato, raggiunte da
+     * "Il Circolo" - a differenza delle omonime EVENTS/CALENDAR/VIDEO/NEWS_LIST/RANKING
+     * (che sul desktop mostrano invece sempre tutti i circoli), queste passano sempre il
+     * circolo corrente. */
+    const val CLUB_EVENTS = "club-events"
+    const val CLUB_CALENDAR = "club-calendar"
+    const val CLUB_VIDEO = "club-video"
+    const val CLUB_NEWS = "club-news"
+    const val CLUB_RANKING = "club-ranking"
     const val BOARD = "board"
     const val SHOP = "shop"
     const val SETTINGS = "settings"
@@ -102,7 +116,9 @@ object ChessoraDestinations {
 
     fun emailPending(email: String) = "auth/email-pending/${java.net.URLEncoder.encode(email, "UTF-8")}"
 
-    fun newsDetail(idNews: Int) = "news/$idNews"
+    /** [club] null = articolo raggiunto dall'elenco "nel desktop" (tutti i circoli). */
+    fun newsDetail(idNews: Int, club: String?) =
+        "news/$idNews/${if (club != null) java.net.URLEncoder.encode(club, "UTF-8") else "_all_"}"
 
     fun performance(focus: String? = null) = if (focus != null) "performance?focus=$focus" else "performance"
 
