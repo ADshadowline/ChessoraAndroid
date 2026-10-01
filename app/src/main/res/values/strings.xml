@@ -3,8 +3,6 @@
 
     <!-- News (ui/news/) -->
     <string name="news_search_hint">Cerca una notizia…</string>
-    <string name="news_scope_circolo">Circoli</string>
-    <string name="news_scope_mondo">Mondo</string>
     <string name="news_comments">Commenti</string>
 
     <!-- Bando in-app (ui/calendar/BandoViewerScreen.kt) -->
@@ -36,7 +34,7 @@
 
     <!-- Navigazione a schede (bottom bar) -->
     <string name="nav_home">Eventi</string>
-    <string name="nav_news">La Rete</string>
+    <string name="nav_news">News</string>
     <string name="nav_ranking">Classifica</string>
     <string name="nav_more">Altro</string>
     <string name="nav_registrations">I miei tornei</string>

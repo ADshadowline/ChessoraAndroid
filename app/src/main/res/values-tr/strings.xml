@@ -3,8 +3,6 @@
 
     <!-- News (ui/news/) -->
     <string name="news_search_hint">Bir haber ara…</string>
-    <string name="news_scope_circolo">Kulüpler</string>
-    <string name="news_scope_mondo">Dünya</string>
     <string name="news_comments">Yorumlar</string>
 
     <!-- Bando in-app (ui/calendar/BandoViewerScreen.kt) -->
@@ -29,7 +27,7 @@
 
     <!-- Bottom bar navigation -->
     <string name="nav_home">Etkinlikler</string>
-    <string name="nav_news">Ağ</string>
+    <string name="nav_news">Haberler</string>
     <string name="nav_ranking">Sıralama</string>
     <string name="nav_more">Diğer</string>
     <string name="nav_registrations">Turnuvalarım</string>

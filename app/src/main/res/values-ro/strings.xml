@@ -3,8 +3,6 @@
 
     <!-- News (ui/news/) -->
     <string name="news_search_hint">Caută o știre…</string>
-    <string name="news_scope_circolo">Cluburi</string>
-    <string name="news_scope_mondo">Lume</string>
     <string name="news_comments">Comentarii</string>
 
     <!-- Bando in-app (ui/calendar/BandoViewerScreen.kt) -->
@@ -29,7 +27,7 @@
 
     <!-- Bottom bar navigation -->
     <string name="nav_home">Evenimente</string>
-    <string name="nav_news">Rețeaua</string>
+    <string name="nav_news">Știri</string>
     <string name="nav_ranking">Clasament</string>
     <string name="nav_more">Mai mult</string>
     <string name="nav_registrations">Turneele mele</string>

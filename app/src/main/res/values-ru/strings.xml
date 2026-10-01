@@ -3,8 +3,6 @@
 
     <!-- News (ui/news/) -->
     <string name="news_search_hint">Поиск новости…</string>
-    <string name="news_scope_circolo">Клубы</string>
-    <string name="news_scope_mondo">Мир</string>
     <string name="news_comments">Комментарии</string>
 
     <!-- Bando in-app (ui/calendar/BandoViewerScreen.kt) -->
@@ -29,7 +27,7 @@
 
     <!-- Bottom bar navigation -->
     <string name="nav_home">События</string>
-    <string name="nav_news">Сеть</string>
+    <string name="nav_news">Новости</string>
     <string name="nav_ranking">Рейтинг</string>
     <string name="nav_more">Ещё</string>
     <string name="nav_registrations">Мои турниры</string>

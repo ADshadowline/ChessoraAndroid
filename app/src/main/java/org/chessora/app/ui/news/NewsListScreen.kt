@@ -17,8 +17,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,22 +34,18 @@ import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
 import org.chessora.app.ui.home.NewsSummaryCard
 
-private val SCOPES = listOf(NewsScope.CIRCOLO, NewsScope.MONDO)
-
-/** [showScopeTabs] false = nessuna tab, solo l'elenco del circolo (usato da "Il Circolo" >
- * News, vedi ChessoraNavHost CLUB_NEWS) - true mostra anche "Mondo" (notizie FIDE/
- * internazionali, slegate dai circoli), usato dalla schermata "La Rete" del desktop/bottom
- * bar (NEWS_LIST), dove la tab "Circoli" aggrega le news di tutti i circoli. */
+/** [mergeAllSources] true = un solo elenco con le news di tutti i circoli PIÙ quelle
+ * FIDE/globali, mescolate e ordinate per data (schermata "News" del desktop/bottom bar,
+ * NEWS_LIST) - false = solo le news del circolo indicato da [club] (schermata "Il
+ * Circolo" > News, CLUB_NEWS). Vedi NewsListViewModel per la logica di fetch/merge. */
 @Composable
-fun NewsListScreen(club: String?, onNewsClick: (Int) -> Unit, showScopeTabs: Boolean = true) {
+fun NewsListScreen(club: String?, onNewsClick: (Int) -> Unit, mergeAllSources: Boolean = false) {
     val viewModel = chessoraViewModel { app -> NewsListViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
-    val scope by viewModel.scope.collectAsState()
     val query by viewModel.query.collectAsState()
     val context = LocalContext.current
-    val scopeIndex = SCOPES.indexOf(scope).coerceAtLeast(0)
 
-    LaunchedEffect(club) { viewModel.load(club) }
+    LaunchedEffect(club, mergeAllSources) { viewModel.load(club, mergeAllSources) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         OutlinedTextField(
@@ -62,20 +56,6 @@ fun NewsListScreen(club: String?, onNewsClick: (Int) -> Unit, showScopeTabs: Boo
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             singleLine = true,
         )
-        if (showScopeTabs) {
-            TabRow(selectedTabIndex = scopeIndex) {
-                Tab(
-                    selected = scope == NewsScope.CIRCOLO,
-                    onClick = { viewModel.setScope(NewsScope.CIRCOLO) },
-                    text = { Text(stringResource(R.string.news_scope_circolo)) },
-                )
-                Tab(
-                    selected = scope == NewsScope.MONDO,
-                    onClick = { viewModel.setScope(NewsScope.MONDO) },
-                    text = { Text(stringResource(R.string.news_scope_mondo)) },
-                )
-            }
-        }
 
         UiStateContent(state = state, onRetry = { viewModel.retry() }) { items ->
             LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {

@@ -83,10 +83,15 @@ object ChessPositions {
      * varianti tra parentesi tonde, e il simbolo di risultato finale. Usato sia per
      * ricostruire le posizioni FEN ([fromPgn]) sia per il testo mostrato sotto la
      * scacchiera ([formatPgnForDisplay]). */
+    /** BUG REALE trovato in produzione (01/10/2026, segnalato come crash "PatternSyntaxException"
+     * aprendo una partita Chess.com): la graffa di chiusura qui sotto era scritta "}" invece di
+     * "\\}" - il motore regex ICU di Android (diverso da quello, più permissivo, della JVM
+     * desktop dove giravano i test di questo file) la rifiuta come sintassi non valida. Ogni
+     * parentesi letterale in questi pattern va SEMPRE escapata su entrambi i lati. */
     private fun cleanMovetext(pgn: String): String = pgn.lineSequence()
         .filterNot { it.trim().startsWith("[") }
         .joinToString(" ")
-        .replace(Regex("\\{[^}]*}"), " ")
+        .replace(Regex("\\{[^}]*\\}"), " ")
         .replace(Regex("\\([^)]*\\)"), " ")
         .replace(Regex("(1-0|0-1|1/2-1/2|\\*)\\s*$"), "")
 }

@@ -461,6 +461,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                     NewsListScreen(
                         club = null, // Sempre tutti i circoli - vedi CLUB_NEWS per quelle del solo circolo.
                         onNewsClick = { navController.navigate(ChessoraDestinations.newsDetail(it, club = null)) },
+                        mergeAllSources = true, // Un solo elenco: tutti i circoli + news FIDE/globali, ordinate per data.
                     )
                 }
             }
@@ -662,7 +663,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                     NewsListScreen(
                         club = club,
                         onNewsClick = { navController.navigate(ChessoraDestinations.newsDetail(it, club = club)) },
-                        showScopeTabs = false, // Solo le news del circolo, niente tab "Mondo" - quella è su "La Rete".
+                        // mergeAllSources = false (default): solo le news di questo circolo.
                     )
                 }
             }
