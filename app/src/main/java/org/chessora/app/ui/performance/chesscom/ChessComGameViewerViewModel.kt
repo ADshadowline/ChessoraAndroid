@@ -31,7 +31,10 @@ class ChessComGameViewerViewModel : ViewModel() {
         _state.value = try {
             val game = ChessComGameCache.get(gameId)
             if (game == null) {
-                UiState.Error("Partita non più disponibile - torna indietro e riprova dall'elenco.")
+                // TEMPORANEO (diagnosi bug segnalato in produzione): porta con sé l'id
+                // cercato, per distinguere subito un "cache vuota" (processo ricreato) da
+                // un vero mismatch di id tra elenco e cache - vedi ChessComGameCache.
+                UiState.Error("Partita non più disponibile (id=$gameId) - torna indietro e riprova dall'elenco.")
             } else {
                 val positions = if (game.rules == "chess") ChessPositions.fromPgn(game.pgn) else listOf(ChessPositions.STANDARD_START_FEN)
                 UiState.Success(ChessComGameViewerData(game, positions))
@@ -41,10 +44,11 @@ class ChessComGameViewerViewModel : ViewModel() {
             // ancora visto) mandi in crash l'intera app: meglio un errore gestito che
             // l'utente può chiudere, come per qualunque altro errore di caricamento.
             // recordException manda lo stack trace a Firebase Crashlytics come evento
-            // non fatale - senza, un errore "gestito" così non lascerebbe alcuna traccia
-            // da remoto per capire cosa sia successo davvero.
+            // non fatale; il messaggio include ANCHE tipo+dettaglio dell'eccezione
+            // (TEMPORANEO, solo per diagnosi: vedi commento sopra) cosi' non serve
+            // aspettare/consultare Crashlytics per saperlo.
             FirebaseCrashlytics.getInstance().recordException(e)
-            UiState.Error("Impossibile aprire questa partita.")
+            UiState.Error("Impossibile aprire questa partita (${e::class.simpleName}: ${e.message}).")
         }
     }
 }
