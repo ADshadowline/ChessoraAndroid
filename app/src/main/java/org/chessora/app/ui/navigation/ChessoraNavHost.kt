@@ -220,6 +220,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
     val registeredTournamentStartingSoon by sessionViewModel.registeredTournamentStartingSoon.collectAsState()
     val hasTournamentInProgress by sessionViewModel.hasTournamentInProgress.collectAsState()
     val hasManageableTournaments by sessionViewModel.hasManageableTournaments.collectAsState()
+    val hasShopItems by sessionViewModel.hasShopItems.collectAsState()
     val unreadMessagesCount by sessionViewModel.unreadMessagesCount.collectAsState()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -417,6 +418,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                         registeredTournamentStartingSoon = registeredTournamentStartingSoon,
                         hasTournamentInProgress = hasTournamentInProgress,
                         hasManageableTournaments = hasManageableTournaments,
+                        hasShopItems = hasShopItems,
                         desktop = DesktopHomeCallbacks(
                             onOpenEvents = { navController.navigate(ChessoraDestinations.EVENTS) },
                             onOpenCalendar = { navController.navigate(ChessoraDestinations.CALENDAR) },
@@ -660,6 +662,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                     NewsListScreen(
                         club = club,
                         onNewsClick = { navController.navigate(ChessoraDestinations.newsDetail(it, club = club)) },
+                        showScopeTabs = false, // Solo le news del circolo, niente tab "Mondo" - quella è su "La Rete".
                     )
                 }
             }

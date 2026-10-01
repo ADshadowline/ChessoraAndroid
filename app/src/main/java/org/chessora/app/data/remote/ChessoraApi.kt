@@ -40,6 +40,7 @@ import org.chessora.app.data.remote.dto.StartDirectConversationRequest
 import org.chessora.app.data.remote.dto.RegisterDeviceRequest
 import org.chessora.app.data.remote.dto.ReportDeliveryRequest
 import org.chessora.app.data.remote.dto.ResolveClubResponse
+import org.chessora.app.data.remote.dto.ShopHasProducts
 import org.chessora.app.data.remote.dto.ShopProduct
 import org.chessora.app.data.remote.dto.SiteSettings
 import org.chessora.app.data.remote.dto.StandingsRow
@@ -220,6 +221,9 @@ interface ChessoraApi {
 
     @GET("api/shop/products")
     suspend fun getShopProducts(@Query("club") club: String): List<ShopProduct>
+
+    @GET("api/shop/has-products")
+    suspend fun getShopHasProducts(@Query("club") club: String): ShopHasProducts
 
     // ---------- Altro ----------
 

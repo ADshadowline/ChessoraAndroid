@@ -2,6 +2,7 @@ package org.chessora.app.ui.performance.online
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -73,6 +74,7 @@ class OnlineGamesViewModel(
 
                 _state.value = UiState.Success(OnlineGamesData(lichessUsername, chessComUsername, summaries))
             } catch (e: Exception) {
+                FirebaseCrashlytics.getInstance().recordException(e)
                 _state.value = UiState.Error(e.toFriendlyMessage())
             }
         }

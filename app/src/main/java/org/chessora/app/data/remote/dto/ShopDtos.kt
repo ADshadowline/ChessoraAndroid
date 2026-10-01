@@ -16,3 +16,10 @@ data class ShopProduct(
     val imagePath: String? = null,
     val stockQuantity: Int? = null,
 )
+
+/** GET /api/shop/has-products - per nascondere l'icona "Negozio" in Home desktop se il
+ * negozio del circolo non ha articoli, senza scaricare l'intero catalogo. */
+@Serializable
+data class ShopHasProducts(
+    val hasProducts: Boolean = false,
+)

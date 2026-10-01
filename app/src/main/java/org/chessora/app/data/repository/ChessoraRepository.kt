@@ -265,6 +265,8 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun getShopProducts(club: String): Result<List<ShopProduct>> = safeCall { api.getShopProducts(club) }
 
+    suspend fun hasShopItems(club: String): Result<Boolean> = safeCall { api.getShopHasProducts(club).hasProducts }
+
     // ---------- Altro ----------
 
     suspend fun getGoogleReviews(club: String): Result<GoogleReviewsResponse> =

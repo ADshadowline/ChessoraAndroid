@@ -141,6 +141,9 @@ fun HomeScreen(
      * l'icona "Gestione tornei" quando l'organizzatore self-service non ha nessun torneo
      * InCorso da gestire. */
     hasManageableTournaments: Boolean = false,
+    /** Vedi DESKTOP_ICON_DESCRIPTORS - SessionViewModel.hasShopItems: nasconde l'icona
+     * "Negozio" quando il circolo non ha ancora nessun articolo in vendita. */
+    hasShopItems: Boolean = false,
     /** Logo del circolo (già risolto in URL assoluto) mostrato sull'icona "Il Circolo"
      * al posto di un'icona generica - null finché il circolo non ne ha caricato uno. */
     clubLogoUrl: String? = null,
@@ -181,6 +184,7 @@ fun HomeScreen(
                 registeredTournamentStartingSoon = registeredTournamentStartingSoon,
                 hasTournamentInProgress = hasTournamentInProgress,
                 hasManageableTournaments = hasManageableTournaments,
+                hasShopItems = hasShopItems,
                 nextEventStart = nextEventStart,
                 clubLogoUrl = clubLogoUrl,
             )
@@ -385,6 +389,9 @@ private fun DesktopHomeGrid(
      * differenza di hiddenInPlatformMode, questo dipende da un dato caricato, non da una
      * modalità fissa). */
     hasManageableTournaments: Boolean = false,
+    /** Vedi HomeScreen - SessionViewModel.hasShopItems: "shop" compare solo se true,
+     * stesso spirito di [hasManageableTournaments]. */
+    hasShopItems: Boolean = false,
     /** Vedi HomeScreen - il logo del circolo mostrato sull'icona "Il Circolo" (id
      * "board") al posto di un'icona generica. */
     clubLogoUrl: String? = null,
@@ -392,10 +399,11 @@ private fun DesktopHomeGrid(
     // Messaggi e Impostazioni sono ancorate agli angoli in basso (sinistra/destra), non
     // parte della griglia scorrevole - posizione fissa richiesta esplicitamente, non
     // riordinabili/nascondibili da Impostazioni > Icone Home.
-    val baseIcons = remember(desktop, isPlatformMode, iconOrder, hiddenIcons, registeredTournamentsCount, registeredTournamentStartingSoon, hasTournamentInProgress, nextEventStart, hasManageableTournaments, clubLogoUrl) {
+    val baseIcons = remember(desktop, isPlatformMode, iconOrder, hiddenIcons, registeredTournamentsCount, registeredTournamentStartingSoon, hasTournamentInProgress, nextEventStart, hasManageableTournaments, hasShopItems, clubLogoUrl) {
         val defaults = DESKTOP_ICON_DESCRIPTORS
             .filter { !(isPlatformMode && it.hiddenInPlatformMode) }
             .filter { it.id != "tournamentManager" || hasManageableTournaments }
+            .filter { it.id != "shop" || hasShopItems }
         applyIconPreferences(defaults, iconOrder, hiddenIcons).mapNotNull { descriptor ->
             callbackFor(descriptor.id, desktop)?.let { onClick ->
                 val badgeCount = if (descriptor.id == "registrations") registeredTournamentsCount else 0

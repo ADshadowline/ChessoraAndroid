@@ -3,8 +3,8 @@
 
     <!-- News (ui/news/) -->
     <string name="news_search_hint">Rechercher une actualité…</string>
-    <string name="news_scope_circolo">Club</string>
-    <string name="news_scope_mondo">En ligne</string>
+    <string name="news_scope_circolo">Clubs</string>
+    <string name="news_scope_mondo">Monde</string>
     <string name="news_comments">Commentaires</string>
 
     <!-- Bando in-app (ui/calendar/BandoViewerScreen.kt) -->
@@ -29,7 +29,7 @@
 
     <!-- Bottom bar navigation -->
     <string name="nav_home">Événements</string>
-    <string name="nav_news">Actualités</string>
+    <string name="nav_news">Le Réseau</string>
     <string name="nav_ranking">Classement</string>
     <string name="nav_more">Plus</string>
     <string name="nav_registrations">Mes tournois</string>
@@ -197,6 +197,7 @@
     <string name="club_menu_statuto_empty">Aucun statut téléversé pour l\'instant.</string>
     <string name="club_menu_contacts">Contacts</string>
     <string name="club_menu_location">Comment nous trouver</string>
+    <string name="club_menu_news">Actualités</string>
     <string name="club_contacts_empty">Aucune coordonnée disponible.</string>
     <string name="club_contacts_call">Appeler</string>
     <string name="club_contacts_email">Envoyer un e-mail</string>

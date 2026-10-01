@@ -10,6 +10,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.kotlin.plugin.serialization")
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 // Credenziali della chiave di firma release, lette da keystore.properties
@@ -33,8 +34,8 @@ android {
         // valerne la pena su un'app di sola consultazione.
         minSdk = 26
         targetSdk = 35
-        versionCode = 83
-        versionName = "1.39.1"
+        versionCode = 84
+        versionName = "1.40.0"
 
         // URL base dell'Api Chessora in produzione: iniettato come BuildConfig
         // string invece che hard-codato nel client Retrofit, cosi' un domani un
@@ -145,10 +146,11 @@ dependencies {
     // rotazione solo a lettura, non ai pixel del file. ---
     implementation("androidx.exifinterface:exifinterface:1.3.7")
 
-    // --- Firebase Cloud Messaging (solo il modulo Messaging, niente Analytics: non
-    // serve e complicherebbe l'informativa privacy) ---
+    // --- Firebase Cloud Messaging + Crashlytics (niente Analytics: non serve e
+    // complicherebbe l'informativa privacy - Crashlytics non lo richiede più da anni) ---
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
     implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
 
     // --- Motore/parser di scacchi (ui/lichess/): valida le mosse SAN scaricate da
     // Lichess e ricostruisce la posizione FEN dopo ogni mossa - la scacchiera vera e

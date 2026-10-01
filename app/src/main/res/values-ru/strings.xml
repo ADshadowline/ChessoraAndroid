@@ -3,8 +3,8 @@
 
     <!-- News (ui/news/) -->
     <string name="news_search_hint">Поиск новости…</string>
-    <string name="news_scope_circolo">Клуб</string>
-    <string name="news_scope_mondo">В сети</string>
+    <string name="news_scope_circolo">Клубы</string>
+    <string name="news_scope_mondo">Мир</string>
     <string name="news_comments">Комментарии</string>
 
     <!-- Bando in-app (ui/calendar/BandoViewerScreen.kt) -->
@@ -29,7 +29,7 @@
 
     <!-- Bottom bar navigation -->
     <string name="nav_home">События</string>
-    <string name="nav_news">Новости</string>
+    <string name="nav_news">Сеть</string>
     <string name="nav_ranking">Рейтинг</string>
     <string name="nav_more">Ещё</string>
     <string name="nav_registrations">Мои турниры</string>
@@ -197,6 +197,7 @@
     <string name="club_menu_statuto_empty">Устав пока не загружен.</string>
     <string name="club_menu_contacts">Контакты</string>
     <string name="club_menu_location">Как нас найти</string>
+    <string name="club_menu_news">Новости</string>
     <string name="club_contacts_empty">Контактные данные недоступны.</string>
     <string name="club_contacts_call">Позвонить</string>
     <string name="club_contacts_email">Написать письмо</string>

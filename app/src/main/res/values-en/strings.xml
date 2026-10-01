@@ -3,8 +3,8 @@
 
     <!-- News (ui/news/) -->
     <string name="news_search_hint">Search for a news item…</string>
-    <string name="news_scope_circolo">Club</string>
-    <string name="news_scope_mondo">Online</string>
+    <string name="news_scope_circolo">Clubs</string>
+    <string name="news_scope_mondo">World</string>
     <string name="news_comments">Comments</string>
 
     <!-- Bando in-app (ui/calendar/BandoViewerScreen.kt) -->
@@ -29,7 +29,7 @@
 
     <!-- Bottom bar navigation -->
     <string name="nav_home">Events</string>
-    <string name="nav_news">News</string>
+    <string name="nav_news">Network</string>
     <string name="nav_ranking">Ranking</string>
     <string name="nav_more">More</string>
     <string name="nav_registrations">My tournaments</string>
@@ -197,6 +197,7 @@
     <string name="club_menu_statuto_empty">No bylaws uploaded yet.</string>
     <string name="club_menu_contacts">Contacts</string>
     <string name="club_menu_location">How to reach us</string>
+    <string name="club_menu_news">News</string>
     <string name="club_contacts_empty">No contact info available.</string>
     <string name="club_contacts_call">Call</string>
     <string name="club_contacts_email">Send an email</string>

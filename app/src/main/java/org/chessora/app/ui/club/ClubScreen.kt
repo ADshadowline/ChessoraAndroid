@@ -107,7 +107,7 @@ fun ClubScreen(
                 modifier = Modifier.clickable(onClick = onOpenVideo),
             )
             ListItem(
-                headlineContent = { Text(stringResource(R.string.nav_news)) },
+                headlineContent = { Text(stringResource(R.string.club_menu_news)) },
                 leadingContent = { Icon(Icons.Default.Newspaper, contentDescription = null) },
                 trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
                 modifier = Modifier.clickable(onClick = onOpenNews),

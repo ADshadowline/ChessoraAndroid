@@ -3,8 +3,8 @@
 
     <!-- News (ui/news/) -->
     <string name="news_search_hint">Cerca una notizia…</string>
-    <string name="news_scope_circolo">Circolo</string>
-    <string name="news_scope_mondo">In rete</string>
+    <string name="news_scope_circolo">Circoli</string>
+    <string name="news_scope_mondo">Mondo</string>
     <string name="news_comments">Commenti</string>
 
     <!-- Bando in-app (ui/calendar/BandoViewerScreen.kt) -->
@@ -36,7 +36,7 @@
 
     <!-- Navigazione a schede (bottom bar) -->
     <string name="nav_home">Eventi</string>
-    <string name="nav_news">News</string>
+    <string name="nav_news">La Rete</string>
     <string name="nav_ranking">Classifica</string>
     <string name="nav_more">Altro</string>
     <string name="nav_registrations">I miei tornei</string>
@@ -211,6 +211,7 @@
     <string name="club_menu_statuto_empty">Nessuno statuto caricato ancora.</string>
     <string name="club_menu_contacts">Contatti</string>
     <string name="club_menu_location">Dove raggiungerlo</string>
+    <string name="club_menu_news">News</string>
     <string name="club_contacts_empty">Nessun contatto disponibile.</string>
     <string name="club_contacts_call">Chiama</string>
     <string name="club_contacts_email">Scrivi un\'email</string>

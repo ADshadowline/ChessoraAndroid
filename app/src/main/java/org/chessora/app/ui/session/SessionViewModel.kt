@@ -285,18 +285,30 @@ class SessionViewModel(
         }
     }
 
+    /** True se il negozio del circolo ha almeno un articolo abilitato - nasconde l'icona
+     * "Negozio" in Home quando il negozio è vuoto, stesso spirito di
+     * [hasManageableTournaments] per "Gestione tornei". Caricato insieme al branding (per
+     * circolo, non per utente loggato: a differenza degli altri flag "has*" qui sopra, non
+     * è gated da [_isLoggedIn]) - un solo EXISTS lato server, vedi
+     * ChessoraRepository.hasShopItems. */
+    private val _hasShopItems = MutableStateFlow(false)
+    val hasShopItems: StateFlow<Boolean> = _hasShopItems
+
     private suspend fun loadBranding(club: String) {
         if (club == ClubPreferences.PLATFORM_CLUB_CODE) {
             // "Modalità piattaforma" (nessun circolo, vedi MembershipQuestionScreen):
             // nessuna chiamata di rete club-scoped, branding sintetico con il nome/logo
             // di Chessora stessa (strings.xml platform_branding_name) invece del nome
-            // di un circolo.
+            // di un circolo. L'icona "shop" è comunque già nascosta in modalità
+            // piattaforma (hiddenInPlatformMode, vedi HomeScreen.DESKTOP_ICON_DESCRIPTORS).
             _branding.value = SiteBranding(namePrefix = "", nameHighlight = "Chessora Platform", logoImage = null)
+            _hasShopItems.value = false
             return
         }
         repository.getSiteSettings(club).onSuccess { settings ->
             _branding.value = settings.site
         }
+        _hasShopItems.value = repository.hasShopItems(club).getOrDefault(false)
     }
 
     /** Id della conversazione diretta già esistente con [otherIdPlayer], se c'è - null se

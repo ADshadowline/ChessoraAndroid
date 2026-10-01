@@ -1,6 +1,7 @@
 package org.chessora.app.ui.performance.chesscom
 
 import androidx.lifecycle.ViewModel
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,6 +40,10 @@ class ChessComGameViewerViewModel : ViewModel() {
             // Mai lasciare che un imprevisto (dati di una partita in un formato non
             // ancora visto) mandi in crash l'intera app: meglio un errore gestito che
             // l'utente può chiudere, come per qualunque altro errore di caricamento.
+            // recordException manda lo stack trace a Firebase Crashlytics come evento
+            // non fatale - senza, un errore "gestito" così non lascerebbe alcuna traccia
+            // da remoto per capire cosa sia successo davvero.
+            FirebaseCrashlytics.getInstance().recordException(e)
             UiState.Error("Impossibile aprire questa partita.")
         }
     }
