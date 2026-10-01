@@ -14,6 +14,7 @@ import org.chessora.app.data.repository.ChessComGameCache
 import org.chessora.app.data.repository.ChessComRepository
 import org.chessora.app.data.repository.ChessComResult
 import org.chessora.app.data.repository.ChessoraRepository
+import org.chessora.app.ui.common.toFriendlyMessage
 import org.chessora.app.data.repository.LichessRepository
 import org.chessora.app.ui.common.UiState
 
@@ -44,28 +45,36 @@ class OnlineGamesViewModel(
     fun load() {
         viewModelScope.launch {
             _state.value = UiState.Loading
-            val idPlayer = clubPreferences.identifiedPlayerId.first()
-            val settings = idPlayer?.let { repository.getLichessSettings(it).getOrNull() }
-            val lichessUsername = settings?.lichessUsername?.takeIf { it.isNotBlank() }
-            val chessComUsername = settings?.chessComUsername?.takeIf { it.isNotBlank() }
+            // Mai lasciare che un imprevisto (dato malformato da uno dei due siti, ecc.)
+            // mandi in crash l'intera app: una coroutine lanciata da viewModelScope con
+            // un'eccezione non catturata la farebbe comunque, a differenza dei singoli
+            // fetchGames già protetti da Result/getOrDefault qui sotto.
+            try {
+                val idPlayer = clubPreferences.identifiedPlayerId.first()
+                val settings = idPlayer?.let { repository.getLichessSettings(it).getOrNull() }
+                val lichessUsername = settings?.lichessUsername?.takeIf { it.isNotBlank() }
+                val chessComUsername = settings?.chessComUsername?.takeIf { it.isNotBlank() }
 
-            if (lichessUsername == null && chessComUsername == null) {
-                _state.value = UiState.Success(OnlineGamesData(null, null, emptyList()))
-                return@launch
+                if (lichessUsername == null && chessComUsername == null) {
+                    _state.value = UiState.Success(OnlineGamesData(null, null, emptyList()))
+                    return@launch
+                }
+
+                val lichessGames = lichessUsername
+                    ?.let { lichessRepository.fetchGames(it, GAMES_LIMIT_PER_SOURCE).getOrDefault(emptyList()) }
+                    ?: emptyList()
+                val chessComGames = chessComUsername
+                    ?.let { chessComRepository.fetchGames(it, GAMES_LIMIT_PER_SOURCE).getOrDefault(emptyList()) }
+                    ?: emptyList()
+                ChessComGameCache.putAll(chessComGames)
+
+                val summaries = (lichessGames.map { it.toSummary(lichessUsername ?: "") } + chessComGames.map { it.toSummary() })
+                    .sortedByDescending { it.createdAt }
+
+                _state.value = UiState.Success(OnlineGamesData(lichessUsername, chessComUsername, summaries))
+            } catch (e: Exception) {
+                _state.value = UiState.Error(e.toFriendlyMessage())
             }
-
-            val lichessGames = lichessUsername
-                ?.let { lichessRepository.fetchGames(it, GAMES_LIMIT_PER_SOURCE).getOrDefault(emptyList()) }
-                ?: emptyList()
-            val chessComGames = chessComUsername
-                ?.let { chessComRepository.fetchGames(it, GAMES_LIMIT_PER_SOURCE).getOrDefault(emptyList()) }
-                ?: emptyList()
-            ChessComGameCache.putAll(chessComGames)
-
-            val summaries = (lichessGames.map { it.toSummary(lichessUsername ?: "") } + chessComGames.map { it.toSummary() })
-                .sortedByDescending { it.createdAt }
-
-            _state.value = UiState.Success(OnlineGamesData(lichessUsername, chessComUsername, summaries))
         }
     }
 }

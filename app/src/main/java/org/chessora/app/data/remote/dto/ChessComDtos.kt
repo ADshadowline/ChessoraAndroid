@@ -44,4 +44,8 @@ data class ChessComGameRaw(
     @SerialName("time_class") val timeClass: String = "?",
     /** Epoch secondi (non millisecondi, a differenza di LichessGame.createdAt). */
     @SerialName("end_time") val endTime: Long = 0,
+    /** Identificativo stabile della partita, sempre presente - usato come id invece di
+     * ricavarlo dall'ultimo segmento di [url] (che varia forma tra partite "live" e
+     * "daily" e potrebbe non essere un numero pulito, vedi ChessComRepository.mapGame). */
+    val uuid: String? = null,
 )

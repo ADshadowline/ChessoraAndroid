@@ -104,6 +104,7 @@
     <string name="lichess_move_prev">Previous move</string>
     <string name="lichess_move_next">Next move</string>
     <string name="lichess_move_last">Last move</string>
+    <string name="chess_pgn_label">PGN</string>
     <string name="performance_period_6m">6 months</string>
     <string name="performance_period_1y">1 year</string>
     <string name="performance_period_5y">5 years</string>

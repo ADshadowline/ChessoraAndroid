@@ -27,12 +27,19 @@ class ChessComGameViewerViewModel : ViewModel() {
     val state: StateFlow<UiState<ChessComGameViewerData>> = _state.asStateFlow()
 
     fun load(gameId: String) {
-        val game = ChessComGameCache.get(gameId)
-        _state.value = if (game == null) {
-            UiState.Error("Partita non più disponibile - torna indietro e riprova dall'elenco.")
-        } else {
-            val positions = if (game.rules == "chess") ChessPositions.fromPgn(game.pgn) else listOf(ChessPositions.STANDARD_START_FEN)
-            UiState.Success(ChessComGameViewerData(game, positions))
+        _state.value = try {
+            val game = ChessComGameCache.get(gameId)
+            if (game == null) {
+                UiState.Error("Partita non più disponibile - torna indietro e riprova dall'elenco.")
+            } else {
+                val positions = if (game.rules == "chess") ChessPositions.fromPgn(game.pgn) else listOf(ChessPositions.STANDARD_START_FEN)
+                UiState.Success(ChessComGameViewerData(game, positions))
+            }
+        } catch (e: Exception) {
+            // Mai lasciare che un imprevisto (dati di una partita in un formato non
+            // ancora visto) mandi in crash l'intera app: meglio un errore gestito che
+            // l'utente può chiudere, come per qualunque altro errore di caricamento.
+            UiState.Error("Impossibile aprire questa partita.")
         }
     }
 }

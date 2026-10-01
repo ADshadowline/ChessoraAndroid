@@ -59,7 +59,7 @@ private fun mapGame(raw: ChessComGameRaw, username: String): ChessComGame? {
     }
     val url = raw.url ?: ""
     return ChessComGame(
-        id = idFromUrl(url),
+        id = raw.uuid ?: idFromUrl(url),
         createdAt = raw.endTime * 1000,
         speed = raw.timeClass,
         rules = raw.rules,

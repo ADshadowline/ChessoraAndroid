@@ -104,6 +104,7 @@
     <string name="lichess_move_prev">Предыдущий ход</string>
     <string name="lichess_move_next">Следующий ход</string>
     <string name="lichess_move_last">Последний ход</string>
+    <string name="chess_pgn_label">PGN</string>
     <string name="performance_period_6m">6 месяцев</string>
     <string name="performance_period_1y">1 год</string>
     <string name="performance_period_5y">5 лет</string>

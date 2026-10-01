@@ -43,12 +43,50 @@ object ChessPositions {
      * vanno ripuliti qui PRIMA di passare a [fromMoves]. */
     fun fromPgn(pgn: String?): List<String> {
         if (pgn.isNullOrBlank()) return fromMoves(null)
-        val movetext = pgn.lineSequence()
-            .filterNot { it.trim().startsWith("[") }
-            .joinToString(" ")
-            .replace(Regex("\\{[^}]*}"), " ")
-            .replace(Regex("\\([^)]*\\)"), " ")
-            .replace(Regex("(1-0|0-1|1/2-1/2|\\*)\\s*$"), "")
-        return fromMoves(movetext)
+        return fromMoves(cleanMovetext(pgn))
     }
+
+    /** Testo PGN leggibile da mostrare sotto la scacchiera (es. "1. e4 c5 2. c3 Qa5 ..."),
+     * a partire dal PGN completo di Chess.com - stessa pulizia di [fromPgn] (intestazioni/
+     * commenti orologio/risultato finale via [cleanMovetext]), più la rimozione dei
+     * marcatori "N..." del nero: ridondanti per la lettura dato che la sua mossa segue già
+     * subito quella del bianco sulla stessa riga. */
+    fun formatPgnForDisplay(pgn: String?): String {
+        if (pgn.isNullOrBlank()) return ""
+        return cleanMovetext(pgn)
+            .split(Regex("\\s+"))
+            .filter { it.isNotBlank() && !it.contains("...") }
+            .joinToString(" ")
+    }
+
+    /** Come [formatPgnForDisplay] ma a partire dalle mosse SAN pure di Lichess (es. il
+     * campo "moves" dell'export, senza numeri di turno) - li aggiunge nel formato PGN
+     * standard ("1. e4 e5 2. Nf3 Nc6 ..."). */
+    fun formatLichessMovesForDisplay(moves: String?): String {
+        if (moves.isNullOrBlank()) return ""
+        val tokens = moves.trim().split(Regex("\\s+")).filter { it.isNotBlank() }
+        val sb = StringBuilder()
+        tokens.forEachIndexed { index, token ->
+            if (index % 2 == 0) {
+                if (index > 0) sb.append(' ')
+                sb.append(index / 2 + 1).append(". ")
+            } else {
+                sb.append(' ')
+            }
+            sb.append(token)
+        }
+        return sb.toString()
+    }
+
+    /** Toglie dal PGN tutto ciò che non serve per ricostruire/mostrare le mosse: righe di
+     * intestazione tra parentesi quadre, commenti/orologio tra parentesi graffe, eventuali
+     * varianti tra parentesi tonde, e il simbolo di risultato finale. Usato sia per
+     * ricostruire le posizioni FEN ([fromPgn]) sia per il testo mostrato sotto la
+     * scacchiera ([formatPgnForDisplay]). */
+    private fun cleanMovetext(pgn: String): String = pgn.lineSequence()
+        .filterNot { it.trim().startsWith("[") }
+        .joinToString(" ")
+        .replace(Regex("\\{[^}]*}"), " ")
+        .replace(Regex("\\([^)]*\\)"), " ")
+        .replace(Regex("(1-0|0-1|1/2-1/2|\\*)\\s*$"), "")
 }

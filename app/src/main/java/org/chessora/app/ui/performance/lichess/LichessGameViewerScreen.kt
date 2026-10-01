@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.LastPage
 import androidx.compose.material.icons.automirrored.filled.NavigateBefore
@@ -53,7 +56,7 @@ fun LichessGameViewerScreen(gameId: String) {
     UiStateContent(state = state, onRetry = { viewModel.load(gameId) }) { data ->
         LaunchedEffect(data.positions.size) { moveIndex = data.positions.size - 1 }
 
-        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Column(modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {
             GameHeader(data.game)
             if (data.game.variant != "standard") {
                 Text(
@@ -95,7 +98,19 @@ fun LichessGameViewerScreen(gameId: String) {
                         Icon(Icons.AutoMirrored.Filled.LastPage, contentDescription = stringResource(R.string.lichess_move_last))
                     }
                 }
+                PgnCard(ChessPositions.formatLichessMovesForDisplay(data.game.moves))
             }
+        }
+    }
+}
+
+@Composable
+private fun PgnCard(pgn: String) {
+    if (pgn.isBlank()) return
+    Card(modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(stringResource(R.string.chess_pgn_label), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+            Text(pgn, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 6.dp))
         }
     }
 }

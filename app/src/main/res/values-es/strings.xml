@@ -104,6 +104,7 @@
     <string name="lichess_move_prev">Jugada anterior</string>
     <string name="lichess_move_next">Jugada siguiente</string>
     <string name="lichess_move_last">Última jugada</string>
+    <string name="chess_pgn_label">PGN</string>
     <string name="performance_period_6m">6 meses</string>
     <string name="performance_period_1y">1 año</string>
     <string name="performance_period_5y">5 años</string>
