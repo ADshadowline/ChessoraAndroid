@@ -109,6 +109,7 @@
     <string name="lichess_move_prev">Mossa precedente</string>
     <string name="lichess_move_next">Mossa successiva</string>
     <string name="lichess_move_last">Ultima mossa</string>
+    <string name="chessboard_flip">Gira la scacchiera</string>
     <string name="chess_pgn_label">PGN</string>
     <string name="performance_period_6m">6 mesi</string>
     <string name="performance_period_1y">1 anno</string>

@@ -102,6 +102,7 @@
     <string name="lichess_move_prev">Önceki hamle</string>
     <string name="lichess_move_next">Sonraki hamle</string>
     <string name="lichess_move_last">Son hamle</string>
+    <string name="chessboard_flip">Tahtayı çevir</string>
     <string name="chess_pgn_label">PGN</string>
     <string name="performance_period_6m">6 ay</string>
     <string name="performance_period_1y">1 yıl</string>

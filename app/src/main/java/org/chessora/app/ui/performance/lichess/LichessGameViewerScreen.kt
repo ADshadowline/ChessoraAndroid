@@ -16,6 +16,7 @@ import androidx.compose.material.icons.automirrored.filled.LastPage
 import androidx.compose.material.icons.automirrored.filled.NavigateBefore
 import androidx.compose.material.icons.automirrored.filled.NavigateNext
 import androidx.compose.material.icons.filled.FirstPage
+import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Icon
@@ -49,6 +50,7 @@ fun LichessGameViewerScreen(gameId: String) {
     val viewModel = chessoraViewModel { app -> LichessGameViewerViewModel(LichessRepository()) }
     val state by viewModel.state.collectAsState()
     var moveIndex by remember { mutableStateOf(0) }
+    var flipped by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     LaunchedEffect(gameId) { viewModel.load(gameId) }
@@ -72,6 +74,7 @@ fun LichessGameViewerScreen(gameId: String) {
                 ChessBoardView(
                     fen = data.positions.getOrElse(moveIndex) { ChessPositions.STANDARD_START_FEN },
                     modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+                    flipped = flipped,
                 )
                 Text(
                     stringResource(R.string.lichess_move_of, moveIndex, (data.positions.size - 1).coerceAtLeast(0)),
@@ -96,6 +99,9 @@ fun LichessGameViewerScreen(gameId: String) {
                         enabled = moveIndex < data.positions.size - 1,
                     ) {
                         Icon(Icons.AutoMirrored.Filled.LastPage, contentDescription = stringResource(R.string.lichess_move_last))
+                    }
+                    IconButton(onClick = { flipped = !flipped }) {
+                        Icon(Icons.Filled.SwapVert, contentDescription = stringResource(R.string.chessboard_flip))
                     }
                 }
                 PgnCard(ChessPositions.formatLichessMovesForDisplay(data.game.moves))
