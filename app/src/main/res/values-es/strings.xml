@@ -90,6 +90,14 @@
     <string name="lichess_games_empty">No se han encontrado partidas para este usuario de Lichess.</string>
     <string name="online_games_not_configured">Configura tu usuario de Lichess o Chess.com en Ajustes para ver aquí tus partidas online.</string>
     <string name="online_games_empty">No se han encontrado partidas.</string>
+    <string name="online_games_tab_games">Partidas</string>
+    <string name="online_games_tab_openings">Aperturas</string>
+    <string name="online_games_search_hint">Buscar por rival</string>
+    <string name="online_games_search_clear">Borrar búsqueda</string>
+    <string name="online_games_no_results">Ninguna partida coincide con los filtros.</string>
+    <string name="online_games_opening_filter_active">Apertura: %1$s</string>
+    <string name="online_games_openings_empty">No hay aperturas disponibles.</string>
+    <string name="online_games_opening_count">%1$d partidas (Li %2$d · CC %3$d)</string>
     <string name="lichess_game_vs">vs %1$s</string>
     <string name="lichess_result_win">V</string>
     <string name="lichess_result_loss">D</string>

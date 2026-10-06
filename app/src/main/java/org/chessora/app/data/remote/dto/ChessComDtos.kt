@@ -48,4 +48,10 @@ data class ChessComGameRaw(
      * ricavarlo dall'ultimo segmento di [url] (che varia forma tra partite "live" e
      * "daily" e potrebbe non essere un numero pulito, vedi ChessComRepository.mapGame). */
     val uuid: String? = null,
+    /** URL alla pagina dell'apertura sul sito, es.
+     * "https://www.chess.com/openings/Alapin-Sicilian-Defense-2...Qa5" - a differenza di
+     * Lichess (vedi LichessOpening) non c'è un campo separato con nome/codice ECO puliti,
+     * il nome va ricavato dall'ultimo segmento dell'URL (vedi
+     * ChessComRepository.openingNameFromEcoUrl). Assente per alcune partite "daily"/vecchie. */
+    val eco: String? = null,
 )

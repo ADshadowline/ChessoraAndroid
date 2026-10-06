@@ -90,6 +90,14 @@
     <string name="lichess_games_empty">Nu s-a găsit nicio partidă pentru acest nume de utilizator Lichess.</string>
     <string name="online_games_not_configured">Configurează numele tău de utilizator Lichess sau Chess.com în Setări pentru a vedea aici partidele tale online.</string>
     <string name="online_games_empty">Nu s-a găsit nicio partidă.</string>
+    <string name="online_games_tab_games">Partide</string>
+    <string name="online_games_tab_openings">Deschideri</string>
+    <string name="online_games_search_hint">Caută după adversar</string>
+    <string name="online_games_search_clear">Șterge căutarea</string>
+    <string name="online_games_no_results">Nicio partidă nu corespunde filtrelor.</string>
+    <string name="online_games_opening_filter_active">Deschidere: %1$s</string>
+    <string name="online_games_openings_empty">Nicio deschidere disponibilă.</string>
+    <string name="online_games_opening_count">%1$d partide (Li %2$d · CC %3$d)</string>
     <string name="lichess_game_vs">vs %1$s</string>
     <string name="lichess_result_win">V</string>
     <string name="lichess_result_loss">Î</string>

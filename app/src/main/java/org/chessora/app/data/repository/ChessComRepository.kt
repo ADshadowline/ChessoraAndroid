@@ -34,6 +34,9 @@ data class ChessComGame(
     val result: ChessComResult,
     val url: String,
     val pgn: String,
+    /** Nome leggibile dell'apertura (vedi [openingNameFromEcoUrl]), null se Chess.com non
+     * l'ha valorizzata per questa partita (es. alcune "daily" più vecchie). */
+    val openingName: String?,
 )
 
 /** I codici risultato che Chess.com usa per indicare una patta (entrambi i lati portano lo
@@ -42,6 +45,14 @@ data class ChessComGame(
 private val DRAW_CODES = setOf("agreed", "repetition", "stalemate", "insufficient", "50move", "timevsinsufficient")
 
 private fun idFromUrl(url: String): String = url.substringAfterLast('/').ifBlank { url }
+
+/** "https://www.chess.com/openings/Alapin-Sicilian-Defense-2...Qa5" -> "Alapin Sicilian
+ * Defense 2...Qa5" - Chess.com non espone un nome/codice ECO puliti separati (a differenza
+ * di LichessOpening), solo questo URL con l'ultimo segmento già leggibile a trattini. */
+private fun openingNameFromEcoUrl(ecoUrl: String?): String? {
+    if (ecoUrl.isNullOrBlank()) return null
+    return ecoUrl.substringAfterLast('/').replace('-', ' ').trim().ifBlank { null }
+}
 
 private fun mapGame(raw: ChessComGameRaw, username: String): ChessComGame? {
     val white = raw.white ?: return null
@@ -74,6 +85,7 @@ private fun mapGame(raw: ChessComGameRaw, username: String): ChessComGame? {
         result = result,
         url = url,
         pgn = raw.pgn ?: "",
+        openingName = openingNameFromEcoUrl(raw.eco),
     )
 }
 

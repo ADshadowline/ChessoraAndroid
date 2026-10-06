@@ -20,4 +20,8 @@ data class OnlineGameSummary(
     val result: OnlineGameResult,
     val speedLabel: String,
     val createdAt: Long,
+    /** Nome dell'apertura giocata, null se la fonte non l'ha valorizzata per questa partita
+     * (vedi LichessOpening.name/ChessComGame.openingName) - usato per le statistiche aperture
+     * in OnlineGamesScreen (scheda "Aperture") e per il filtro per apertura. */
+    val openingName: String?,
 )

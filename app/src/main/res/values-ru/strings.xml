@@ -90,6 +90,14 @@
     <string name="lichess_games_empty">Партии для этого ника Lichess не найдены.</string>
     <string name="online_games_not_configured">Укажите свой ник Lichess или Chess.com в настройках, чтобы видеть здесь свои онлайн-партии.</string>
     <string name="online_games_empty">Партии не найдены.</string>
+    <string name="online_games_tab_games">Партии</string>
+    <string name="online_games_tab_openings">Дебюты</string>
+    <string name="online_games_search_hint">Поиск по сопернику</string>
+    <string name="online_games_search_clear">Очистить поиск</string>
+    <string name="online_games_no_results">Нет партий, соответствующих фильтрам.</string>
+    <string name="online_games_opening_filter_active">Дебют: %1$s</string>
+    <string name="online_games_openings_empty">Нет доступных дебютов.</string>
+    <string name="online_games_opening_count">%1$d партий (Li %2$d · CC %3$d)</string>
     <string name="lichess_game_vs">против %1$s</string>
     <string name="lichess_result_win">В</string>
     <string name="lichess_result_loss">П</string>

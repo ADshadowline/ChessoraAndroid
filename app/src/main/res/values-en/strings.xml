@@ -90,6 +90,14 @@
     <string name="lichess_games_empty">No games found for this Lichess username.</string>
     <string name="online_games_not_configured">Set your Lichess or Chess.com username in Settings to see your online games here.</string>
     <string name="online_games_empty">No games found.</string>
+    <string name="online_games_tab_games">Games</string>
+    <string name="online_games_tab_openings">Openings</string>
+    <string name="online_games_search_hint">Search by opponent</string>
+    <string name="online_games_search_clear">Clear search</string>
+    <string name="online_games_no_results">No games match the filters.</string>
+    <string name="online_games_opening_filter_active">Opening: %1$s</string>
+    <string name="online_games_openings_empty">No openings available.</string>
+    <string name="online_games_opening_count">%1$d games (Li %2$d · CC %3$d)</string>
     <string name="lichess_game_vs">vs %1$s</string>
     <string name="lichess_result_win">W</string>
     <string name="lichess_result_loss">L</string>

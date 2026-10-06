@@ -90,6 +90,14 @@
     <string name="lichess_games_empty">Bu Lichess kullanıcı adı için parti bulunamadı.</string>
     <string name="online_games_not_configured">Çevrimiçi partilerini burada görmek için Ayarlar\'da Lichess veya Chess.com kullanıcı adını ayarla.</string>
     <string name="online_games_empty">Parti bulunamadı.</string>
+    <string name="online_games_tab_games">Partiler</string>
+    <string name="online_games_tab_openings">Açılışlar</string>
+    <string name="online_games_search_hint">Rakibe göre ara</string>
+    <string name="online_games_search_clear">Aramayı temizle</string>
+    <string name="online_games_no_results">Filtrelere uyan parti yok.</string>
+    <string name="online_games_opening_filter_active">Açılış: %1$s</string>
+    <string name="online_games_openings_empty">Kullanılabilir açılış yok.</string>
+    <string name="online_games_opening_count">%1$d parti (Li %2$d · CC %3$d)</string>
     <string name="lichess_game_vs">%1$s\'e karşı</string>
     <string name="lichess_result_win">G</string>
     <string name="lichess_result_loss">M</string>

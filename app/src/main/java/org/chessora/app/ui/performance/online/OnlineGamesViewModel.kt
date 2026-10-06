@@ -98,6 +98,7 @@ private fun LichessGame.toSummary(myUsername: String): OnlineGameSummary {
         result = result,
         speedLabel = speed.replaceFirstChar { it.uppercase() },
         createdAt = createdAt,
+        openingName = opening?.name,
     )
 }
 
@@ -113,4 +114,5 @@ private fun ChessComGame.toSummary(): OnlineGameSummary = OnlineGameSummary(
     },
     speedLabel = speed.replaceFirstChar { it.uppercase() },
     createdAt = createdAt,
+    openingName = openingName,
 )
