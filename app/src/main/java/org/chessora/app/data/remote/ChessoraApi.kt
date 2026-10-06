@@ -52,6 +52,8 @@ import org.chessora.app.data.remote.dto.TournamentRound
 import org.chessora.app.data.remote.dto.TournamentSummary
 import org.chessora.app.data.remote.dto.VideoNewsItem
 import org.chessora.app.data.remote.dto.LichessSettings
+import org.chessora.app.data.remote.dto.PlayerGame
+import org.chessora.app.data.remote.dto.SaveGameRequest
 import org.chessora.app.data.remote.dto.SetChessComSettingsRequest
 import org.chessora.app.data.remote.dto.SetLichessSettingsRequest
 import org.chessora.app.data.remote.dto.SetVideoChannelPreferencesRequest
@@ -260,6 +262,15 @@ interface ChessoraApi {
 
     @PUT("api/lichess-settings/chesscom")
     suspend fun setChessComSettings(@Body request: SetChessComSettingsRequest)
+
+    /** "Le mie partite" (vedi ui/mygames/) - elenco completo di un socio, caricato una
+     * sola volta all'apertura schermo e filtrato lato client (vedi MyGamesViewModel);
+     * [search] resta disponibile lato server ma non è usato da questa chiamata oggi. */
+    @GET("api/games")
+    suspend fun getMyGames(@Query("idPlayer") idPlayer: Int): List<PlayerGame>
+
+    @POST("api/games")
+    suspend fun saveMyGame(@Body request: SaveGameRequest): PlayerGame
 
     @GET("api/video-news")
     suspend fun getVideoNews(@Query("club") club: String, @Query("limit") limit: Int = 20): List<VideoNewsItem>

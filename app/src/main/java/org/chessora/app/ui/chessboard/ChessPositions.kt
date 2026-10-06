@@ -3,6 +3,16 @@ package org.chessora.app.ui.chessboard
 import com.github.bhlangonijr.chesslib.Board
 import com.github.bhlangonijr.chesslib.move.MoveList
 
+/** Esito di [ChessPositions.validateStrict]. */
+sealed class StrictPgnValidation {
+    data class Valid(val moveCount: Int) : StrictPgnValidation()
+
+    /** [parsedMoveCount] mosse buone su [totalTokenCount] trovate nel testo (0/0 se non
+     * c'è proprio nessuna mossa) - cosi' la UI può dire con precisione dove si è fermata
+     * l'interpretazione, invece di un generico "PGN non valido". */
+    data class Invalid(val parsedMoveCount: Int, val totalTokenCount: Int) : StrictPgnValidation()
+}
+
 /** Ricostruisce, con chesslib (motore/parser di scacchi open source, vedi
  * app/build.gradle.kts), la sequenza di posizioni FEN attraversate da una partita a
  * partire dalle sue mosse SAN (es. il campo "moves" dell'export di Lichess, separato da
@@ -91,6 +101,39 @@ object ChessPositions {
         return formattedPgn.split(Regex("\\s+"))
             .filter { it.isNotBlank() && !Regex("^\\d+\\.+$").matches(it) }
             .take(maxMoves)
+    }
+
+    /** Validazione SEVERA di un PGN appena incollato/digitato dal socio (vedi
+     * ui/mygames/AddMyGameScreen.kt, modalità "Incolla PGN") - A DIFFERENZA di [fromPgn]/
+     * [fromMoves] (che troncano silenziosamente al primo errore, corretto per il loro uso
+     * attuale di sola visualizzazione di partite altrui) qui un errore deve essere visibile
+     * subito: se anche un solo token non è una mossa legale, l'esito è [StrictPgnValidation.
+     * Invalid] con quante mosse erano state interpretate correttamente fino a quel punto, mai
+     * un salvataggio silenzioso parziale. addSanMove applica le mosse una alla volta, lanciando
+     * un'eccezione esattamente al primo token non valido - a differenza di loadFromSan (usata
+     * da fromMoves) che o le applica tutte o nessuna. IMPORTANTE: la board su cui chesslib
+     * decodifica il SAN è un ThreadLocal CONDIVISO tra tutte le MoveList dello stesso thread
+     * (bug/comportamento sorprendente della libreria, verificato leggendo l'implementazione
+     * reale di addSanMove) - senza `replay=true` riuserebbe la posizione lasciata da una
+     * chiamata precedente qualunque (es. l'ultima partita visualizzata), facendo fallire anche
+     * una prima mossa innocua come "e4". `replay=true` la forza a ripartire ogni volta dalla
+     * posizione iniziale e a rigiocare tutte le mosse già accettate prima di decodificare la
+     * successiva - O(n²) ma per una partita (tipicamente <100 mosse) è irrilevante. */
+    fun validateStrict(pgn: String): StrictPgnValidation {
+        val tokens = cleanMovetext(pgn)
+            .split(Regex("\\s+"))
+            .filter { it.isNotBlank() && !Regex("^\\d+\\.+$").matches(it) }
+        if (tokens.isEmpty()) return StrictPgnValidation.Invalid(0, 0)
+
+        val moveList = MoveList()
+        for ((index, token) in tokens.withIndex()) {
+            try {
+                moveList.addSanMove(token, true, true)
+            } catch (e: Exception) {
+                return StrictPgnValidation.Invalid(index, tokens.size)
+            }
+        }
+        return StrictPgnValidation.Valid(tokens.size)
     }
 
     /** Toglie dal PGN tutto ciò che non serve per ricostruire/mostrare le mosse: righe di

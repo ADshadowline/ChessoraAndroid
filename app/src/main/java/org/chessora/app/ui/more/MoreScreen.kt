@@ -12,6 +12,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Settings
@@ -41,6 +42,7 @@ fun MoreScreen(
     onCalendarClick: () -> Unit,
     onRankingClick: () -> Unit,
     onPerformanceClick: () -> Unit,
+    onMyGamesClick: () -> Unit,
     onClubClick: () -> Unit,
     onShopClick: () -> Unit,
     onVideoClick: () -> Unit,
@@ -74,6 +76,12 @@ fun MoreScreen(
             leadingContent = { Icon(Icons.AutoMirrored.Filled.ShowChart, contentDescription = null) },
             trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
             modifier = Modifier.clickable(onClick = onPerformanceClick),
+        )
+        ListItem(
+            headlineContent = { Text(stringResource(R.string.more_my_games)) },
+            leadingContent = { Icon(Icons.Default.History, contentDescription = null) },
+            trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
+            modifier = Modifier.clickable(onClick = onMyGamesClick),
         )
         if (!isPlatformMode) {
             ListItem(

@@ -90,6 +90,9 @@ import org.chessora.app.ui.pairings.PairingsScreen
 import org.chessora.app.ui.pairings.RoundPublishedOverlay
 import org.chessora.app.push.RoundPublishedEvent
 import org.chessora.app.push.TournamentRoundEvents
+import org.chessora.app.ui.mygames.AddMyGameScreen
+import org.chessora.app.ui.mygames.MyGameViewerScreen
+import org.chessora.app.ui.mygames.MyGamesListScreen
 import org.chessora.app.ui.performance.EloRatingType
 import org.chessora.app.ui.performance.PerformanceScreen
 import org.chessora.app.ui.performance.chesscom.ChessComGameViewerScreen
@@ -427,6 +430,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                             onOpenMessaging = { navController.navigate(ChessoraDestinations.MESSAGING) },
                             onOpenRanking = { navController.navigate(ChessoraDestinations.RANKING) },
                             onOpenPerformance = { navController.navigate(ChessoraDestinations.performance()) },
+                            onOpenMyGames = { navController.navigate(ChessoraDestinations.MY_GAMES) },
                             onOpenClub = { navController.navigate(ChessoraDestinations.CLUB) },
                             onOpenShop = { navController.navigate(ChessoraDestinations.SHOP) },
                             onOpenVideo = { navController.navigate(ChessoraDestinations.VIDEO) },
@@ -503,6 +507,23 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                     onOpenLichessGame = { gameId -> navController.navigate(ChessoraDestinations.lichessGameViewer(gameId)) },
                     onOpenChessComGame = { gameId -> navController.navigate(ChessoraDestinations.chessComGameViewer(gameId)) },
                 )
+            }
+            composable(ChessoraDestinations.MY_GAMES) {
+                MyGamesListScreen(
+                    onIdentify = { navController.navigate(ChessoraDestinations.AUTH_LOGIN) },
+                    onAddGame = { navController.navigate(ChessoraDestinations.MY_GAMES_ADD) },
+                    onOpenGame = { id -> navController.navigate(ChessoraDestinations.myGameViewer(id)) },
+                )
+            }
+            composable(ChessoraDestinations.MY_GAMES_ADD) {
+                AddMyGameScreen(onSaved = { navController.popBackStack() })
+            }
+            composable(
+                ChessoraDestinations.MY_GAME_VIEWER,
+                arguments = listOf(navArgument("id") { type = NavType.IntType }),
+            ) { backStack ->
+                val id = backStack.arguments?.getInt("id") ?: return@composable
+                MyGameViewerScreen(gameId = id)
             }
             composable(
                 ChessoraDestinations.LICHESS_GAME_VIEWER,
@@ -609,6 +630,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                     onCalendarClick = { navController.navigate(ChessoraDestinations.CALENDAR) },
                     onRankingClick = { navController.navigate(ChessoraDestinations.RANKING) },
                     onPerformanceClick = { navController.navigate(ChessoraDestinations.performance()) },
+                    onMyGamesClick = { navController.navigate(ChessoraDestinations.MY_GAMES) },
                     onClubClick = { navController.navigate(ChessoraDestinations.CLUB) },
                     onShopClick = { navController.navigate(ChessoraDestinations.SHOP) },
                     onVideoClick = { navController.navigate(ChessoraDestinations.VIDEO) },

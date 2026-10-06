@@ -88,6 +88,12 @@ object ChessoraDestinations {
      * ui/performance/chesscom/ChessComGameViewerScreen.kt. */
     const val LICHESS_GAME_VIEWER = "lichess-game/{gameId}"
     const val CHESSCOM_GAME_VIEWER = "chesscom-game/{gameId}"
+    /** "Le mie partite" (vedi ui/mygames/) - partite registrate a mano dal socio, PGN
+     * incollato o composto a tocchi sulla scacchiera. Indipendente da "Le mie performance"
+     * (quella resta solo Elo storico + Scacchi Online Lichess/Chess.com). */
+    const val MY_GAMES = "my-games"
+    const val MY_GAMES_ADD = "my-games/add"
+    const val MY_GAME_VIEWER = "my-games/view/{id}"
     const val PROFILE_PHOTO = "profile-photo"
     const val TOURNAMENT_DETAIL = "tornei/{idTournament}"
     /** Abbinamenti/classifica di un torneo AVVIATO (LifecycleStatus InCorso/Concluso) -
@@ -126,6 +132,8 @@ object ChessoraDestinations {
     fun performance(focus: String? = null) = if (focus != null) "performance?focus=$focus" else "performance"
 
     fun lichessGameViewer(gameId: String) = "lichess-game/${java.net.URLEncoder.encode(gameId, "UTF-8")}"
+
+    fun myGameViewer(id: Int) = "my-games/view/$id"
 
     fun chessComGameViewer(gameId: String) = "chesscom-game/${java.net.URLEncoder.encode(gameId, "UTF-8")}"
 

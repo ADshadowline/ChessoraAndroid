@@ -53,6 +53,8 @@ import org.chessora.app.data.remote.dto.TournamentPreRegistrationResult
 import org.chessora.app.data.remote.dto.TournamentRound
 import org.chessora.app.data.remote.dto.TournamentSummary
 import org.chessora.app.data.remote.dto.LichessSettings
+import org.chessora.app.data.remote.dto.PlayerGame
+import org.chessora.app.data.remote.dto.SaveGameRequest
 import org.chessora.app.data.remote.dto.SetChessComSettingsRequest
 import org.chessora.app.data.remote.dto.SetLichessSettingsRequest
 import org.chessora.app.data.remote.dto.SetVideoChannelPreferencesRequest
@@ -294,6 +296,12 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun setChessComUsername(idPlayer: Int, chessComUsername: String?): Result<Unit> =
         safeCall { api.setChessComSettings(SetChessComSettingsRequest(idPlayer, chessComUsername)) }
+
+    suspend fun getMyGames(idPlayer: Int): Result<List<PlayerGame>> =
+        safeCall { api.getMyGames(idPlayer) }
+
+    suspend fun saveMyGame(request: SaveGameRequest): Result<PlayerGame> =
+        safeCall { api.saveMyGame(request) }
 
     suspend fun getVideoNews(club: String, limit: Int = 20): Result<List<VideoNewsItem>> =
         safeCall { api.getVideoNews(club, limit) }

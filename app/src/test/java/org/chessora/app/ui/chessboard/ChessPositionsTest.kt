@@ -56,6 +56,33 @@ class ChessPositionsTest {
         assertEquals(viaMoves, viaPgn)
     }
 
+    @Test
+    fun `validateStrict riconosce un PGN completamente valido`() {
+        val result = ChessPositions.validateStrict("1. e4 e5 2. Nf3 Nc6 3. Bb5 a6")
+        assertEquals(StrictPgnValidation.Valid(6), result)
+    }
+
+    @Test
+    fun `validateStrict riconosce la partita Chess_com reale di esempio`() {
+        val result = ChessPositions.validateStrict(SAMPLE_CHESSCOM_PGN)
+        assertEquals(StrictPgnValidation.Valid(72), result)
+    }
+
+    @Test
+    fun `validateStrict si ferma esattamente al primo token non valido, senza troncare in silenzio`() {
+        // "Z9" non è una mossa SAN valida - a differenza di fromMoves (che tornerebbe solo
+        // le prime 4 semimosse senza segnalare nulla), qui l'esito deve dire chiaramente
+        // "le prime 4 mosse erano buone, la quinta no, il testo ne dichiarava 6".
+        val result = ChessPositions.validateStrict("1. e4 e5 2. Nf3 Nc6 3. Z9 a6")
+        assertEquals(StrictPgnValidation.Invalid(4, 6), result)
+    }
+
+    @Test
+    fun `validateStrict su testo vuoto non dichiara nessuna mossa valida`() {
+        assertEquals(StrictPgnValidation.Invalid(0, 0), ChessPositions.validateStrict(""))
+        assertEquals(StrictPgnValidation.Invalid(0, 0), ChessPositions.validateStrict("   "))
+    }
+
     private companion object {
         /** Partita reale Hikaru vs michobr, Titled Tuesday Blitz dell'8 settembre 2026,
          * scaricata da https://api.chess.com/pub/player/hikaru/games/2026/09 - include

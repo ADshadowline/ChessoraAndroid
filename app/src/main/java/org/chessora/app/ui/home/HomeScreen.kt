@@ -41,6 +41,7 @@ import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Newspaper
 import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Search
@@ -120,6 +121,7 @@ data class DesktopHomeCallbacks(
     val onOpenMessaging: () -> Unit,
     val onOpenRanking: () -> Unit,
     val onOpenPerformance: () -> Unit,
+    val onOpenMyGames: () -> Unit,
     val onOpenClub: () -> Unit,
     val onOpenShop: () -> Unit,
     val onOpenVideo: () -> Unit,
@@ -309,6 +311,7 @@ val DESKTOP_ICON_DESCRIPTORS = listOf(
     DesktopIconDescriptor("registrations", R.string.nav_registrations, Icons.Default.HowToReg),
     DesktopIconDescriptor("ranking", R.string.nav_ranking, Icons.Default.Leaderboard),
     DesktopIconDescriptor("performance", R.string.more_performance, Icons.AutoMirrored.Filled.ShowChart),
+    DesktopIconDescriptor("myGames", R.string.more_my_games, Icons.Default.History),
     DesktopIconDescriptor("board", R.string.nav_club, Icons.Default.Groups, hiddenInPlatformMode = true),
     DesktopIconDescriptor("shop", R.string.desktop_icon_shop, Icons.Default.ShoppingCart, hiddenInPlatformMode = true),
     DesktopIconDescriptor("video", R.string.desktop_icon_video, Icons.Default.PlayCircle, hiddenInPlatformMode = true),
@@ -340,6 +343,7 @@ private fun callbackFor(id: String, desktop: DesktopHomeCallbacks): (() -> Unit)
     "registrations" -> desktop.onOpenRegistrations
     "ranking" -> desktop.onOpenRanking
     "performance" -> desktop.onOpenPerformance
+    "myGames" -> desktop.onOpenMyGames
     "board" -> desktop.onOpenClub
     "shop" -> desktop.onOpenShop
     "video" -> desktop.onOpenVideo
