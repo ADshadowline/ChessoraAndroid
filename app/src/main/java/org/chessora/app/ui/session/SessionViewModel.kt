@@ -46,7 +46,7 @@ class SessionViewModel(
      * 401): il token non è più valido, azzera tutto e rimanda l'utente al login. */
     fun onUnauthorized() {
         _isLoggedIn.value = false
-        viewModelScope.launch { AuthSessionPersister.clear(authPreferences, clubPreferences) }
+        viewModelScope.launch { AuthSessionPersister.clear(authPreferences) }
     }
 
     /** Richiamata da ui/auth/ subito dopo un login/registrazione completata con successo -
@@ -61,16 +61,19 @@ class SessionViewModel(
         refreshUnreadMessagesCount()
     }
 
-    /** Richiamata da Impostazioni ("Esci"): azzera sessione E circolo scelto, cosi' un
-     * prossimo utente sullo stesso dispositivo non eredita niente del precedente. Le altre
-     * preferenze locali (sfondi, ordine icone, notifiche...) restano intatte - per quelle
-     * vedi [resetAllSettings]. */
+    /** Richiamata da Impostazioni ("Esci"): azzera sessione E circolo scelto, MA NON
+     * l'identificazione del socio ([ClubPreferences.identifiedPlayerId]/
+     * [ClubPreferences.identifiedPlayerName]) - il dispositivo resta associato al socio
+     * cosi' continua a ricevere le notifiche push dei messaggi di chat anche da
+     * disconnesso (richiesto esplicitamente: "ricevere i messaggi anche se non sono
+     * loggato"), visto che la messaggistica non ha mai richiesto un login. Per un vero
+     * "nuovo utente su questo dispositivo" che non deve ereditare nulla del precedente
+     * c'è [resetAllSettings], che azzera anche quella (oltre a sfondi, ordine icone,
+     * notifiche...). */
     fun logout() {
         _isLoggedIn.value = false
         _selectedClub.value = null
         _branding.value = null
-        _identityResolved.value = false
-        _identifiedPlayerName.value = null
         _isTournamentManager.value = false
         _registeredTournamentsCount.value = 0
         _registeredTournamentStartingSoon.value = null
@@ -78,7 +81,7 @@ class SessionViewModel(
         _unreadMessagesCount.value = 0
         OrganizerSession.token = null
         viewModelScope.launch {
-            AuthSessionPersister.clear(authPreferences, clubPreferences)
+            AuthSessionPersister.clear(authPreferences)
             clubPreferences.clearSelectedClub()
         }
     }

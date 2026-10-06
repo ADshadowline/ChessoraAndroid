@@ -51,9 +51,19 @@ object AuthSessionPersister {
         }
     }
 
-    suspend fun clear(authPreferences: AuthPreferences, clubPreferences: ClubPreferences) {
+    /**
+     * Azzera SOLO il token/la sessione di login - NON tocca [ClubPreferences]
+     * (identifiedPlayerId/authenticatedEmail/...). [ClubPreferences.clearIdentity] è
+     * pensato per il cambio circolo (l'identificazione è per-circolo, vedi
+     * SessionViewModel.clearSelectedClub), non per il logout: se lo richiamassimo anche
+     * qui, la prossima registrazione del token FCM (push/DeviceRegistration.kt, che
+     * legge sempre identifiedPlayerId) lo re-invierebbe al server con idPlayer=null,
+     * disassociando il dispositivo dal socio e interrompendo la ricezione dei messaggi
+     * di chat anche subito dopo un logout - mentre l'app deve continuare a notificarli
+     * pure da disconnessi.
+     */
+    suspend fun clear(authPreferences: AuthPreferences) {
         authPreferences.clearSession()
         AuthSession.accessToken = null
-        clubPreferences.clearIdentity()
     }
 }
