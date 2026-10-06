@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Card
 import androidx.compose.material.icons.automirrored.filled.LastPage
 import androidx.compose.material.icons.automirrored.filled.NavigateBefore
 import androidx.compose.material.icons.automirrored.filled.NavigateNext
@@ -39,6 +38,7 @@ import org.chessora.app.R
 import org.chessora.app.data.repository.ChessComGame
 import org.chessora.app.ui.chessboard.ChessBoardView
 import org.chessora.app.ui.chessboard.ChessPositions
+import org.chessora.app.ui.chessboard.PgnMoveList
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
 
@@ -57,73 +57,75 @@ fun ChessComGameViewerScreen(gameId: String) {
 
     UiStateContent(state = state, onRetry = { viewModel.load(gameId) }) { data ->
         LaunchedEffect(data.positions.size) { moveIndex = data.positions.size - 1 }
+        val pgnText = remember(data.game.pgn) { ChessPositions.formatPgnForDisplay(data.game.pgn) }
+        val sanMoves = remember(pgnText, data.positions.size) { ChessPositions.sanMovesForDisplay(pgnText, data.positions.size) }
 
-        Column(modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {
-            GameHeader(data.game)
+        Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+            GameHeader(data.game, modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp))
             if (data.game.rules != "chess") {
-                Text(
-                    stringResource(R.string.lichess_variant_unsupported),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 16.dp),
-                )
-                Button(
-                    onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(data.game.url))) },
-                    modifier = Modifier.padding(top = 12.dp),
-                ) { Text(stringResource(R.string.chesscom_open_on_chesscom)) }
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Text(
+                        stringResource(R.string.lichess_variant_unsupported),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Button(
+                        onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(data.game.url))) },
+                        modifier = Modifier.padding(top = 12.dp),
+                    ) { Text(stringResource(R.string.chesscom_open_on_chesscom)) }
+                }
             } else {
+                // Scacchiera a piena larghezza, senza margini laterali: la priorità è
+                // vederla il più grande possibile (richiesta esplicita), i controlli sotto
+                // restano invece con il solito margine di lettura.
                 ChessBoardView(
                     fen = data.positions.getOrElse(moveIndex) { ChessPositions.STANDARD_START_FEN },
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     flipped = flipped,
                 )
-                Text(
-                    stringResource(R.string.lichess_move_of, moveIndex, (data.positions.size - 1).coerceAtLeast(0)),
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                )
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                    IconButton(onClick = { moveIndex = 0 }, enabled = moveIndex > 0) {
-                        Icon(Icons.Default.FirstPage, contentDescription = stringResource(R.string.lichess_move_first))
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Text(
+                        stringResource(R.string.lichess_move_of, moveIndex, (data.positions.size - 1).coerceAtLeast(0)),
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
+                    )
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                        IconButton(onClick = { moveIndex = 0 }, enabled = moveIndex > 0) {
+                            Icon(Icons.Default.FirstPage, contentDescription = stringResource(R.string.lichess_move_first))
+                        }
+                        IconButton(onClick = { moveIndex = (moveIndex - 1).coerceAtLeast(0) }, enabled = moveIndex > 0) {
+                            Icon(Icons.AutoMirrored.Filled.NavigateBefore, contentDescription = stringResource(R.string.lichess_move_prev))
+                        }
+                        IconButton(
+                            onClick = { moveIndex = (moveIndex + 1).coerceAtMost(data.positions.size - 1) },
+                            enabled = moveIndex < data.positions.size - 1,
+                        ) {
+                            Icon(Icons.AutoMirrored.Filled.NavigateNext, contentDescription = stringResource(R.string.lichess_move_next))
+                        }
+                        IconButton(
+                            onClick = { moveIndex = data.positions.size - 1 },
+                            enabled = moveIndex < data.positions.size - 1,
+                        ) {
+                            Icon(Icons.AutoMirrored.Filled.LastPage, contentDescription = stringResource(R.string.lichess_move_last))
+                        }
+                        IconButton(onClick = { flipped = !flipped }) {
+                            Icon(Icons.Filled.SwapVert, contentDescription = stringResource(R.string.chessboard_flip))
+                        }
                     }
-                    IconButton(onClick = { moveIndex = (moveIndex - 1).coerceAtLeast(0) }, enabled = moveIndex > 0) {
-                        Icon(Icons.AutoMirrored.Filled.NavigateBefore, contentDescription = stringResource(R.string.lichess_move_prev))
-                    }
-                    IconButton(
-                        onClick = { moveIndex = (moveIndex + 1).coerceAtMost(data.positions.size - 1) },
-                        enabled = moveIndex < data.positions.size - 1,
-                    ) {
-                        Icon(Icons.AutoMirrored.Filled.NavigateNext, contentDescription = stringResource(R.string.lichess_move_next))
-                    }
-                    IconButton(
-                        onClick = { moveIndex = data.positions.size - 1 },
-                        enabled = moveIndex < data.positions.size - 1,
-                    ) {
-                        Icon(Icons.AutoMirrored.Filled.LastPage, contentDescription = stringResource(R.string.lichess_move_last))
-                    }
-                    IconButton(onClick = { flipped = !flipped }) {
-                        Icon(Icons.Filled.SwapVert, contentDescription = stringResource(R.string.chessboard_flip))
-                    }
+                    PgnMoveList(
+                        moves = sanMoves,
+                        currentMoveIndex = moveIndex,
+                        onMoveClick = { moveIndex = it },
+                        modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
+                    )
                 }
-                PgnCard(ChessPositions.formatPgnForDisplay(data.game.pgn))
             }
         }
     }
 }
 
 @Composable
-private fun PgnCard(pgn: String) {
-    if (pgn.isBlank()) return
-    Card(modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(stringResource(R.string.chess_pgn_label), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
-            Text(pgn, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 6.dp))
-        }
-    }
-}
-
-@Composable
-private fun GameHeader(game: ChessComGame) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+private fun GameHeader(game: ChessComGame, modifier: Modifier = Modifier) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier.fillMaxWidth()) {
         Text(
             "${game.whiteName} – ${game.blackName}",
             fontWeight = FontWeight.Bold,

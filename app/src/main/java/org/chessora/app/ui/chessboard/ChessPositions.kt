@@ -78,6 +78,21 @@ object ChessPositions {
         return sb.toString()
     }
 
+    /** Mosse SAN pure (una per ply, senza numeri di turno), ricavate ri-tokenizzando lo
+     * stesso testo già prodotto da [formatPgnForDisplay]/[formatLichessMovesForDisplay] -
+     * cosi' l'elenco cliccabile mostrato nella UI (vedi PgnMoveList) usa esattamente le
+     * stesse mosse del testo PGN leggibile. Troncata a [positionsCount] - 1: se
+     * [fromPgn]/[fromMoves] si sono fermate a metà partita per una mossa malformata, la
+     * lista cliccabile si ferma allo stesso punto, mai oltre le posizioni realmente
+     * disponibili (eviterebbe un click su una mossa senza posizione corrispondente). */
+    fun sanMovesForDisplay(formattedPgn: String, positionsCount: Int): List<String> {
+        if (formattedPgn.isBlank()) return emptyList()
+        val maxMoves = (positionsCount - 1).coerceAtLeast(0)
+        return formattedPgn.split(Regex("\\s+"))
+            .filter { it.isNotBlank() && !Regex("^\\d+\\.+$").matches(it) }
+            .take(maxMoves)
+    }
+
     /** Toglie dal PGN tutto ciò che non serve per ricostruire/mostrare le mosse: righe di
      * intestazione tra parentesi quadre, commenti/orologio tra parentesi graffe, eventuali
      * varianti tra parentesi tonde, e il simbolo di risultato finale. Usato sia per

@@ -10,13 +10,16 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.chessora.app.R
 
 private val LightSquare = Color(0xFFEEDDB0)
@@ -43,6 +46,7 @@ fun ChessBoardView(fen: String, modifier: Modifier = Modifier, flipped: Boolean 
                     val file = if (flipped) 7 - displayFile else displayFile
                     val isLight = (rank + file) % 2 == 0
                     val piece = board[rank][file]
+                    val labelColor = if (isLight) DarkSquare else LightSquare
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -55,6 +59,28 @@ fun ChessBoardView(fen: String, modifier: Modifier = Modifier, flipped: Boolean 
                                 painter = painterResource(drawableRes),
                                 contentDescription = null,
                                 modifier = Modifier.fillMaxSize().padding(2.dp),
+                            )
+                        }
+                        // Coordinate solo sul bordo (prima colonna per il numero di
+                        // traversa, ultima riga per la lettera di colonna) - stesso
+                        // posizionamento di Lichess/Chess.com, niente righe/colonne extra
+                        // che cambierebbero l'aspect ratio 1:1 della scacchiera.
+                        if (displayFile == 0) {
+                            Text(
+                                text = (8 - rank).toString(),
+                                color = labelColor,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.align(Alignment.TopStart).padding(1.dp),
+                            )
+                        }
+                        if (displayRank == 7) {
+                            Text(
+                                text = ('a' + file).toString(),
+                                color = labelColor,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.align(Alignment.BottomEnd).padding(1.dp),
                             )
                         }
                     }
