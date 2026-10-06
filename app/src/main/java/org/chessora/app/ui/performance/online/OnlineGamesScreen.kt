@@ -88,7 +88,7 @@ fun OnlineGamesScreen(onOpenSettings: () -> Unit, onOpenLichessGame: (String) ->
         val openingStats = remember(data.games) { data.games.computeOpeningStats() }
         val filteredGames = remember(data.games, searchQuery, openingFilter) {
             data.games.filter { game ->
-                (openingFilter == null || game.openingName == openingFilter) &&
+                (openingFilter == null || game.openingFamily == openingFilter) &&
                     (searchQuery.isBlank() || game.opponentName.contains(searchQuery, ignoreCase = true))
             }
         }
