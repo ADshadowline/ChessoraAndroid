@@ -7,6 +7,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -162,7 +163,11 @@ private fun TapOverlayGrid(
     onSquareTapped: (Square) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.then(Modifier.fillMaxWidth())) {
+    // La stessa aspectRatio(1f) di ChessBoardView (Modifier.weight(1f) sulle righe non
+    // funzionerebbe altrimenti: un Column senza altezza propria la lascerebbe a zero,
+    // facendo collassare l'intera griglia dei tocchi a un'area invisibile/non toccabile -
+    // bug reale riscontrato sul dispositivo: "componi sulla scacchiera" non muoveva i pezzi).
+    Column(modifier = modifier.then(Modifier.fillMaxWidth().aspectRatio(1f))) {
         for (displayRank in 0..7) {
             Row(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 for (displayFile in 0..7) {
