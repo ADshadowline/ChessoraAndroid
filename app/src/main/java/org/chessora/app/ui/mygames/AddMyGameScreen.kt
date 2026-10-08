@@ -163,6 +163,18 @@ fun AddMyGameScreen(onSaved: () -> Unit) {
                 enabled = gameState.canUndo,
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
             ) { Text(stringResource(R.string.mygames_undo_move)) }
+            // Notazione PGN generata dalle mosse giocate sulla scacchiera, mostrata (sola
+            // lettura: il tocco sui pezzi resta l'unico modo di modificarla) nello stesso
+            // campo testo della modalità "Incolla PGN" - richiesto esplicitamente, cosi' si
+            // vede subito cosa si sta registrando invece del solo contatore mosse.
+            OutlinedTextField(
+                value = gameState.toPgn() ?: "",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text(stringResource(R.string.chess_pgn_label)) },
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                minLines = 3,
+            )
         }
 
         if (saveState is SaveGameUiState.Error) {
