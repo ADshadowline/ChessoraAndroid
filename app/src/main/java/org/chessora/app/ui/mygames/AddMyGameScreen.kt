@@ -45,6 +45,8 @@ import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import org.chessora.app.R
+import org.chessora.app.data.remote.dto.OpponentColor
+import org.chessora.app.data.repository.MyGameCache
 import org.chessora.app.ui.chessboard.InteractiveChessBoardView
 import org.chessora.app.ui.chessboard.StrictPgnValidation
 import org.chessora.app.ui.chessboard.ChessPositions
@@ -56,26 +58,32 @@ private val ISO_DATE_PATTERN = DateTimeFormatter.ISO_LOCAL_DATE
 
 private enum class AddGameMode { PASTE, COMPOSE }
 
-/** Form di "Le mie partite": campi anagrafici (avversario/turno/torneo/cadenza) in testa,
- * poi un selettore a due modalità per il contenuto della partita - incollare un PGN già
- * pronto o comporlo a tocchi sulla scacchiera (vedi InteractiveChessBoardView). "Salva" resta
- * disabilitato finché non c'è almeno una mossa riconosciuta, mai un salvataggio parziale
- * silenzioso (vedi ChessPositions.validateStrict). */
+/** Form di "Le mie partite": campi anagrafici (avversario e suo colore/turno/torneo/
+ * cadenza) in testa, poi un selettore a due modalità per il contenuto della partita -
+ * incollare un PGN già pronto o comporlo a tocchi sulla scacchiera (vedi
+ * InteractiveChessBoardView). "Salva" resta disabilitato finché non c'è almeno una mossa
+ * riconosciuta, mai un salvataggio parziale silenzioso (vedi ChessPositions.validateStrict).
+ * Con [gameId] valorizzato modifica una partita esistente (presa da MyGameCache, campi già
+ * compilati, PGN in modalità "Incolla"). */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun AddMyGameScreen(onSaved: () -> Unit) {
+fun AddMyGameScreen(gameId: Int? = null, onSaved: () -> Unit) {
     val viewModel = chessoraViewModel { app -> AddMyGameViewModel(app.repository, app.clubPreferences) }
     val saveState by viewModel.saveState.collectAsState()
+    val existing = remember(gameId) { gameId?.let { MyGameCache.get(it) } }
 
-    var opponentName by remember { mutableStateOf("") }
-    var roundText by remember { mutableStateOf("") }
-    var tournamentName by remember { mutableStateOf("") }
-    var datePlayed by remember { mutableStateOf(LocalDate.now()) }
+    var opponentName by remember { mutableStateOf(existing?.opponentName ?: "") }
+    var opponentColor by remember { mutableStateOf(existing?.opponentColor ?: OpponentColor.BLACK) }
+    var roundText by remember { mutableStateOf(existing?.round?.toString() ?: "") }
+    var tournamentName by remember { mutableStateOf(existing?.tournamentName ?: "") }
+    var datePlayed by remember {
+        mutableStateOf(existing?.datePlayed?.take(10)?.let { runCatching { LocalDate.parse(it) }.getOrNull() } ?: LocalDate.now())
+    }
     var showDatePicker by remember { mutableStateOf(false) }
-    var cadenza by remember { mutableStateOf(Cadenza.STANDARD) }
-    var timeControl by remember { mutableStateOf("") }
+    var cadenza by remember { mutableStateOf(existing?.let { Cadenza.fromTipologiaTempo(it.tipologiaTempo) } ?: Cadenza.STANDARD) }
+    var timeControl by remember { mutableStateOf(existing?.timeControl ?: "") }
     var mode by remember { mutableStateOf(AddGameMode.PASTE) }
-    var pgnText by remember { mutableStateOf("") }
+    var pgnText by remember { mutableStateOf(existing?.pgn ?: "") }
     val gameState = rememberInteractiveGameState()
 
     LaunchedEffect(saveState) {
@@ -97,6 +105,23 @@ fun AddMyGameScreen(onSaved: () -> Unit) {
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
         )
+        Text(
+            stringResource(R.string.mygames_opponent_color_label),
+            style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(top = 16.dp, bottom = 6.dp),
+        )
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            SegmentedButton(
+                selected = opponentColor == OpponentColor.WHITE,
+                onClick = { opponentColor = OpponentColor.WHITE },
+                shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+            ) { Text(stringResource(R.string.mygames_color_white)) }
+            SegmentedButton(
+                selected = opponentColor == OpponentColor.BLACK,
+                onClick = { opponentColor = OpponentColor.BLACK },
+                shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+            ) { Text(stringResource(R.string.mygames_color_black)) }
+        }
         OutlinedTextField(
             value = roundText,
             onValueChange = { roundText = it.filter(Char::isDigit) },
@@ -250,7 +275,9 @@ fun AddMyGameScreen(onSaved: () -> Unit) {
             onClick = {
                 pgnToSave?.let {
                     viewModel.save(
+                        gameId = gameId,
                         opponentName = opponentName.trim(),
+                        opponentColor = opponentColor,
                         round = roundText.toIntOrNull(),
                         tournamentName = tournamentName,
                         cadenza = cadenza,

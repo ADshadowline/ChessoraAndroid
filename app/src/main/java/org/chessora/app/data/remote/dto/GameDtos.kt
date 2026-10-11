@@ -18,9 +18,17 @@ data class PlayerGame(
     val datePlayed: String,
     val timeControl: String? = null,
     val createdAt: String,
+    /** "white"/"black" ([OpponentColor]), null per le partite salvate prima del campo. */
+    val opponentColor: String? = null,
 )
 
-/** Specchio di Chessora.Contracts.Games.SaveGameRequest (POST /api/games). */
+/** Colore con cui ha giocato l'avversario - valori di PlayerGame.opponentColor. */
+object OpponentColor {
+    const val WHITE = "white"
+    const val BLACK = "black"
+}
+
+/** Specchio di Chessora.Contracts.Games.SaveGameRequest (POST /api/games, PUT /api/games/{id}). */
 @Serializable
 data class SaveGameRequest(
     val idPlayer: Int,
@@ -31,4 +39,5 @@ data class SaveGameRequest(
     val pgn: String,
     val datePlayed: String,
     val timeControl: String? = null,
+    val opponentColor: String? = null,
 )

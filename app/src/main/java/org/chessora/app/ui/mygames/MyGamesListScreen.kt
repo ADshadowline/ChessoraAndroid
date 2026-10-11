@@ -126,6 +126,7 @@ private fun MyGameRow(game: PlayerGame, onClick: () -> Unit) {
                 Text(game.timeControl?.let { "$cadenzaLabel $it" } ?: cadenzaLabel, style = MaterialTheme.typography.labelMedium)
             }
             val subtitle = buildList {
+                opponentColorLabel(game.opponentColor)?.let { add(it) }
                 game.tournamentName?.let { add(it) }
                 game.round?.let { add(stringResource(R.string.mygames_round_short, it)) }
                 add(game.datePlayed.toItalianDate())

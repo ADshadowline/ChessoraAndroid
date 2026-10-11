@@ -307,6 +307,12 @@ class ChessoraRepository(private val api: ChessoraApi) {
     suspend fun saveMyGame(request: SaveGameRequest): Result<PlayerGame> =
         safeCall { api.saveMyGame(request) }
 
+    suspend fun updateMyGame(id: Int, request: SaveGameRequest): Result<PlayerGame> =
+        safeCall { api.updateMyGame(id, request) }
+
+    suspend fun deleteMyGame(id: Int, idPlayer: Int): Result<Unit> =
+        safeCall { api.deleteMyGame(id, idPlayer) }
+
     suspend fun getVideoNews(club: String, limit: Int = 20): Result<List<VideoNewsItem>> =
         safeCall { api.getVideoNews(club, limit) }
 

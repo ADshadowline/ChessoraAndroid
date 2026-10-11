@@ -125,6 +125,15 @@
     <string name="mygames_promotion_bishop">Слон</string>
     <string name="mygames_promotion_knight">Конь</string>
     <string name="mygames_cancel">Отмена</string>
+    <string name="mygames_opponent_color_label">Цвет соперника</string>
+    <string name="mygames_color_white">Белые</string>
+    <string name="mygames_color_black">Чёрные</string>
+    <string name="mygames_opponent_plays_white">Соперник белыми</string>
+    <string name="mygames_opponent_plays_black">Соперник чёрными</string>
+    <string name="mygames_edit">Изменить</string>
+    <string name="mygames_delete">Удалить</string>
+    <string name="mygames_delete_confirm_title">Удалить партию?</string>
+    <string name="mygames_delete_confirm_body">Партия против %1$s будет удалена без возможности восстановления.</string>
     <string name="mygames_date_label">Дата партии</string>
     <string name="mygames_date_confirm">ОК</string>
     <string name="mygames_time_control_label">Контроль времени (необязательно)</string>

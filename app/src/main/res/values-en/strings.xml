@@ -125,6 +125,15 @@
     <string name="mygames_promotion_bishop">Bishop</string>
     <string name="mygames_promotion_knight">Knight</string>
     <string name="mygames_cancel">Cancel</string>
+    <string name="mygames_opponent_color_label">Opponent\'s colour</string>
+    <string name="mygames_color_white">White</string>
+    <string name="mygames_color_black">Black</string>
+    <string name="mygames_opponent_plays_white">Opponent with White</string>
+    <string name="mygames_opponent_plays_black">Opponent with Black</string>
+    <string name="mygames_edit">Edit</string>
+    <string name="mygames_delete">Delete</string>
+    <string name="mygames_delete_confirm_title">Delete this game?</string>
+    <string name="mygames_delete_confirm_body">The game against %1$s will be permanently deleted.</string>
     <string name="mygames_date_label">Date played</string>
     <string name="mygames_date_confirm">OK</string>
     <string name="mygames_time_control_label">Time control (optional)</string>

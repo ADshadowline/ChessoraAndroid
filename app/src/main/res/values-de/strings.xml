@@ -125,6 +125,15 @@
     <string name="mygames_promotion_bishop">Läufer</string>
     <string name="mygames_promotion_knight">Springer</string>
     <string name="mygames_cancel">Abbrechen</string>
+    <string name="mygames_opponent_color_label">Farbe des Gegners</string>
+    <string name="mygames_color_white">Weiß</string>
+    <string name="mygames_color_black">Schwarz</string>
+    <string name="mygames_opponent_plays_white">Gegner mit Weiß</string>
+    <string name="mygames_opponent_plays_black">Gegner mit Schwarz</string>
+    <string name="mygames_edit">Bearbeiten</string>
+    <string name="mygames_delete">Löschen</string>
+    <string name="mygames_delete_confirm_title">Partie löschen?</string>
+    <string name="mygames_delete_confirm_body">Die Partie gegen %1$s wird endgültig gelöscht.</string>
     <string name="mygames_date_label">Spieldatum</string>
     <string name="mygames_date_confirm">OK</string>
     <string name="mygames_time_control_label">Bedenkzeit (optional)</string>

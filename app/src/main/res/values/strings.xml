@@ -132,6 +132,15 @@
     <string name="mygames_promotion_bishop">Alfiere</string>
     <string name="mygames_promotion_knight">Cavallo</string>
     <string name="mygames_cancel">Annulla</string>
+    <string name="mygames_opponent_color_label">Colore dell\'avversario</string>
+    <string name="mygames_color_white">Bianco</string>
+    <string name="mygames_color_black">Nero</string>
+    <string name="mygames_opponent_plays_white">Avversario col Bianco</string>
+    <string name="mygames_opponent_plays_black">Avversario col Nero</string>
+    <string name="mygames_edit">Modifica</string>
+    <string name="mygames_delete">Elimina</string>
+    <string name="mygames_delete_confirm_title">Eliminare la partita?</string>
+    <string name="mygames_delete_confirm_body">La partita contro %1$s verrà eliminata definitivamente.</string>
     <string name="mygames_date_label">Data della partita</string>
     <string name="mygames_date_confirm">OK</string>
     <string name="mygames_time_control_label">Tempo di riflessione (facoltativo)</string>

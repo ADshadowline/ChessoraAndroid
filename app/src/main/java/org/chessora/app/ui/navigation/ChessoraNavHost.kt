@@ -528,7 +528,18 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                 arguments = listOf(navArgument("id") { type = NavType.IntType }),
             ) { backStack ->
                 val id = backStack.arguments?.getInt("id") ?: return@composable
-                MyGameViewerScreen(gameId = id)
+                MyGameViewerScreen(
+                    gameId = id,
+                    onEdit = { gameId -> navController.navigate(ChessoraDestinations.myGameEdit(gameId)) },
+                    onDeleted = { navController.popBackStack() },
+                )
+            }
+            composable(
+                ChessoraDestinations.MY_GAME_EDIT,
+                arguments = listOf(navArgument("id") { type = NavType.IntType }),
+            ) { backStack ->
+                val id = backStack.arguments?.getInt("id") ?: return@composable
+                AddMyGameScreen(gameId = id, onSaved = { navController.popBackStack() })
             }
             composable(
                 ChessoraDestinations.LICHESS_GAME_VIEWER,

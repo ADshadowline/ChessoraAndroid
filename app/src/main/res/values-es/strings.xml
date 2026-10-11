@@ -125,6 +125,15 @@
     <string name="mygames_promotion_bishop">Alfil</string>
     <string name="mygames_promotion_knight">Caballo</string>
     <string name="mygames_cancel">Cancelar</string>
+    <string name="mygames_opponent_color_label">Color del rival</string>
+    <string name="mygames_color_white">Blancas</string>
+    <string name="mygames_color_black">Negras</string>
+    <string name="mygames_opponent_plays_white">Rival con Blancas</string>
+    <string name="mygames_opponent_plays_black">Rival con Negras</string>
+    <string name="mygames_edit">Editar</string>
+    <string name="mygames_delete">Eliminar</string>
+    <string name="mygames_delete_confirm_title">¿Eliminar la partida?</string>
+    <string name="mygames_delete_confirm_body">La partida contra %1$s se eliminará definitivamente.</string>
     <string name="mygames_date_label">Fecha de la partida</string>
     <string name="mygames_date_confirm">Aceptar</string>
     <string name="mygames_time_control_label">Ritmo de juego (opcional)</string>

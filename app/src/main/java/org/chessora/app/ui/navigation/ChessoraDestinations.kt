@@ -94,6 +94,7 @@ object ChessoraDestinations {
     const val MY_GAMES = "my-games"
     const val MY_GAMES_ADD = "my-games/add"
     const val MY_GAME_VIEWER = "my-games/view/{id}"
+    const val MY_GAME_EDIT = "my-games/edit/{id}"
     const val PROFILE_PHOTO = "profile-photo"
     const val TOURNAMENT_DETAIL = "tornei/{idTournament}"
     /** Abbinamenti/classifica di un torneo AVVIATO (LifecycleStatus InCorso/Concluso) -
@@ -134,6 +135,8 @@ object ChessoraDestinations {
     fun lichessGameViewer(gameId: String) = "lichess-game/${java.net.URLEncoder.encode(gameId, "UTF-8")}"
 
     fun myGameViewer(id: Int) = "my-games/view/$id"
+
+    fun myGameEdit(id: Int) = "my-games/edit/$id"
 
     fun chessComGameViewer(gameId: String) = "chesscom-game/${java.net.URLEncoder.encode(gameId, "UTF-8")}"
 

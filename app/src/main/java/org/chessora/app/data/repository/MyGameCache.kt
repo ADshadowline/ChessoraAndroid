@@ -14,4 +14,13 @@ object MyGameCache {
     }
 
     fun get(id: Int): PlayerGame? = games[id]
+
+    /** Dopo una modifica: il visualizzatore riletto mostra subito la versione aggiornata. */
+    fun put(game: PlayerGame) {
+        games[game.id] = game
+    }
+
+    fun remove(id: Int) {
+        games.remove(id)
+    }
 }

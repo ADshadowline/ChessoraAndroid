@@ -125,6 +125,15 @@
     <string name="mygames_promotion_bishop">Nebun</string>
     <string name="mygames_promotion_knight">Cal</string>
     <string name="mygames_cancel">Anulează</string>
+    <string name="mygames_opponent_color_label">Culoarea adversarului</string>
+    <string name="mygames_color_white">Albe</string>
+    <string name="mygames_color_black">Negre</string>
+    <string name="mygames_opponent_plays_white">Adversar cu Albele</string>
+    <string name="mygames_opponent_plays_black">Adversar cu Negrele</string>
+    <string name="mygames_edit">Modifică</string>
+    <string name="mygames_delete">Șterge</string>
+    <string name="mygames_delete_confirm_title">Ștergi partida?</string>
+    <string name="mygames_delete_confirm_body">Partida împotriva lui %1$s va fi ștearsă definitiv.</string>
     <string name="mygames_date_label">Data partidei</string>
     <string name="mygames_date_confirm">OK</string>
     <string name="mygames_time_control_label">Control de timp (opțional)</string>

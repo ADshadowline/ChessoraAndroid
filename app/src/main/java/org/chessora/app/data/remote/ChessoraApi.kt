@@ -277,6 +277,13 @@ interface ChessoraApi {
     @POST("api/games")
     suspend fun saveMyGame(@Body request: SaveGameRequest): PlayerGame
 
+    /** request.idPlayer deve essere il socio proprietario della partita (404 altrimenti). */
+    @PUT("api/games/{id}")
+    suspend fun updateMyGame(@Path("id") id: Int, @Body request: SaveGameRequest): PlayerGame
+
+    @DELETE("api/games/{id}")
+    suspend fun deleteMyGame(@Path("id") id: Int, @Query("idPlayer") idPlayer: Int)
+
     @GET("api/video-news")
     suspend fun getVideoNews(@Query("club") club: String, @Query("limit") limit: Int = 20): List<VideoNewsItem>
 

@@ -125,6 +125,15 @@
     <string name="mygames_promotion_bishop">Fil</string>
     <string name="mygames_promotion_knight">At</string>
     <string name="mygames_cancel">İptal</string>
+    <string name="mygames_opponent_color_label">Rakibin rengi</string>
+    <string name="mygames_color_white">Beyaz</string>
+    <string name="mygames_color_black">Siyah</string>
+    <string name="mygames_opponent_plays_white">Rakip Beyazla</string>
+    <string name="mygames_opponent_plays_black">Rakip Siyahla</string>
+    <string name="mygames_edit">Düzenle</string>
+    <string name="mygames_delete">Sil</string>
+    <string name="mygames_delete_confirm_title">Oyun silinsin mi?</string>
+    <string name="mygames_delete_confirm_body">%1$s karşısındaki oyun kalıcı olarak silinecek.</string>
     <string name="mygames_date_label">Oyun tarihi</string>
     <string name="mygames_date_confirm">Tamam</string>
     <string name="mygames_time_control_label">Süre kontrolü (isteğe bağlı)</string>
