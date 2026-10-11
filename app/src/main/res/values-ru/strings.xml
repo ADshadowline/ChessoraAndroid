@@ -125,6 +125,10 @@
     <string name="mygames_promotion_bishop">Слон</string>
     <string name="mygames_promotion_knight">Конь</string>
     <string name="mygames_cancel">Отмена</string>
+    <string name="mygames_date_label">Дата партии</string>
+    <string name="mygames_date_confirm">ОК</string>
+    <string name="mygames_time_control_label">Контроль времени (необязательно)</string>
+    <string name="mygames_time_control_hint">напр. 90+30</string>
     <string name="lichess_game_vs">против %1$s</string>
     <string name="lichess_result_win">В</string>
     <string name="lichess_result_loss">П</string>

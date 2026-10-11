@@ -132,6 +132,10 @@
     <string name="mygames_promotion_bishop">Alfiere</string>
     <string name="mygames_promotion_knight">Cavallo</string>
     <string name="mygames_cancel">Annulla</string>
+    <string name="mygames_date_label">Data della partita</string>
+    <string name="mygames_date_confirm">OK</string>
+    <string name="mygames_time_control_label">Tempo di riflessione (facoltativo)</string>
+    <string name="mygames_time_control_hint">es. 90+30</string>
     <string name="lichess_game_vs">vs %1$s</string>
     <string name="lichess_result_win">V</string>
     <string name="lichess_result_loss">P</string>

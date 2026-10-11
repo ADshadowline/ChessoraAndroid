@@ -6,12 +6,19 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -19,6 +26,8 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -26,16 +35,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import org.chessora.app.R
 import org.chessora.app.ui.chessboard.InteractiveChessBoardView
 import org.chessora.app.ui.chessboard.StrictPgnValidation
 import org.chessora.app.ui.chessboard.ChessPositions
 import org.chessora.app.ui.chessboard.rememberInteractiveGameState
 import org.chessora.app.ui.common.chessoraViewModel
+
+private val ITALIAN_DATE_PATTERN = DateTimeFormatter.ofPattern("d MMMM yyyy")
+private val ISO_DATE_PATTERN = DateTimeFormatter.ISO_LOCAL_DATE
 
 private enum class AddGameMode { PASTE, COMPOSE }
 
@@ -53,7 +70,10 @@ fun AddMyGameScreen(onSaved: () -> Unit) {
     var opponentName by remember { mutableStateOf("") }
     var roundText by remember { mutableStateOf("") }
     var tournamentName by remember { mutableStateOf("") }
+    var datePlayed by remember { mutableStateOf(LocalDate.now()) }
+    var showDatePicker by remember { mutableStateOf(false) }
     var cadenza by remember { mutableStateOf(Cadenza.STANDARD) }
+    var timeControl by remember { mutableStateOf("") }
     var mode by remember { mutableStateOf(AddGameMode.PASTE) }
     var pgnText by remember { mutableStateOf("") }
     val gameState = rememberInteractiveGameState()
@@ -94,6 +114,18 @@ fun AddMyGameScreen(onSaved: () -> Unit) {
         )
 
         Text(
+            stringResource(R.string.mygames_date_label),
+            style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(top = 16.dp, bottom = 2.dp),
+        )
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+            Text(datePlayed.format(ITALIAN_DATE_PATTERN), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+            IconButton(onClick = { showDatePicker = true }) {
+                Icon(Icons.Default.CalendarMonth, contentDescription = stringResource(R.string.mygames_date_label))
+            }
+        }
+
+        Text(
             stringResource(R.string.mygames_cadenza_label),
             style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.padding(top = 16.dp, bottom = 6.dp),
@@ -102,6 +134,34 @@ fun AddMyGameScreen(onSaved: () -> Unit) {
             Cadenza.entries.forEach { option ->
                 FilterChip(selected = cadenza == option, onClick = { cadenza = option }, label = { Text(option.label()) })
             }
+        }
+        OutlinedTextField(
+            value = timeControl,
+            onValueChange = { timeControl = it },
+            label = { Text(stringResource(R.string.mygames_time_control_label)) },
+            placeholder = { Text(stringResource(R.string.mygames_time_control_hint)) },
+            modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+            singleLine = true,
+        )
+
+        if (showDatePicker) {
+            val datePickerState = rememberDatePickerState(
+                initialSelectedDateMillis = datePlayed.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli(),
+            )
+            DatePickerDialog(
+                onDismissRequest = { showDatePicker = false },
+                confirmButton = {
+                    TextButton(onClick = {
+                        datePickerState.selectedDateMillis?.let {
+                            datePlayed = Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate()
+                        }
+                        showDatePicker = false
+                    }) { Text(stringResource(R.string.mygames_date_confirm)) }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDatePicker = false }) { Text(stringResource(R.string.mygames_cancel)) }
+                },
+            ) { DatePicker(state = datePickerState) }
         }
 
         SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth().padding(top = 20.dp)) {
@@ -187,7 +247,19 @@ fun AddMyGameScreen(onSaved: () -> Unit) {
         }
 
         Button(
-            onClick = { pgnToSave?.let { viewModel.save(opponentName.trim(), roundText.toIntOrNull(), tournamentName, cadenza, it) } },
+            onClick = {
+                pgnToSave?.let {
+                    viewModel.save(
+                        opponentName = opponentName.trim(),
+                        round = roundText.toIntOrNull(),
+                        tournamentName = tournamentName,
+                        cadenza = cadenza,
+                        pgn = it,
+                        datePlayed = datePlayed.format(ISO_DATE_PATTERN),
+                        timeControl = timeControl,
+                    )
+                }
+            },
             enabled = canSave,
             modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
         ) { Text(stringResource(R.string.mygames_save)) }

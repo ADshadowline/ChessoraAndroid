@@ -125,6 +125,10 @@
     <string name="mygames_promotion_bishop">Alfil</string>
     <string name="mygames_promotion_knight">Caballo</string>
     <string name="mygames_cancel">Cancelar</string>
+    <string name="mygames_date_label">Fecha de la partida</string>
+    <string name="mygames_date_confirm">Aceptar</string>
+    <string name="mygames_time_control_label">Ritmo de juego (opcional)</string>
+    <string name="mygames_time_control_hint">p. ej. 90+30</string>
     <string name="lichess_game_vs">vs %1$s</string>
     <string name="lichess_result_win">V</string>
     <string name="lichess_result_loss">D</string>

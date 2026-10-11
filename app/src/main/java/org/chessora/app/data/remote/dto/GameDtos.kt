@@ -15,6 +15,8 @@ data class PlayerGame(
     val tournamentName: String? = null,
     val tipologiaTempo: Int,
     val pgn: String,
+    val datePlayed: String,
+    val timeControl: String? = null,
     val createdAt: String,
 )
 
@@ -27,4 +29,6 @@ data class SaveGameRequest(
     val tournamentName: String? = null,
     val tipologiaTempo: Int,
     val pgn: String,
+    val datePlayed: String,
+    val timeControl: String? = null,
 )

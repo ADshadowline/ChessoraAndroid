@@ -125,6 +125,10 @@
     <string name="mygames_promotion_bishop">Fil</string>
     <string name="mygames_promotion_knight">At</string>
     <string name="mygames_cancel">İptal</string>
+    <string name="mygames_date_label">Oyun tarihi</string>
+    <string name="mygames_date_confirm">Tamam</string>
+    <string name="mygames_time_control_label">Süre kontrolü (isteğe bağlı)</string>
+    <string name="mygames_time_control_hint">örn. 90+30</string>
     <string name="lichess_game_vs">%1$s\'e karşı</string>
     <string name="lichess_result_win">G</string>
     <string name="lichess_result_loss">M</string>

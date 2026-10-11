@@ -122,12 +122,13 @@ private fun MyGameRow(game: PlayerGame, onClick: () -> Unit) {
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                Text(Cadenza.fromTipologiaTempo(game.tipologiaTempo).label(), style = MaterialTheme.typography.labelMedium)
+                val cadenzaLabel = Cadenza.fromTipologiaTempo(game.tipologiaTempo).label()
+                Text(game.timeControl?.let { "$cadenzaLabel $it" } ?: cadenzaLabel, style = MaterialTheme.typography.labelMedium)
             }
             val subtitle = buildList {
                 game.tournamentName?.let { add(it) }
                 game.round?.let { add(stringResource(R.string.mygames_round_short, it)) }
-                add(game.createdAt.toItalianDate())
+                add(game.datePlayed.toItalianDate())
             }.joinToString(" · ")
             Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }

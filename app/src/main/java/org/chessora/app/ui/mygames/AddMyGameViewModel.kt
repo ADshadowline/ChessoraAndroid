@@ -26,7 +26,15 @@ class AddMyGameViewModel(
     private val _saveState = MutableStateFlow<SaveGameUiState>(SaveGameUiState.Idle)
     val saveState: StateFlow<SaveGameUiState> = _saveState.asStateFlow()
 
-    fun save(opponentName: String, round: Int?, tournamentName: String?, cadenza: Cadenza, pgn: String) {
+    fun save(
+        opponentName: String,
+        round: Int?,
+        tournamentName: String?,
+        cadenza: Cadenza,
+        pgn: String,
+        datePlayed: String,
+        timeControl: String?,
+    ) {
         viewModelScope.launch {
             _saveState.value = SaveGameUiState.Saving
             val idPlayer = clubPreferences.identifiedPlayerId.first()
@@ -42,6 +50,8 @@ class AddMyGameViewModel(
                     tournamentName = tournamentName?.takeIf { it.isNotBlank() },
                     tipologiaTempo = cadenza.tipologiaTempo,
                     pgn = pgn,
+                    datePlayed = datePlayed,
+                    timeControl = timeControl?.takeIf { it.isNotBlank() },
                 ),
             ).onSuccess {
                 _saveState.value = SaveGameUiState.Saved
