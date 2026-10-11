@@ -23,25 +23,35 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import java.net.URLEncoder
+import java.util.Locale
 import org.chessora.app.R
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
 
-/** Come raggiungere il circolo - usa il link Maps già pronto impostato dal circolo nel
- * wizard (contact.mapsUrl) se presente, altrimenti costruisce una ricerca Maps
- * dall'indirizzo (contact.address) - mai una mappa incorporata, coerente con ogni altro
- * "apri il link esterno" già presente nell'app (vedi ClubViewModel per il dato). */
+/** Come raggiungere il circolo - apre Maps sul punto esatto di latitude/longitude del
+ * circolo (anag.Clubs, via GET api/clubs/directory) quando disponibili; altrimenti il
+ * link Maps impostato dal circolo nel wizard (contact.mapsUrl) o, in ultima istanza, una
+ * ricerca Maps dall'indirizzo (contact.address), che può cadere nel punto sbagliato - mai
+ * una mappa incorporata, coerente con ogni altro "apri il link esterno" dell'app. */
 @Composable
 fun ClubLocationScreen(club: String) {
     val viewModel = chessoraViewModel { app -> ClubViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
+    val coordinates by viewModel.coordinates.collectAsState()
     val context = LocalContext.current
 
-    LaunchedEffect(club) { viewModel.load(club) }
+    LaunchedEffect(club) {
+        viewModel.load(club)
+        viewModel.loadCoordinates(club)
+    }
 
     UiStateContent(state = state, onRetry = { viewModel.load(club) }) { settings ->
         val contact = settings.contact
-        val mapsUrl = contact.mapsUrl.takeIf { it.isNotBlank() && it != "#" }
+        // URL universale di Google Maps (apre l'app se installata, altrimenti il browser)
+        // con un segnaposto esattamente su lat,lon - Locale.ROOT per avere sempre il punto
+        // decimale, mai la virgola della lingua del telefono.
+        val mapsUrl = coordinates?.let { "https://www.google.com/maps/search/?api=1&query=${"%.6f".format(Locale.ROOT, it.latitude)},${"%.6f".format(Locale.ROOT, it.longitude)}" }
+            ?: contact.mapsUrl.takeIf { it.isNotBlank() && it != "#" }
             ?: contact.address.takeIf { it.isNotBlank() }
                 ?.let { "https://maps.google.com/?q=${URLEncoder.encode(it, "UTF-8")}" }
 
