@@ -29,7 +29,6 @@ sealed interface ProfileUiPhase {
     /** Nome trovato in anagrafica FIDE, pronto per completare il profilo con
      * [CompleteProfileViewModel.confirmFide]. */
     data class ConfirmFide(val name: String) : ProfileUiPhase
-    data object AmateurDetails : ProfileUiPhase
     data object Done : ProfileUiPhase
     data class Error(val message: String) : ProfileUiPhase
 }
@@ -69,9 +68,9 @@ class CompleteProfileViewModel(
      * hasIdFide=false/isClubMember=true invece che con l'ID FIDE. */
     private var clubMemberWithoutFide: Boolean = false
 
-    fun answerHasFide(hasFide: Boolean) {
+    fun chooseHasFide() {
         clubMemberWithoutFide = false
-        _phase.value = if (hasFide) ProfileUiPhase.EnterIdFide else ProfileUiPhase.AmateurDetails
+        _phase.value = ProfileUiPhase.EnterIdFide
     }
 
     fun chooseClubMemberWithoutFide() {
@@ -224,28 +223,16 @@ class CompleteProfileViewModel(
         }
     }
 
-    fun submitAmateur(firstName: String, lastName: String, password: String, confirmPassword: String) {
-        if (firstName.isBlank() || lastName.isBlank() || password.isBlank()) {
-            _phase.value = ProfileUiPhase.Error("Compila tutti i campi.")
-            return
-        }
-        if (password != confirmPassword) {
-            _phase.value = ProfileUiPhase.Error("Le due password non coincidono.")
-            return
-        }
+    /** "Non ho un ID FIDE e non sono socio di un circolo": registrazione immediata come
+     * utente della piattaforma, senza chiedere nulla - nome e cognome li prende il server
+     * dall'account Google, la password resta quella generata al primo login Google. */
+    fun registerAsPlatformUser() {
+        clubMemberWithoutFide = false
         _phase.value = ProfileUiPhase.Loading
         viewModelScope.launch {
-            repository.completeProfile(
-                CompletePlayerProfileRequestDto(
-                    hasIdFide = false,
-                    firstName = firstName.trim(),
-                    lastName = lastName.trim(),
-                    password = password,
-                    confirmPassword = confirmPassword,
-                ),
-            )
+            repository.completeProfile(CompletePlayerProfileRequestDto(hasIdFide = false, isClubMember = false))
                 .onSuccess { auth ->
-                    AuthSessionPersister.persist(auth, "${firstName.trim()} ${lastName.trim()}", authPreferences, clubPreferences)
+                    AuthSessionPersister.persist(auth, null, authPreferences, clubPreferences)
                     _phase.value = ProfileUiPhase.Done
                 }
                 .onFailure { _phase.value = ProfileUiPhase.Error(it.apiErrorMessage() ?: "Impossibile completare il profilo. Riprova.") }

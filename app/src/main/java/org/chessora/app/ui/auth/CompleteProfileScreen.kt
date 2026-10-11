@@ -38,8 +38,8 @@ import org.chessora.app.ui.common.chessoraViewModel
  * tre scelte. "Ho un ID FIDE": stesso percorso di LoginFideScreen (ricerca/verifica ID
  * FIDE + eventuale scelta circolo/socio) ma senza email/password (l'account esiste già).
  * "Sono socio di un circolo": scelta del circolo e poi del proprio nominativo
- * dall'elenco soci. "Né l'uno né l'altro": nome/cognome/password per un account
- * amatoriale di piattaforma.
+ * dall'elenco soci. "Né l'uno né l'altro": registrazione immediata come utente della
+ * piattaforma, con nome e cognome presi dall'account Google (nessun campo da compilare).
  */
 @Composable
 fun CompleteProfileScreen(onDone: () -> Unit) {
@@ -55,10 +55,6 @@ fun CompleteProfileScreen(onDone: () -> Unit) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var clubQuery by rememberSaveable { mutableStateOf("") }
     var rosterQuery by rememberSaveable { mutableStateOf("") }
-    var firstName by rememberSaveable { mutableStateOf("") }
-    var lastName by rememberSaveable { mutableStateOf("") }
-    var password by rememberSaveable { mutableStateOf("") }
-    var confirmPassword by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(phase) {
         if (phase is ProfileUiPhase.Done) onDone()
@@ -74,13 +70,13 @@ fun CompleteProfileScreen(onDone: () -> Unit) {
                     stringResource(R.string.complete_profile_ask_fide),
                     modifier = Modifier.padding(top = 16.dp, bottom = 24.dp),
                 )
-                Button(onClick = { viewModel.answerHasFide(true) }, modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = { viewModel.chooseHasFide() }, modifier = Modifier.fillMaxWidth()) {
                     Text(stringResource(R.string.complete_profile_option_fide))
                 }
                 Button(onClick = { viewModel.chooseClubMemberWithoutFide() }, modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
                     Text(stringResource(R.string.complete_profile_option_club))
                 }
-                OutlinedButton(onClick = { viewModel.answerHasFide(false) }, modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
+                OutlinedButton(onClick = { viewModel.registerAsPlatformUser() }, modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
                     Text(stringResource(R.string.complete_profile_option_none), textAlign = TextAlign.Center)
                 }
             }
@@ -186,40 +182,6 @@ fun CompleteProfileScreen(onDone: () -> Unit) {
                 Button(onClick = { viewModel.confirmFide() }, modifier = Modifier.fillMaxWidth().padding(top = 20.dp)) {
                     Text(stringResource(R.string.common_confirm))
                 }
-            }
-
-            is ProfileUiPhase.AmateurDetails -> {
-                Text(stringResource(R.string.complete_profile_amateur_title), style = MaterialTheme.typography.headlineSmall)
-                OutlinedTextField(
-                    value = firstName,
-                    onValueChange = { firstName = it },
-                    label = { Text(stringResource(R.string.register_first_name_label)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
-                )
-                OutlinedTextField(
-                    value = lastName,
-                    onValueChange = { lastName = it },
-                    label = { Text(stringResource(R.string.register_last_name_label)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-                )
-                PasswordField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = stringResource(R.string.login_password_label),
-                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-                )
-                PasswordField(
-                    value = confirmPassword,
-                    onValueChange = { confirmPassword = it },
-                    label = stringResource(R.string.register_confirm_password_label),
-                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-                )
-                Button(
-                    onClick = { viewModel.submitAmateur(firstName, lastName, password, confirmPassword) },
-                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
-                ) { Text(stringResource(R.string.register_submit)) }
             }
 
             is ProfileUiPhase.Error -> {
