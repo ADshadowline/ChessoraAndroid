@@ -281,6 +281,10 @@
     <string name="login_email_not_confirmed">Önce e-postanızı onaylamanız gerekiyor.</string>
     <string name="login_resend_confirmation">E-postayı tekrar gönder</string>
     <string name="login_confirmation_resent">Size yeni bir onay e-postası gönderdik.</string>
+    <string name="login_create_account">Hesabınız yok mu? Yeni kullanıcı oluşturun</string>
+    <string name="register_email_title">Yeni kullanıcı oluştur</string>
+    <string name="register_password_hint">En az 8 karakter; büyük harf, küçük harf, rakam ve sembol içermeli (örn. ! ? @ #).</string>
+    <string name="login_have_account">Zaten hesabınız var mı? Giriş yapın</string>
 
     <string name="forgot_password_title">Şifre unutuldu</string>
     <string name="forgot_password_subtitle">E-postanızı girin: bir hesapla eşleşiyorsa şifrenizi sıfırlamak için talimatları alacaksınız.</string>

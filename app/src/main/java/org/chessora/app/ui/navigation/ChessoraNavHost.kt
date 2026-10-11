@@ -343,7 +343,6 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                     },
                     onNeedsProfile = { navController.navigate(ChessoraDestinations.AUTH_COMPLETE_PROFILE) },
                     onLoginEmail = { navController.navigate(ChessoraDestinations.AUTH_LOGIN_EMAIL) },
-                    onLoginFide = { navController.navigate(ChessoraDestinations.AUTH_LOGIN_FIDE) },
                 )
             }
             composable(ChessoraDestinations.AUTH_LOGIN_EMAIL) {
@@ -351,6 +350,12 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                     onLoggedIn = {
                         sessionViewModel.onLoggedIn()
                         navController.navigate(ChessoraDestinations.SPLASH) { popUpTo(0) }
+                    },
+                    onNeedsProfile = { navController.navigate(ChessoraDestinations.AUTH_COMPLETE_PROFILE) },
+                    onRegistered = { email ->
+                        navController.navigate(ChessoraDestinations.emailPending(email)) {
+                            popUpTo(ChessoraDestinations.AUTH_LOGIN)
+                        }
                     },
                     onForgotPassword = { navController.navigate(ChessoraDestinations.AUTH_FORGOT_PASSWORD) },
                 )

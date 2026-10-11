@@ -76,6 +76,11 @@ data class RegisterWithFideRequestDto(
 @Serializable
 data class RegisterResponseDto(val requiresEmailConfirmation: Boolean, val email: String)
 
+/** Specchio di Chessora.Contracts.PlayerAuth.RegisterWithEmailRequest - "Crea nuovo
+ * utente" con sola email e password (POST api/auth/register-email). */
+@Serializable
+data class RegisterWithEmailRequestDto(val email: String, val password: String, val confirmPassword: String)
+
 @Serializable
 data class ForgotPasswordRequestDto(val email: String)
 

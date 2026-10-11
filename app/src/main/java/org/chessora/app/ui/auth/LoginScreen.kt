@@ -27,17 +27,16 @@ import org.chessora.app.ui.common.chessoraViewModel
 
 /**
  * Schermata di accesso - primo punto obbligato dell'app se non si è già loggati (vedi
- * ChessoraNavHost SPLASH): tre modi per accedere, nessuna consultazione anonima. La
- * creazione di un nuovo account "amatoriale" senza alcun ID FIDE avviene solo come
- * sotto-passo di un login Google (CompleteProfileScreen) o ID FIDE (LoginFideScreen),
- * non da qui - non esiste un punto di ingresso "Registrati" separato in questa versione.
+ * ChessoraNavHost SPLASH): Google oppure email e password, nessuna consultazione
+ * anonima. L'accesso con ID FIDE non è più offerto qui: l'ID FIDE si indica al primo
+ * accesso, in CompleteProfileScreen. Un nuovo utente con email e password si crea da
+ * LoginEmailScreen ("Crea nuovo utente", con conferma email).
  */
 @Composable
 fun LoginScreen(
     onLoggedIn: () -> Unit,
     onNeedsProfile: () -> Unit,
     onLoginEmail: () -> Unit,
-    onLoginFide: () -> Unit,
 ) {
     val viewModel = chessoraViewModel { app -> LoginViewModel(app.repository, app.clubPreferences, app.authPreferences) }
     val step by viewModel.step.collectAsState()
@@ -81,9 +80,6 @@ fun LoginScreen(
                     },
                     modifier = Modifier.fillMaxWidth(),
                 ) { Text(stringResource(R.string.login_google)) }
-                OutlinedButton(onClick = onLoginFide, modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
-                    Text(stringResource(R.string.login_fide))
-                }
                 OutlinedButton(onClick = onLoginEmail, modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
                     Text(stringResource(R.string.login_email))
                 }

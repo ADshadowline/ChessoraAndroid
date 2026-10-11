@@ -23,6 +23,7 @@ import org.chessora.app.data.remote.dto.MessagingPlayerSettings
 import org.chessora.app.data.remote.dto.PlayerAuthResponseDto
 import org.chessora.app.data.remote.dto.PlayerLoginRequestDto
 import org.chessora.app.data.remote.dto.RegisterResponseDto
+import org.chessora.app.data.remote.dto.RegisterWithEmailRequestDto
 import org.chessora.app.data.remote.dto.RegisterWithFideRequestDto
 import org.chessora.app.data.remote.dto.ResendConfirmationRequestDto
 import org.chessora.app.data.remote.dto.NetworkNewsItem
@@ -114,6 +115,10 @@ interface ChessoraApi {
      * richiede conferma email prima di poter accedere. */
     @POST("api/auth/register-fide")
     suspend fun registerWithFide(@Body request: RegisterWithFideRequestDto): RegisterResponseDto
+
+    /** Account con sola email e password, inattivo finché non si conferma l'email. */
+    @POST("api/auth/register-email")
+    suspend fun registerWithEmail(@Body request: RegisterWithEmailRequestDto): RegisterResponseDto
 
     /** Null implicito (404) se idFide non esiste affatto in anagrafica FIDE - vedi
      * ChessoraRepository.checkFide, che lo traduce in Result<CheckFideResultDto?>. */

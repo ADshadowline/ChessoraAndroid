@@ -281,6 +281,10 @@
     <string name="login_email_not_confirmed">Сначала подтвердите свой email.</string>
     <string name="login_resend_confirmation">Отправить письмо повторно</string>
     <string name="login_confirmation_resent">Мы отправили вам новое письмо для подтверждения.</string>
+    <string name="login_create_account">Нет аккаунта? Создать нового пользователя</string>
+    <string name="register_email_title">Создать нового пользователя</string>
+    <string name="register_password_hint">Не менее 8 символов: заглавная и строчная буквы, цифра и символ (например ! ? @ #).</string>
+    <string name="login_have_account">Уже есть аккаунт? Войти</string>
 
     <string name="forgot_password_title">Забыли пароль</string>
     <string name="forgot_password_subtitle">Введите свой email: если он соответствует аккаунту, вы получите инструкции по сбросу пароля.</string>

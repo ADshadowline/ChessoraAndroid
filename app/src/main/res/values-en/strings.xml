@@ -281,6 +281,10 @@
     <string name="login_email_not_confirmed">You need to confirm your email first.</string>
     <string name="login_resend_confirmation">Resend the email</string>
     <string name="login_confirmation_resent">We\'ve sent you a new confirmation email.</string>
+    <string name="login_create_account">No account? Create a new user</string>
+    <string name="register_email_title">Create a new user</string>
+    <string name="register_password_hint">At least 8 characters, with an uppercase letter, a lowercase letter, a number and a symbol (e.g. ! ? @ #).</string>
+    <string name="login_have_account">Already have an account? Sign in</string>
 
     <string name="forgot_password_title">Forgot password</string>
     <string name="forgot_password_subtitle">Enter your email: if it matches an account, you\'ll receive instructions to reset your password.</string>

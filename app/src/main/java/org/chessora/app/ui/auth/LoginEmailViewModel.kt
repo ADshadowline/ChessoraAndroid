@@ -8,12 +8,18 @@ import kotlinx.coroutines.launch
 import org.chessora.app.data.local.AuthPreferences
 import org.chessora.app.data.local.ClubPreferences
 import org.chessora.app.data.remote.apiError
+import org.chessora.app.data.remote.dto.RegisterWithEmailRequestDto
 import org.chessora.app.data.repository.ChessoraRepository
 
 sealed interface LoginEmailStep {
     data object Idle : LoginEmailStep
     data object Loading : LoginEmailStep
     data object LoggedIn : LoginEmailStep
+    /** Login riuscito ma profilo ancora da completare (account creato con "Crea nuovo
+     * utente"): si prosegue con CompleteProfileScreen, come dopo un login Google. */
+    data object NeedsProfile : LoginEmailStep
+    /** "Crea nuovo utente" riuscito: account creato, in attesa della conferma email. */
+    data class Registered(val email: String) : LoginEmailStep
     /** Il server ha risposto EmailNotConfirmed - offre "Invia di nuovo l'email" invece
      * del solo messaggio generico (vedi LoginEmailScreen.kt). */
     data class EmailNotConfirmed(val email: String) : LoginEmailStep
@@ -41,7 +47,7 @@ class LoginEmailViewModel(
             repository.playerLogin(emailOrIdFide.trim(), password)
                 .onSuccess { auth ->
                     AuthSessionPersister.persist(auth, displayName = null, authPreferences, clubPreferences)
-                    _step.value = LoginEmailStep.LoggedIn
+                    _step.value = if (auth.profileComplete) LoginEmailStep.LoggedIn else LoginEmailStep.NeedsProfile
                 }
                 .onFailure { error ->
                     val apiError = error.apiError()
@@ -52,6 +58,28 @@ class LoginEmailViewModel(
                     }
                 }
         }
+    }
+
+    fun register(email: String, password: String, confirmPassword: String) {
+        if (email.isBlank() || password.isBlank()) {
+            _step.value = LoginEmailStep.Error("Inserisci email e password.")
+            return
+        }
+        if (password != confirmPassword) {
+            _step.value = LoginEmailStep.Error("Le due password non coincidono.")
+            return
+        }
+        _step.value = LoginEmailStep.Loading
+        viewModelScope.launch {
+            repository.registerWithEmail(RegisterWithEmailRequestDto(email.trim(), password, confirmPassword))
+                .onSuccess { _step.value = LoginEmailStep.Registered(it.email) }
+                .onFailure { _step.value = LoginEmailStep.Error(it.apiError()?.message ?: "Connessione non riuscita, riprova.") }
+        }
+    }
+
+    /** Il passaggio tra "Accedi" e "Crea nuovo utente" azzera l'eventuale errore a schermo. */
+    fun clearMessage() {
+        _step.value = LoginEmailStep.Idle
     }
 
     fun resendConfirmation(email: String) {

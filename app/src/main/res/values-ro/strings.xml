@@ -281,6 +281,10 @@
     <string name="login_email_not_confirmed">Trebuie mai întâi să îți confirmi emailul.</string>
     <string name="login_resend_confirmation">Retrimite emailul</string>
     <string name="login_confirmation_resent">Ți-am trimis un nou email de confirmare.</string>
+    <string name="login_create_account">Nu ai cont? Creează un utilizator nou</string>
+    <string name="register_email_title">Creează un utilizator nou</string>
+    <string name="register_password_hint">Cel puțin 8 caractere, cu o majusculă, o minusculă, o cifră și un simbol (ex. ! ? @ #).</string>
+    <string name="login_have_account">Ai deja cont? Autentifică-te</string>
 
     <string name="forgot_password_title">Parolă uitată</string>
     <string name="forgot_password_subtitle">Introdu emailul tău: dacă corespunde unui cont, vei primi instrucțiuni pentru resetarea parolei.</string>

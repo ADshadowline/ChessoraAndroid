@@ -27,6 +27,7 @@ import org.chessora.app.data.remote.dto.MessagingPlayerSettings
 import org.chessora.app.data.remote.dto.PlayerAuthResponseDto
 import org.chessora.app.data.remote.dto.PlayerLoginRequestDto
 import org.chessora.app.data.remote.dto.RegisterResponseDto
+import org.chessora.app.data.remote.dto.RegisterWithEmailRequestDto
 import org.chessora.app.data.remote.dto.RegisterWithFideRequestDto
 import org.chessora.app.data.remote.dto.RegisteredPlayer
 import org.chessora.app.data.remote.dto.ResendConfirmationRequestDto
@@ -93,6 +94,9 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun registerWithFide(request: RegisterWithFideRequestDto): Result<RegisterResponseDto> =
         safeCall { api.registerWithFide(request) }
+
+    suspend fun registerWithEmail(request: RegisterWithEmailRequestDto): Result<RegisterResponseDto> =
+        safeCall { api.registerWithEmail(request) }
 
     /** Null (non un errore) se idFide non esiste affatto in anagrafica FIDE (404
      * dal server) - qualunque altro fallimento resta un Result.failure normale. */
