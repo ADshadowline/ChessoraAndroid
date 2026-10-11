@@ -304,7 +304,10 @@
     <string name="register_submit">Registrarse</string>
 
     <string name="complete_profile_title">Un paso más</string>
-    <string name="complete_profile_ask_fide">¿Tienes un ID FIDE o eres socio de un club?</string>
+    <string name="complete_profile_ask_fide">Elige la opción que te corresponde:</string>
+    <string name="complete_profile_option_fide">Tengo un ID FIDE</string>
+    <string name="complete_profile_option_club">Soy socio de un club</string>
+    <string name="complete_profile_option_none">No tengo ID FIDE y no soy socio de ningún club</string>
     <string name="complete_profile_amateur_title">Completa tu perfil</string>
 
     <string name="email_pending_title">Revisa tu correo</string>

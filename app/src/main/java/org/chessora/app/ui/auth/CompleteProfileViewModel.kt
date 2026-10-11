@@ -64,8 +64,20 @@ class CompleteProfileViewModel(
     private var selectedIdClub: Int? = null
     private var selectedIdPlayer: Int? = null
 
+    /** True se l'utente ha scelto "Sono socio di un circolo" senza ID FIDE: circolo e
+     * nominativo dall'elenco soci, poi [confirmFide] completa il profilo con
+     * hasIdFide=false/isClubMember=true invece che con l'ID FIDE. */
+    private var clubMemberWithoutFide: Boolean = false
+
     fun answerHasFide(hasFide: Boolean) {
+        clubMemberWithoutFide = false
         _phase.value = if (hasFide) ProfileUiPhase.EnterIdFide else ProfileUiPhase.AmateurDetails
+    }
+
+    fun chooseClubMemberWithoutFide() {
+        clubMemberWithoutFide = true
+        idFide = null
+        answerClubMembership(true)
     }
 
     private var searchJob: Job? = null
@@ -146,7 +158,14 @@ class CompleteProfileViewModel(
                 .onSuccess { resolvedId ->
                     selectedIdClub = resolvedId
                     repository.getClubRoster(resolvedId)
-                        .onSuccess { _roster.value = it; _phase.value = ProfileUiPhase.PickRoster }
+                        .onSuccess {
+                            _roster.value = it
+                            _phase.value = if (it.isEmpty()) {
+                                ProfileUiPhase.Error("Nessun socio registrato per quest'anno in questo circolo.")
+                            } else {
+                                ProfileUiPhase.PickRoster
+                            }
+                        }
                         .onFailure { _phase.value = ProfileUiPhase.Error("Impossibile caricare l'elenco soci. Riprova.") }
                 }
                 .onFailure { _phase.value = ProfileUiPhase.Error("Circolo non valido. Riprova.") }
@@ -155,10 +174,15 @@ class CompleteProfileViewModel(
 
     fun selectRosterEntry(entry: ClubRosterEntryDto) {
         selectedIdPlayer = entry.idPlayer
+        if (clubMemberWithoutFide) resolvedName = entry.name
         _phase.value = ProfileUiPhase.ConfirmFide(resolvedName)
     }
 
     fun confirmFide() {
+        if (clubMemberWithoutFide) {
+            confirmClubMember()
+            return
+        }
         val value = idFide ?: return
         _phase.value = ProfileUiPhase.Loading
         viewModelScope.launch {
@@ -169,6 +193,27 @@ class CompleteProfileViewModel(
                     isClubMember = isClubMember,
                     selectedIdClub = selectedIdClub ?: resolvedIdClub,
                     selectedIdPlayer = selectedIdPlayer,
+                ),
+            )
+                .onSuccess { auth ->
+                    AuthSessionPersister.persist(auth, resolvedName, authPreferences, clubPreferences)
+                    _phase.value = ProfileUiPhase.Done
+                }
+                .onFailure { _phase.value = ProfileUiPhase.Error(it.apiErrorMessage() ?: "Impossibile completare il profilo. Riprova.") }
+        }
+    }
+
+    private fun confirmClubMember() {
+        val idClub = selectedIdClub ?: return
+        val idPlayer = selectedIdPlayer ?: return
+        _phase.value = ProfileUiPhase.Loading
+        viewModelScope.launch {
+            repository.completeProfile(
+                CompletePlayerProfileRequestDto(
+                    hasIdFide = false,
+                    isClubMember = true,
+                    selectedIdClub = idClub,
+                    selectedIdPlayer = idPlayer,
                 ),
             )
                 .onSuccess { auth ->
@@ -208,6 +253,9 @@ class CompleteProfileViewModel(
     }
 
     fun retry() {
+        clubMemberWithoutFide = false
+        selectedIdClub = null
+        selectedIdPlayer = null
         _phase.value = ProfileUiPhase.AskHasFide
     }
 }

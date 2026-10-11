@@ -316,7 +316,10 @@
     <string name="register_submit">Registrati</string>
 
     <string name="complete_profile_title">Ancora un passo</string>
-    <string name="complete_profile_ask_fide">Hai un ID FIDE oppure sei socio di un circolo?</string>
+    <string name="complete_profile_ask_fide">Scegli l\'opzione che ti riguarda:</string>
+    <string name="complete_profile_option_fide">Ho un ID FIDE</string>
+    <string name="complete_profile_option_club">Sono socio di un circolo</string>
+    <string name="complete_profile_option_none">Non ho un ID FIDE e non sono socio di un circolo</string>
     <string name="complete_profile_amateur_title">Completa il tuo profilo</string>
 
     <string name="email_pending_title">Controlla la tua posta</string>

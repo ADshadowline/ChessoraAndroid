@@ -304,7 +304,10 @@
     <string name="register_submit">Înregistrare</string>
 
     <string name="complete_profile_title">Încă un pas</string>
-    <string name="complete_profile_ask_fide">Ai un ID FIDE sau ești membru al unui club?</string>
+    <string name="complete_profile_ask_fide">Alege opțiunea care ți se potrivește:</string>
+    <string name="complete_profile_option_fide">Am un ID FIDE</string>
+    <string name="complete_profile_option_club">Sunt membru al unui club</string>
+    <string name="complete_profile_option_none">Nu am ID FIDE și nu sunt membru al unui club</string>
     <string name="complete_profile_amateur_title">Completează-ți profilul</string>
 
     <string name="email_pending_title">Verifică-ți emailul</string>

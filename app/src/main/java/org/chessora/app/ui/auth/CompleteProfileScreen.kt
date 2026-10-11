@@ -28,16 +28,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.chessora.app.R
 import org.chessora.app.ui.common.chessoraViewModel
 
 /**
  * Completamento profilo dopo un primo login Google (vedi CompleteProfileViewModel):
- * "hai un ID FIDE oppure sei socio di un circolo?" - se sì, stesso percorso di
- * LoginFideScreen (ricerca/verifica ID FIDE + eventuale scelta circolo/socio) ma senza
- * email/password (l'account esiste già); se no, richiede solo nome/cognome/password
- * per un account amatoriale.
+ * tre scelte. "Ho un ID FIDE": stesso percorso di LoginFideScreen (ricerca/verifica ID
+ * FIDE + eventuale scelta circolo/socio) ma senza email/password (l'account esiste già).
+ * "Sono socio di un circolo": scelta del circolo e poi del proprio nominativo
+ * dall'elenco soci. "Né l'uno né l'altro": nome/cognome/password per un account
+ * amatoriale di piattaforma.
  */
 @Composable
 fun CompleteProfileScreen(onDone: () -> Unit) {
@@ -73,10 +75,13 @@ fun CompleteProfileScreen(onDone: () -> Unit) {
                     modifier = Modifier.padding(top = 16.dp, bottom = 24.dp),
                 )
                 Button(onClick = { viewModel.answerHasFide(true) }, modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(R.string.common_yes))
+                    Text(stringResource(R.string.complete_profile_option_fide))
+                }
+                Button(onClick = { viewModel.chooseClubMemberWithoutFide() }, modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
+                    Text(stringResource(R.string.complete_profile_option_club))
                 }
                 OutlinedButton(onClick = { viewModel.answerHasFide(false) }, modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
-                    Text(stringResource(R.string.common_no))
+                    Text(stringResource(R.string.complete_profile_option_none), textAlign = TextAlign.Center)
                 }
             }
 

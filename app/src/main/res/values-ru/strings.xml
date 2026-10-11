@@ -304,7 +304,10 @@
     <string name="register_submit">Зарегистрироваться</string>
 
     <string name="complete_profile_title">Ещё один шаг</string>
-    <string name="complete_profile_ask_fide">У вас есть ID ФИДЕ или вы состоите в клубе?</string>
+    <string name="complete_profile_ask_fide">Выберите подходящий вариант:</string>
+    <string name="complete_profile_option_fide">У меня есть ID ФИДЕ</string>
+    <string name="complete_profile_option_club">Я состою в клубе</string>
+    <string name="complete_profile_option_none">У меня нет ID ФИДЕ и я не состою в клубе</string>
     <string name="complete_profile_amateur_title">Заполните профиль</string>
 
     <string name="email_pending_title">Проверьте почту</string>
