@@ -337,6 +337,11 @@
     <string name="settings_reset_body">Se borrarán todas las preferencias locales (club elegido, fondos, orden y visibilidad de los iconos de Inicio, notificaciones) y tendrás que iniciar sesión de nuevo. Esta acción no se puede deshacer.</string>
     <string name="settings_reset_confirm">Restablecer</string>
     <string name="settings_reset_cancel">Cancelar</string>
+    <string name="settings_delete_account_button">Eliminar mi cuenta</string>
+    <string name="settings_delete_account_title">¿Eliminar tu cuenta?</string>
+    <string name="settings_delete_account_body">Se eliminarán definitivamente tu cuenta, las partidas guardadas, las conversaciones que iniciaste, tus ajustes y tu foto de perfil. Esta acción no se puede deshacer.</string>
+    <string name="settings_delete_account_confirm">Eliminar</string>
+    <string name="settings_delete_account_failed">No se pudo eliminar. Inténtalo más tarde.</string>
 
     <!-- "My photo" (ui/profile/) -->
     <string name="more_profile_photo">Mi foto</string>

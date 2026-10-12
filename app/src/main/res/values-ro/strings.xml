@@ -337,6 +337,11 @@
     <string name="settings_reset_body">Toate preferințele locale (clubul ales, fundalurile, ordinea și vizibilitatea pictogramelor de pe Acasă, notificările) vor fi șterse și va trebui să te reconectezi. Această acțiune nu poate fi anulată.</string>
     <string name="settings_reset_confirm">Resetează</string>
     <string name="settings_reset_cancel">Anulează</string>
+    <string name="settings_delete_account_button">Șterge contul meu</string>
+    <string name="settings_delete_account_title">Ștergi contul?</string>
+    <string name="settings_delete_account_body">Contul tău, partidele salvate, conversațiile începute de tine, setările și fotografia de profil vor fi șterse definitiv. Operațiunea nu poate fi anulată.</string>
+    <string name="settings_delete_account_confirm">Șterge</string>
+    <string name="settings_delete_account_failed">Ștergerea nu a reușit. Încearcă mai târziu.</string>
 
     <!-- "My photo" (ui/profile/) -->
     <string name="more_profile_photo">Fotografia mea</string>

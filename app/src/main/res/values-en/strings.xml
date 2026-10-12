@@ -337,6 +337,11 @@
     <string name="settings_reset_body">All local preferences (chosen club, backgrounds, Home icon order and visibility, notifications) will be cleared, and you\'ll need to sign in again. This action can\'t be undone.</string>
     <string name="settings_reset_confirm">Reset</string>
     <string name="settings_reset_cancel">Cancel</string>
+    <string name="settings_delete_account_button">Delete my account</string>
+    <string name="settings_delete_account_title">Delete your account?</string>
+    <string name="settings_delete_account_body">Your account, saved games, the conversations you started, your settings and your profile photo will be permanently deleted. This cannot be undone.</string>
+    <string name="settings_delete_account_confirm">Delete</string>
+    <string name="settings_delete_account_failed">Deletion failed. Please try again later.</string>
 
     <!-- "My photo" (ui/profile/) -->
     <string name="more_profile_photo">My photo</string>

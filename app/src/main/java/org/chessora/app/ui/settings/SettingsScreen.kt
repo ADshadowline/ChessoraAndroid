@@ -57,6 +57,7 @@ fun SettingsScreen(
     identifiedPlayerName: String?,
     onChangeClub: () -> Unit,
     onLogout: () -> Unit,
+    onAccountDeleted: () -> Unit,
     onResetSettings: () -> Unit,
     onOpenProfilePhoto: () -> Unit,
     onOpenIconSettings: () -> Unit,
@@ -72,6 +73,9 @@ fun SettingsScreen(
     val chessComUsername by viewModel.chessComUsername.collectAsState()
     val context = LocalContext.current
     var showResetConfirmation by remember { mutableStateOf(false) }
+    var showDeleteAccountConfirmation by remember { mutableStateOf(false) }
+    val deletingAccount by viewModel.deletingAccount.collectAsState()
+    val deleteAccountError by viewModel.deleteAccountError.collectAsState()
 
     LaunchedEffect(identifiedPlayerName) {
         viewModel.loadHideReadReceipts()
@@ -246,6 +250,15 @@ fun SettingsScreen(
         ) {
             Text(stringResource(R.string.settings_reset_button), color = MaterialTheme.colorScheme.error)
         }
+        // Obbligatorio per il Play Store (app con creazione di account): cancella account e
+        // dati sul server, poi azzera la sessione locale come "Reimposta impostazioni".
+        TextButton(
+            onClick = { showDeleteAccountConfirmation = true },
+            enabled = !deletingAccount,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(stringResource(R.string.settings_delete_account_button), color = MaterialTheme.colorScheme.error)
+        }
 
         Text(
             "${stringResource(R.string.settings_about)}: Chessora ${BuildConfig.VERSION_NAME}",
@@ -276,6 +289,34 @@ fun SettingsScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showResetConfirmation = false }) { Text(stringResource(R.string.settings_reset_cancel)) }
+            },
+        )
+    }
+
+    if (showDeleteAccountConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showDeleteAccountConfirmation = false },
+            title = { Text(stringResource(R.string.settings_delete_account_title)) },
+            text = { Text(stringResource(R.string.settings_delete_account_body)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDeleteAccountConfirmation = false
+                    viewModel.deleteAccount(onDeleted = onAccountDeleted)
+                }) { Text(stringResource(R.string.settings_delete_account_confirm), color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteAccountConfirmation = false }) { Text(stringResource(R.string.settings_reset_cancel)) }
+            },
+        )
+    }
+
+    deleteAccountError?.let { message ->
+        AlertDialog(
+            onDismissRequest = { viewModel.clearDeleteAccountError() },
+            title = { Text(stringResource(R.string.settings_delete_account_title)) },
+            text = { Text(message.ifBlank { stringResource(R.string.settings_delete_account_failed) }) },
+            confirmButton = {
+                TextButton(onClick = { viewModel.clearDeleteAccountError() }) { Text("OK") }
             },
         )
     }

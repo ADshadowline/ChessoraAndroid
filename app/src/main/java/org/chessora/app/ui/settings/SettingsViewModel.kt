@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.chessora.app.data.local.ClubPreferences
+import org.chessora.app.data.remote.apiErrorMessage
 import org.chessora.app.data.repository.ChessoraRepository
 import org.chessora.app.push.DeviceRegistration
 
@@ -30,6 +31,30 @@ class SettingsViewModel(
 
     val desktopBackgroundUri: StateFlow<String?> = clubPreferences.desktopBackgroundUri
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    private val _deletingAccount = MutableStateFlow(false)
+    val deletingAccount: StateFlow<Boolean> = _deletingAccount.asStateFlow()
+
+    private val _deleteAccountError = MutableStateFlow<String?>(null)
+    val deleteAccountError: StateFlow<String?> = _deleteAccountError.asStateFlow()
+
+    /** "Elimina il mio account": [onDeleted] solo se il server ha cancellato davvero
+     * l'account (poi il chiamante azzera la sessione locale e torna al login). */
+    fun deleteAccount(onDeleted: () -> Unit) {
+        if (_deletingAccount.value) return
+        _deletingAccount.value = true
+        _deleteAccountError.value = null
+        viewModelScope.launch {
+            repository.deleteMyAccount()
+                .onSuccess { onDeleted() }
+                .onFailure { _deleteAccountError.value = it.apiErrorMessage() ?: it.message ?: "" }
+            _deletingAccount.value = false
+        }
+    }
+
+    fun clearDeleteAccountError() {
+        _deleteAccountError.value = null
+    }
 
     /** [club] serve solo per ri-registrare subito il token se l'utente riaccende il toggle. */
     fun setNotificationsEnabled(enabled: Boolean, club: String?) {

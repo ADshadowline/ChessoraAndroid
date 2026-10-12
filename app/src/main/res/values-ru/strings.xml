@@ -337,6 +337,11 @@
     <string name="settings_reset_body">Все локальные настройки (выбранный клуб, фоны, порядок и видимость значков главного экрана, уведомления) будут сброшены, и вам нужно будет войти снова. Это действие нельзя отменить.</string>
     <string name="settings_reset_confirm">Сбросить</string>
     <string name="settings_reset_cancel">Отмена</string>
+    <string name="settings_delete_account_button">Удалить мой аккаунт</string>
+    <string name="settings_delete_account_title">Удалить аккаунт?</string>
+    <string name="settings_delete_account_body">Твой аккаунт, сохранённые партии, начатые тобой переписки, настройки и фото профиля будут удалены без возможности восстановления.</string>
+    <string name="settings_delete_account_confirm">Удалить</string>
+    <string name="settings_delete_account_failed">Не удалось удалить. Попробуй позже.</string>
 
     <!-- "My photo" (ui/profile/) -->
     <string name="more_profile_photo">Моё фото</string>

@@ -349,6 +349,11 @@
     <string name="settings_reset_body">Verranno azzerate tutte le preferenze locali (circolo scelto, sfondi, ordine e visibilità delle icone Home, notifiche) e dovrai autenticarti di nuovo. L\'operazione non può essere annullata.</string>
     <string name="settings_reset_confirm">Reimposta</string>
     <string name="settings_reset_cancel">Annulla</string>
+    <string name="settings_delete_account_button">Elimina il mio account</string>
+    <string name="settings_delete_account_title">Eliminare l\'account?</string>
+    <string name="settings_delete_account_body">Verranno cancellati definitivamente il tuo account, le partite registrate, le conversazioni avviate da te, le impostazioni e la foto del profilo. L\'operazione non può essere annullata.</string>
+    <string name="settings_delete_account_confirm">Elimina</string>
+    <string name="settings_delete_account_failed">Eliminazione non riuscita. Riprova più tardi.</string>
 
     <!-- "La mia foto" (ui/profile/) -->
     <string name="more_profile_photo">La mia foto</string>

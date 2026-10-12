@@ -117,6 +117,11 @@ interface ChessoraApi {
     @GET("api/me")
     suspend fun getMe(): MeDto
 
+    /** "Elimina il mio account" (Impostazioni): cancella account e dati dell'app sul
+     * server - obbligatorio per il Play Store. */
+    @DELETE("api/me")
+    suspend fun deleteMyAccount()
+
     /** ID FIDE valido ma non ancora associato a nessun utente - crea l'account,
      * richiede conferma email prima di poter accedere. */
     @POST("api/auth/register-fide")

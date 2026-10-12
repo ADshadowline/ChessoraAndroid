@@ -95,6 +95,8 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun getMe(): Result<MeDto> = safeCall { api.getMe() }
 
+    suspend fun deleteMyAccount(): Result<Unit> = safeCall { api.deleteMyAccount() }
+
     suspend fun registerWithFide(request: RegisterWithFideRequestDto): Result<RegisterResponseDto> =
         safeCall { api.registerWithFide(request) }
 

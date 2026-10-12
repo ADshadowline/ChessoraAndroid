@@ -337,6 +337,11 @@
     <string name="settings_reset_body">Alle lokalen Einstellungen (gewählter Verein, Hintergründe, Reihenfolge und Sichtbarkeit der Start-Symbole, Benachrichtigungen) werden gelöscht und du musst dich erneut anmelden. Dieser Vorgang kann nicht rückgängig gemacht werden.</string>
     <string name="settings_reset_confirm">Zurücksetzen</string>
     <string name="settings_reset_cancel">Abbrechen</string>
+    <string name="settings_delete_account_button">Mein Konto löschen</string>
+    <string name="settings_delete_account_title">Konto löschen?</string>
+    <string name="settings_delete_account_body">Dein Konto, gespeicherte Partien, die von dir begonnenen Unterhaltungen, deine Einstellungen und dein Profilbild werden endgültig gelöscht. Dies kann nicht rückgängig gemacht werden.</string>
+    <string name="settings_delete_account_confirm">Löschen</string>
+    <string name="settings_delete_account_failed">Löschen fehlgeschlagen. Bitte später erneut versuchen.</string>
 
     <!-- "My photo" (ui/profile/) -->
     <string name="more_profile_photo">Mein Foto</string>

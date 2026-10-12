@@ -34,8 +34,8 @@ android {
         // valerne la pena su un'app di sola consultazione.
         minSdk = 26
         targetSdk = 35
-        versionCode = 101
-        versionName = "1.49.0"
+        versionCode = 102
+        versionName = "1.50.0"
 
         // URL base dell'Api Chessora in produzione: iniettato come BuildConfig
         // string invece che hard-codato nel client Retrofit, cosi' un domani un
@@ -52,6 +52,24 @@ android {
                 keyAlias = releaseSigning.getProperty("keyAlias")
                 keyPassword = releaseSigning.getProperty("keyPassword")
             }
+        }
+    }
+
+    // Due canali di distribuzione dello stesso pacchetto (stesso applicationId, stessa
+    // chiave): "sideload" = apk scaricato da chessora.org/downloads, che controlla da solo
+    // version.json e propone l'aggiornamento; "play" = bundle (.aab) per il Google Play
+    // Store, dove gli aggiornamenti li gestisce lo store - le norme di Google Play vietano
+    // a un'app di aggiornarsi da una fonte diversa, quindi lì SELF_UPDATE è false.
+    // Build: assembleSideloadRelease (apk per il sito), bundlePlayRelease (aab per lo store).
+    flavorDimensions += "distribution"
+    productFlavors {
+        create("sideload") {
+            dimension = "distribution"
+            buildConfigField("boolean", "SELF_UPDATE", "true")
+        }
+        create("play") {
+            dimension = "distribution"
+            buildConfigField("boolean", "SELF_UPDATE", "false")
         }
     }
 

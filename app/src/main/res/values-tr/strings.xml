@@ -337,6 +337,11 @@
     <string name="settings_reset_body">Tüm yerel tercihler (seçilen kulüp, arka planlar, ana ekran simge sırası ve görünürlüğü, bildirimler) silinecek ve tekrar giriş yapmanız gerekecek. Bu işlem geri alınamaz.</string>
     <string name="settings_reset_confirm">Sıfırla</string>
     <string name="settings_reset_cancel">İptal</string>
+    <string name="settings_delete_account_button">Hesabımı sil</string>
+    <string name="settings_delete_account_title">Hesap silinsin mi?</string>
+    <string name="settings_delete_account_body">Hesabın, kayıtlı oyunların, başlattığın sohbetler, ayarların ve profil fotoğrafın kalıcı olarak silinecek. Bu işlem geri alınamaz.</string>
+    <string name="settings_delete_account_confirm">Sil</string>
+    <string name="settings_delete_account_failed">Silme başarısız oldu. Daha sonra tekrar dene.</string>
 
     <!-- "My photo" (ui/profile/) -->
     <string name="more_profile_photo">Fotoğrafım</string>

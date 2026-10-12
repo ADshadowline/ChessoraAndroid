@@ -337,6 +337,11 @@
     <string name="settings_reset_body">Toutes les préférences locales (club choisi, fonds d\'écran, ordre et visibilité des icônes de l\'accueil, notifications) seront effacées et vous devrez vous reconnecter. Cette action est irréversible.</string>
     <string name="settings_reset_confirm">Réinitialiser</string>
     <string name="settings_reset_cancel">Annuler</string>
+    <string name="settings_delete_account_button">Supprimer mon compte</string>
+    <string name="settings_delete_account_title">Supprimer ton compte ?</string>
+    <string name="settings_delete_account_body">Ton compte, tes parties enregistrées, les conversations que tu as commencées, tes paramètres et ta photo de profil seront définitivement supprimés. Cette action est irréversible.</string>
+    <string name="settings_delete_account_confirm">Supprimer</string>
+    <string name="settings_delete_account_failed">La suppression a échoué. Réessaie plus tard.</string>
 
     <!-- "My photo" (ui/profile/) -->
     <string name="more_profile_photo">Ma photo</string>

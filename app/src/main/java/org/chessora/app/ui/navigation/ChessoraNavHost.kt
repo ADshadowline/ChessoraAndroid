@@ -742,6 +742,12 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                         sessionViewModel.logout()
                         navController.navigate(ChessoraDestinations.AUTH_LOGIN) { popUpTo(0) }
                     },
+                    onAccountDeleted = {
+                        // Account già cancellato sul server: azzera tutto il locale (anche
+                        // l'identità del socio, a differenza di "Esci") e torna al login.
+                        sessionViewModel.resetAllSettings()
+                        navController.navigate(ChessoraDestinations.AUTH_LOGIN) { popUpTo(0) }
+                    },
                     onResetSettings = {
                         sessionViewModel.resetAllSettings()
                         navController.navigate(ChessoraDestinations.AUTH_LOGIN) { popUpTo(0) }
