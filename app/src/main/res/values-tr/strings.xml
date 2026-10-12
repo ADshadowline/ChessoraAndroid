@@ -321,6 +321,10 @@
     <string name="complete_profile_option_fide">FIDE ID\'m var</string>
     <string name="complete_profile_option_club">Bir kulübün üyesiyim</string>
     <string name="complete_profile_option_none">FIDE ID\'m yok ve bir kulübe üye değilim</string>
+    <string name="complete_profile_name_title">Adın ne?</string>
+    <string name="complete_profile_name_hint">Adını ve soyadını gir: profilinde ve turnuvalarda görünecekler.</string>
+    <string name="complete_profile_name_required">Ad ve soyad zorunludur.</string>
+    <string name="complete_profile_back">Geri</string>
     <string name="complete_profile_amateur_title">Profilinizi tamamlayın</string>
 
     <string name="email_pending_title">Posta kutunuzu kontrol edin</string>

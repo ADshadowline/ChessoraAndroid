@@ -29,6 +29,9 @@ sealed interface ProfileUiPhase {
     /** Nome trovato in anagrafica FIDE, pronto per completare il profilo con
      * [CompleteProfileViewModel.confirmFide]. */
     data class ConfirmFide(val name: String) : ProfileUiPhase
+    /** "Non ho un ID FIDE e non sono socio": nome e cognome obbligatori, precompilati
+     * con quelli dell'account (Google) se disponibili - vedi [CompleteProfileViewModel.submitName]. */
+    data class EnterName(val firstName: String, val lastName: String, val showRequiredError: Boolean = false) : ProfileUiPhase
     data object Done : ProfileUiPhase
     data class Error(val message: String) : ProfileUiPhase
 }
@@ -223,16 +226,32 @@ class CompleteProfileViewModel(
         }
     }
 
-    /** "Non ho un ID FIDE e non sono socio di un circolo": registrazione immediata come
-     * utente della piattaforma, senza chiedere nulla - nome e cognome li prende il server
-     * dall'account Google, la password resta quella generata al primo login Google. */
+    /** "Non ho un ID FIDE e non sono socio di un circolo": chi non è socio non ha un
+     * nominativo in anagrafica, quindi nome e cognome vanno indicati qui (precompilati con
+     * quelli dell'account Google, se ci sono - un account email+password non li ha). */
     fun registerAsPlatformUser() {
         clubMemberWithoutFide = false
         _phase.value = ProfileUiPhase.Loading
         viewModelScope.launch {
-            repository.completeProfile(CompletePlayerProfileRequestDto(hasIdFide = false, isClubMember = false))
+            val me = repository.getMe().getOrNull()
+            _phase.value = ProfileUiPhase.EnterName(me?.firstName.orEmpty(), me?.lastName.orEmpty())
+        }
+    }
+
+    fun submitName(firstName: String, lastName: String) {
+        val first = firstName.trim()
+        val last = lastName.trim()
+        if (first.isEmpty() || last.isEmpty()) {
+            _phase.value = ProfileUiPhase.EnterName(first, last, showRequiredError = true)
+            return
+        }
+        _phase.value = ProfileUiPhase.Loading
+        viewModelScope.launch {
+            repository.completeProfile(
+                CompletePlayerProfileRequestDto(hasIdFide = false, isClubMember = false, firstName = first, lastName = last),
+            )
                 .onSuccess { auth ->
-                    AuthSessionPersister.persist(auth, null, authPreferences, clubPreferences)
+                    AuthSessionPersister.persist(auth, "$first $last", authPreferences, clubPreferences)
                     _phase.value = ProfileUiPhase.Done
                 }
                 .onFailure { _phase.value = ProfileUiPhase.Error(it.apiErrorMessage() ?: "Impossibile completare il profilo. Riprova.") }

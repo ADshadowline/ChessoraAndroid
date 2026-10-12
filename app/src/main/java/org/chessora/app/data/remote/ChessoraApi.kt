@@ -19,6 +19,7 @@ import org.chessora.app.data.remote.dto.GoogleLoginRequestDto
 import org.chessora.app.data.remote.dto.GoogleLoginResponseDto
 import org.chessora.app.data.remote.dto.GoogleReviewsResponse
 import org.chessora.app.data.remote.dto.MarkReadRequest
+import org.chessora.app.data.remote.dto.MeDto
 import org.chessora.app.data.remote.dto.MessagingPlayerSettings
 import org.chessora.app.data.remote.dto.PlayerAuthResponseDto
 import org.chessora.app.data.remote.dto.PlayerLoginRequestDto
@@ -110,6 +111,11 @@ interface ChessoraApi {
      * già autenticato dal passo precedente (Bearer già valido). */
     @POST("api/me/complete-profile")
     suspend fun completeProfile(@Body request: CompletePlayerProfileRequestDto): PlayerAuthResponseDto
+
+    /** Dati dell'account autenticato - usato per precompilare nome/cognome (da Google)
+     * nel completamento profilo come utente della piattaforma. */
+    @GET("api/me")
+    suspend fun getMe(): MeDto
 
     /** ID FIDE valido ma non ancora associato a nessun utente - crea l'account,
      * richiede conferma email prima di poter accedere. */

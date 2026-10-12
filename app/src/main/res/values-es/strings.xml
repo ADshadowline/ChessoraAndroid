@@ -321,6 +321,10 @@
     <string name="complete_profile_option_fide">Tengo un ID FIDE</string>
     <string name="complete_profile_option_club">Soy socio de un club</string>
     <string name="complete_profile_option_none">No tengo ID FIDE y no soy socio de ningún club</string>
+    <string name="complete_profile_name_title">¿Cómo te llamas?</string>
+    <string name="complete_profile_name_hint">Introduce tu nombre y apellido: aparecerán en tu perfil y en los torneos.</string>
+    <string name="complete_profile_name_required">El nombre y el apellido son obligatorios.</string>
+    <string name="complete_profile_back">Atrás</string>
     <string name="complete_profile_amateur_title">Completa tu perfil</string>
 
     <string name="email_pending_title">Revisa tu correo</string>

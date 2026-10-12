@@ -60,6 +60,14 @@ data class CompletePlayerProfileRequestDto(
     val confirmPassword: String? = null,
 )
 
+/** Specchio parziale di GET api/me (MeController) - solo i campi usati dall'app. */
+@Serializable
+data class MeDto(
+    val email: String? = null,
+    val firstName: String? = null,
+    val lastName: String? = null,
+)
+
 /** Usato quando un ID FIDE risulta valido ma non ancora associato a nessun utente
  * (FLUSSO 6, accesso con ID FIDE) - crea l'account SUBITO associato a quell'IdFide,
  * richiede conferma email prima di poter accedere. */

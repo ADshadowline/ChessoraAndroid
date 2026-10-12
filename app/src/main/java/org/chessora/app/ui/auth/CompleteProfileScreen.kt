@@ -38,8 +38,8 @@ import org.chessora.app.ui.common.chessoraViewModel
  * tre scelte. "Ho un ID FIDE": stesso percorso di LoginFideScreen (ricerca/verifica ID
  * FIDE + eventuale scelta circolo/socio) ma senza email/password (l'account esiste già).
  * "Sono socio di un circolo": scelta del circolo e poi del proprio nominativo
- * dall'elenco soci. "Né l'uno né l'altro": registrazione immediata come utente della
- * piattaforma, con nome e cognome presi dall'account Google (nessun campo da compilare).
+ * dall'elenco soci. "Né l'uno né l'altro": registrazione come utente della piattaforma,
+ * con nome e cognome obbligatori (precompilati da quelli dell'account Google, se presenti).
  */
 @Composable
 fun CompleteProfileScreen(onDone: () -> Unit) {
@@ -181,6 +181,54 @@ fun CompleteProfileScreen(onDone: () -> Unit) {
                 Text(stringResource(R.string.login_fide_found, current.name), style = MaterialTheme.typography.titleMedium)
                 Button(onClick = { viewModel.confirmFide() }, modifier = Modifier.fillMaxWidth().padding(top = 20.dp)) {
                     Text(stringResource(R.string.common_confirm))
+                }
+            }
+
+            is ProfileUiPhase.EnterName -> {
+                // Chiave sul valore precompilato: un nuovo EnterName (es. dopo l'errore
+                // "campi obbligatori") riparte da quanto già digitato, senza perderlo.
+                var firstName by rememberSaveable(current.firstName) { mutableStateOf(current.firstName) }
+                var lastName by rememberSaveable(current.lastName) { mutableStateOf(current.lastName) }
+                Text(stringResource(R.string.complete_profile_name_title), style = MaterialTheme.typography.headlineSmall)
+                Text(
+                    stringResource(R.string.complete_profile_name_hint),
+                    modifier = Modifier.padding(top = 12.dp),
+                )
+                OutlinedTextField(
+                    value = firstName,
+                    onValueChange = { firstName = it },
+                    label = { Text(stringResource(R.string.register_first_name_label)) },
+                    singleLine = true,
+                    isError = current.showRequiredError && firstName.isBlank(),
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        capitalization = androidx.compose.ui.text.input.KeyboardCapitalization.Words,
+                    ),
+                    modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+                )
+                OutlinedTextField(
+                    value = lastName,
+                    onValueChange = { lastName = it },
+                    label = { Text(stringResource(R.string.register_last_name_label)) },
+                    singleLine = true,
+                    isError = current.showRequiredError && lastName.isBlank(),
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        capitalization = androidx.compose.ui.text.input.KeyboardCapitalization.Words,
+                    ),
+                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                )
+                if (current.showRequiredError) {
+                    Text(
+                        stringResource(R.string.complete_profile_name_required),
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+                }
+                Button(onClick = { viewModel.submitName(firstName, lastName) }, modifier = Modifier.fillMaxWidth().padding(top = 20.dp)) {
+                    Text(stringResource(R.string.common_confirm))
+                }
+                TextButton(onClick = { viewModel.retry() }, modifier = Modifier.padding(top = 8.dp)) {
+                    Text(stringResource(R.string.complete_profile_back))
                 }
             }
 

@@ -13,6 +13,7 @@ import org.chessora.app.data.remote.dto.ClubDirectoryItem
 import org.chessora.app.data.remote.dto.ClubRosterEntryDto
 import org.chessora.app.data.remote.dto.ClubSearchResult
 import org.chessora.app.data.remote.dto.CompletePlayerProfileRequestDto
+import org.chessora.app.data.remote.dto.MeDto
 import org.chessora.app.data.remote.dto.ConversationSummary
 import org.chessora.app.data.remote.dto.EntrantDto
 import org.chessora.app.data.remote.dto.EventType
@@ -91,6 +92,8 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun completeProfile(request: CompletePlayerProfileRequestDto): Result<PlayerAuthResponseDto> =
         safeCall { api.completeProfile(request) }
+
+    suspend fun getMe(): Result<MeDto> = safeCall { api.getMe() }
 
     suspend fun registerWithFide(request: RegisterWithFideRequestDto): Result<RegisterResponseDto> =
         safeCall { api.registerWithFide(request) }

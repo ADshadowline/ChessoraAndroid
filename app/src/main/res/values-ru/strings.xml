@@ -321,6 +321,10 @@
     <string name="complete_profile_option_fide">У меня есть ID ФИДЕ</string>
     <string name="complete_profile_option_club">Я состою в клубе</string>
     <string name="complete_profile_option_none">У меня нет ID ФИДЕ и я не состою в клубе</string>
+    <string name="complete_profile_name_title">Как тебя зовут?</string>
+    <string name="complete_profile_name_hint">Введи имя и фамилию: они будут указаны в твоём профиле и в турнирах.</string>
+    <string name="complete_profile_name_required">Имя и фамилия обязательны.</string>
+    <string name="complete_profile_back">Назад</string>
     <string name="complete_profile_amateur_title">Заполните профиль</string>
 
     <string name="email_pending_title">Проверьте почту</string>
