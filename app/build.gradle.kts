@@ -25,7 +25,7 @@ val releaseSigning: Properties? = if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "org.chessora.app"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "org.chessora.app"
@@ -33,9 +33,9 @@ android {
         // Compose e le API moderne di notifica perdono troppe funzionalità per
         // valerne la pena su un'app di sola consultazione.
         minSdk = 26
-        targetSdk = 35
-        versionCode = 102
-        versionName = "1.50.0"
+        targetSdk = 36
+        versionCode = 103
+        versionName = "1.50.1"
 
         // URL base dell'Api Chessora in produzione: iniettato come BuildConfig
         // string invece che hard-codato nel client Retrofit, cosi' un domani un

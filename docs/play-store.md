@@ -14,6 +14,20 @@ Materiale pronto da copiare nella Play Console per l'app **Chessora** (`org.ches
   - SHA-1 `E5:CD:8D:10:EB:8F:FF:F2:00:6E:35:A9:24:09:3B:86:E6:7A:DA:EA`
   - SHA-256 `90:96:2C:B7:35:2B:CA:A8:60:B2:08:DC:B6:DA:2E:E1:A3:6F:6E:3A:13:D0:4A:FC:BC:55:6E:47:7D:61:D1:FD`
 - A ogni release `versionCode` va aumentato, e Play rifiuta un versionCode già caricato.
+- Dal 13/10/2026 Play richiede **targetSdk 36** (Android 16): progetto su compileSdk/targetSdk 36, Android Gradle Plugin 8.10.1 e Gradle 8.11.1. La 1.50.0 (102), con target 35, era stata rifiutata.
+
+## Stato attuale della firma (13 ottobre 2026)
+
+**Chiave di firma dell'app.** È generata da Google il 12/10/2026, ibrida classica + post-quantistica.
+- SHA-1 classico: `B5:10:49:C9:36:FB:69:1D:F7:55:3D:1D:F3:AE:47:1B:6C:49:79:E1`.
+- È già registrato in Firebase, progetto `chessora-app`, per "Accedi con Google".
+- In Firebase ci sono anche `11:28:8D:…:B0:8C` (copiato dalla Console, da verificare) ed `E5:CD:8D:…:DA:EA` (APK del sito).
+
+**Chiave di caricamento.** È la nostra `release.keystore` (SHA-1 `E5:CD:8D:…:DA:EA`), registrata dal primo AAB accettato, la 1.50.0 (102), il 13/10/2026.
+- Il primo tentativo del 12/10 era stato rifiutato con l'errore "chiave `CB:F4:30:…`", ma non è servito chiedere una reimpostazione.
+- `docs/play-store/upload_certificate.pem` è il certificato di questa chiave.
+
+**Conseguenza:** l'APK del sito e l'app del Play Store hanno chiavi di firma diverse. Chi passa dal sito allo store deve disinstallare l'app una volta.
 
 ## Firma dell'app (primo caricamento)
 
