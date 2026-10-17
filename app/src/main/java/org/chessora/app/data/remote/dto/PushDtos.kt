@@ -2,6 +2,10 @@ package org.chessora.app.data.remote.dto
 
 import kotlinx.serialization.Serializable
 
+/** POST api/me/app-version - BuildConfig.VERSION_NAME/VERSION_CODE. */
+@Serializable
+data class SetAppVersionRequest(val appVersionName: String, val appVersionCode: Int)
+
 /**
  * Specchio di Chessora.Contracts.Push.RegisterDeviceRequest (POST
  * /api/devices/register). [platform] è sempre la stringa costante "android"

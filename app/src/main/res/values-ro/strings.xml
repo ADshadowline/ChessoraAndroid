@@ -387,7 +387,7 @@
     <string name="language_name_russian">Русский</string>
     <string name="language_name_romanian">Română</string>
     <string name="language_name_turkish">Türkçe</string>
-    <string name="help_title">Ajutor</string>
+    <string name="help_title">Info</string>
     <string name="help_features_title">Ce poți face cu Chessora</string>
     <string name="help_features_subtitle">Principalele funcții ale aplicației, pe puncte</string>
     <string name="help_changelog_title">Noutăți și corecturi</string>
@@ -409,4 +409,8 @@
         <item>Primește notificări pentru noutăți, runde publicate și mesaje noi.</item>
         <item>Personalizează aplicația din Setări: limba (8 disponibile), fotografia, notificările, confidențialitatea și ștergerea contului.</item>
     </string-array>
+    <string name="server_maintenance_title">Serverul se actualizează</string>
+    <string name="server_maintenance_body">Încearcă din nou în aproximativ zece minute.</string>
+    <string name="server_maintenance_retry">Reîncearcă</string>
+    <string name="info_tile_label">Info</string>
 </resources>

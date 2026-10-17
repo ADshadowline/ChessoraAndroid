@@ -34,8 +34,8 @@ android {
         // valerne la pena su un'app di sola consultazione.
         minSdk = 26
         targetSdk = 36
-        versionCode = 104
-        versionName = "1.51.0"
+        versionCode = 105
+        versionName = "1.52.0"
 
         // URL base dell'Api Chessora in produzione: iniettato come BuildConfig
         // string invece che hard-codato nel client Retrofit, cosi' un domani un

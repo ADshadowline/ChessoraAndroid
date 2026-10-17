@@ -308,7 +308,17 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
             composable(ChessoraDestinations.SPLASH) {
                 val clubLogoUrl = NetworkModule.resolveAssetUrl(branding?.logoImage)
                 val splashBackgroundUri by sessionViewModel.splashBackgroundUri.collectAsState()
-                SplashScreen(clubLogoUrl = clubLogoUrl, backgroundUri = splashBackgroundUri, onFinished = {
+                val appRepository = (androidx.compose.ui.platform.LocalContext.current.applicationContext as org.chessora.app.ChessoraApplication).repository
+                // Se il primo controllo è fallito, i dati di sessione (branding, identità)
+                // caricati all'avvio vanno ricaricati quando il server torna su.
+                val serverWasDown = remember { mutableStateOf(false) }
+                val checkServer: suspend () -> Boolean = {
+                    val reachable = appRepository.isServerReachable()
+                    if (!reachable) serverWasDown.value = true
+                    else if (serverWasDown.value) sessionViewModel.onServerBackOnline()
+                    reachable
+                }
+                SplashScreen(clubLogoUrl = clubLogoUrl, backgroundUri = splashBackgroundUri, checkServer = checkServer, onFinished = {
                     // Al primissimo avvio in assoluto (nessuna lingua mai scelta) si passa
                     // PRIMA dal selettore lingua, ancora prima del login - vedi
                     // ui/language/AppLanguage.hasChosenLanguage e postLoginDestination sotto

@@ -389,7 +389,7 @@
     <string name="language_name_russian">Русский</string>
     <string name="language_name_romanian">Română</string>
     <string name="language_name_turkish">Türkçe</string>
-    <string name="help_title">Помощь</string>
+    <string name="help_title">Инфо</string>
     <string name="help_features_title">Что можно делать в Chessora</string>
     <string name="help_features_subtitle">Основные возможности приложения по пунктам</string>
     <string name="help_changelog_title">Новое и исправления</string>
@@ -411,4 +411,8 @@
         <item>Получайте уведомления о новостях, опубликованных турах и новых сообщениях.</item>
         <item>Настраивайте приложение в Настройках: язык (8 на выбор), фото, уведомления, конфиденциальность и удаление аккаунта.</item>
     </string-array>
+    <string name="server_maintenance_title">Сервер обновляется</string>
+    <string name="server_maintenance_body">Попробуйте снова минут через десять.</string>
+    <string name="server_maintenance_retry">Повторить</string>
+    <string name="info_tile_label">Инфо</string>
 </resources>

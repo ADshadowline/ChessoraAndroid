@@ -13,6 +13,12 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
+    AppRelease("1.52.0", "ottobre 2026", listOf(
+        "Se all'apertura il server non risponde (per esempio durante un aggiornamento), l'app lo dice chiaramente e ti fa riprovare.",
+        "Direttivo: niente più scorrimento orizzontale, chi non ci sta va a capo; nomi centrati e mai troncati.",
+        "Direttivo: ogni livello ha una striscia di colore diverso, a colori alternati.",
+        "L'icona \"?\" diventa \"Info\", con una nuova grafica; dopo ogni aggiornamento un riflesso di luce la fa notare finché non la apri.",
+    )),
     AppRelease("1.51.0", "ottobre 2026", listOf(
         "Nuova icona \"?\" in Home: cosa puoi fare con l'app e le novità di ogni versione.",
         "Messaggi: tieni premuta una chat per selezionarla ed eliminarla dal tuo elenco (anche più chat insieme).",

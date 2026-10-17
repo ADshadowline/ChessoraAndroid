@@ -46,6 +46,8 @@ import org.chessora.app.data.remote.dto.SetMessagingPlayerSettingsRequest
 import org.chessora.app.data.remote.dto.HideConversationsRequest
 import org.chessora.app.data.remote.dto.BlockPlayerRequest
 import org.chessora.app.data.remote.dto.BlockStatus
+import org.chessora.app.data.remote.dto.SetAppVersionRequest
+import org.chessora.app.BuildConfig
 import org.chessora.app.data.remote.dto.ShopProduct
 import org.chessora.app.data.remote.dto.StartClubConversationRequest
 import org.chessora.app.data.remote.dto.StartDirectConversationRequest
@@ -333,6 +335,24 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun getPlayerRoles(idPlayer: Int, club: String): Result<List<String>> =
         safeCall { api.getPlayerRoles(idPlayer, club) }
+
+    /** Comunica al server la versione installata per l'utente autenticato - vedi
+     * SessionViewModel.reportAppVersion. */
+    suspend fun reportAppVersion(): Result<Unit> =
+        safeCall { api.setAppVersion(SetAppVersionRequest(BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)) }
+
+    /** False se il server non risponde entro 10 secondi o risponde con un errore (es. 503
+     * mentre è in corso una pubblicazione) - usato dallo splash per mostrare "Server in
+     * aggiornamento" invece di schermate vuote o errori sparsi. */
+    suspend fun isServerReachable(): Boolean =
+        kotlinx.coroutines.withTimeoutOrNull(10_000) {
+            runCatching {
+                val response = api.ping()
+                response.body()?.close()
+                response.errorBody()?.close()
+                response.isSuccessful
+            }.getOrDefault(false)
+        } ?: false
 
     // ---------- Messaggi ----------
 

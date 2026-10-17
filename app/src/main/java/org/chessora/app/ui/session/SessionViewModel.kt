@@ -61,6 +61,16 @@ class SessionViewModel(
         refreshUnreadMessagesCount()
     }
 
+    /** Richiamata dallo splash quando il server torna raggiungibile dopo l'avviso "Server in
+     * aggiornamento": quanto caricato in init{} (branding, identità, contatori) era fallito
+     * perché offline, e senza questo la barra in alto resterebbe a "Chessora" senza il
+     * logo del circolo fino al prossimo riavvio. */
+    fun onServerBackOnline() {
+        viewModelScope.launch { refreshClubAndIdentity() }
+        refreshRegisteredTournamentsCount()
+        refreshUnreadMessagesCount()
+    }
+
     /** Richiamata da Impostazioni ("Esci"): azzera sessione E circolo scelto, MA NON
      * l'identificazione del socio ([ClubPreferences.identifiedPlayerId]/
      * [ClubPreferences.identifiedPlayerName]) - il dispositivo resta associato al socio
@@ -250,6 +260,10 @@ class SessionViewModel(
             loadBranding(club)
         }
         DeviceRegistration.registerCurrentToken(repository, clubPreferences, club)
+        // Versione dell'app sull'account, a ogni avvio e dopo ogni login: la
+        // registrazione push qui sopra la porta solo se le notifiche sono attive e il
+        // telefono ha un token Firebase - senza, l'amministrazione non la vedeva mai.
+        if (AuthSession.accessToken != null) repository.reportAppVersion()
 
         _identityResolved.value = clubPreferences.identityResolved.first()
         _identifiedPlayerName.value = clubPreferences.identifiedPlayerName.first()

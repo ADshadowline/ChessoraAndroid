@@ -385,7 +385,7 @@
     <string name="language_name_russian">Русский</string>
     <string name="language_name_romanian">Română</string>
     <string name="language_name_turkish">Türkçe</string>
-    <string name="help_title">Aide</string>
+    <string name="help_title">Infos</string>
     <string name="help_features_title">Ce que tu peux faire avec Chessora</string>
     <string name="help_features_subtitle">Les principales fonctions de l\'app, point par point</string>
     <string name="help_changelog_title">Nouveautés et corrections</string>
@@ -407,4 +407,8 @@
         <item>Reçois des notifications pour les nouveautés, les rondes publiées et les nouveaux messages.</item>
         <item>Personnalise l\'app dans Paramètres : langue (8 disponibles), photo, notifications, confidentialité et suppression du compte.</item>
     </string-array>
+    <string name="server_maintenance_title">Serveur en cours de mise à jour</string>
+    <string name="server_maintenance_body">Réessaie dans une dizaine de minutes.</string>
+    <string name="server_maintenance_retry">Réessayer</string>
+    <string name="info_tile_label">Infos</string>
 </resources>

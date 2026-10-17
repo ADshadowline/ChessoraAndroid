@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.chessora.app.data.local.ClubPreferences
@@ -83,6 +84,17 @@ class HomeViewModel(
 
     val desktopBackgroundUri: StateFlow<String?> = clubPreferences.desktopBackgroundUri
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    /** True finché, dopo un aggiornamento, l'utente non ha ancora aperto l'icona "Info":
+     * fa passare il riflesso di luce sull'icona. False come valore iniziale, così il
+     * riflesso non lampeggia per un istante prima che la preferenza sia letta. */
+    val showInfoShine: StateFlow<Boolean> = clubPreferences.infoSeenVersionCode
+        .map { it < org.chessora.app.BuildConfig.VERSION_CODE }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    fun markInfoSeen() {
+        viewModelScope.launch { clubPreferences.setInfoSeenVersionCode(org.chessora.app.BuildConfig.VERSION_CODE) }
+    }
 
     /** Ordine/visibilità delle icone scelti in ui/settings/IconSettingsScreen.kt - vedi
      * DesktopHomeGrid.applyIconPreferences. */

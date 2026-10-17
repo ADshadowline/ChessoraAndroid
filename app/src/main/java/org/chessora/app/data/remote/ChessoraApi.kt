@@ -40,6 +40,7 @@ import org.chessora.app.data.remote.dto.SetMessagingPlayerSettingsRequest
 import org.chessora.app.data.remote.dto.HideConversationsRequest
 import org.chessora.app.data.remote.dto.BlockPlayerRequest
 import org.chessora.app.data.remote.dto.BlockStatus
+import org.chessora.app.data.remote.dto.SetAppVersionRequest
 import org.chessora.app.data.remote.dto.StartConversationResult
 import org.chessora.app.data.remote.dto.StartDirectConversationRequest
 import org.chessora.app.data.remote.dto.RegisterDeviceRequest
@@ -319,6 +320,16 @@ interface ChessoraApi {
      * nessun login richiesto (stesso livello di fiducia di /identify). */
     @GET("api/players/{idPlayer}/roles")
     suspend fun getPlayerRoles(@Path("idPlayer") idPlayer: Int, @Query("club") club: String): List<String>
+
+    /** Versione dell'app per l'utente autenticato (vista soci/tesserati dell'amministrazione) -
+     * indipendente dalla registrazione push, che non avviene con le notifiche spente. */
+    @POST("api/me/app-version")
+    suspend fun setAppVersion(@Body request: SetAppVersionRequest)
+
+    /** Radice dell'Api, nessun dato: risponde 200 se il server è su. Durante una
+     * pubblicazione (app_offline.htm su Aruba) risponde 503 - vedi isServerReachable. */
+    @GET("/")
+    suspend fun ping(): retrofit2.Response<okhttp3.ResponseBody>
 
     // ---------- Messaggi (ui/messaging/) ----------
     // Pubblici come tutto il resto: il chiamante fornisce il proprio idPlayer, già

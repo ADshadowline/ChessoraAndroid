@@ -59,6 +59,7 @@ class ClubPreferences(context: Context) {
         val DESKTOP_BACKGROUND_URI = stringPreferencesKey("desktop_background_uri")
         val DESKTOP_ICON_ORDER = stringPreferencesKey("desktop_icon_order")
         val DESKTOP_HIDDEN_ICONS = stringPreferencesKey("desktop_hidden_icons")
+        val INFO_SEEN_VERSION_CODE = intPreferencesKey("info_seen_version_code")
     }
 
     val selectedClub: Flow<String?> = dataStore.data.map { it[Keys.SELECTED_CLUB_CODE] }
@@ -149,6 +150,15 @@ class ClubPreferences(context: Context) {
         dataStore.edit {
             if (uri == null) it.remove(Keys.SPLASH_BACKGROUND_URI) else it[Keys.SPLASH_BACKGROUND_URI] = uri
         }
+    }
+
+    /** versionCode dell'app l'ultima volta che l'utente ha aperto l'icona "Info" della Home
+     * (0 = mai) - finché è più vecchio di quello installato, sull'icona passa un riflesso
+     * di luce per far notare le novità dell'aggiornamento (vedi HomeScreen). */
+    val infoSeenVersionCode: Flow<Int> = dataStore.data.map { it[Keys.INFO_SEEN_VERSION_CODE] ?: 0 }
+
+    suspend fun setInfoSeenVersionCode(versionCode: Int) {
+        dataStore.edit { it[Keys.INFO_SEEN_VERSION_CODE] = versionCode }
     }
 
     suspend fun setDesktopBackgroundUri(uri: String?) {

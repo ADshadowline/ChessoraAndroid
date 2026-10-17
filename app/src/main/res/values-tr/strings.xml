@@ -385,7 +385,7 @@
     <string name="language_name_russian">Русский</string>
     <string name="language_name_romanian">Română</string>
     <string name="language_name_turkish">Türkçe</string>
-    <string name="help_title">Yardım</string>
+    <string name="help_title">Bilgi</string>
     <string name="help_features_title">Chessora ile neler yapabilirsin</string>
     <string name="help_features_subtitle">Uygulamanın ana özellikleri, madde madde</string>
     <string name="help_changelog_title">Yenilikler ve düzeltmeler</string>
@@ -407,4 +407,8 @@
         <item>Yenilikler, yayınlanan turlar ve yeni mesajlar için bildirim al.</item>
         <item>Uygulamayı Ayarlar\'dan kişiselleştir: dil (8 seçenek), fotoğraf, bildirimler, gizlilik ve hesap silme.</item>
     </string-array>
+    <string name="server_maintenance_title">Sunucu güncelleniyor</string>
+    <string name="server_maintenance_body">Lütfen yaklaşık on dakika sonra tekrar dene.</string>
+    <string name="server_maintenance_retry">Tekrar dene</string>
+    <string name="info_tile_label">Bilgi</string>
 </resources>

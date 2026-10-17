@@ -8,6 +8,16 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.ui.composed
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
@@ -34,8 +44,8 @@ import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.automirrored.filled.EventNote
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import org.chessora.app.ui.help.HelpChoiceDialog
+import org.chessora.app.ui.theme.ChessoraGold
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.HowToReg
@@ -155,6 +165,7 @@ fun HomeScreen(
     val desktopBackgroundUri by viewModel.desktopBackgroundUri.collectAsState()
     val desktopIconOrder by viewModel.desktopIconOrder.collectAsState()
     val desktopHiddenIcons by viewModel.desktopHiddenIcons.collectAsState()
+    val showInfoShine by viewModel.showInfoShine.collectAsState()
 
     if (displayMode == ClubPreferences.DISPLAY_MODE_DESKTOP) {
         // Serve solo qui (non in modalità classica, dove EventsListScreen carica già gli
@@ -189,6 +200,8 @@ fun HomeScreen(
                 hasShopItems = hasShopItems,
                 nextEventStart = nextEventStart,
                 clubLogoUrl = clubLogoUrl,
+                showInfoShine = showInfoShine,
+                onInfoOpened = viewModel::markInfoSeen,
             )
         }
     } else {
@@ -399,6 +412,9 @@ private fun DesktopHomeGrid(
     /** Vedi HomeScreen - il logo del circolo mostrato sull'icona "Il Circolo" (id
      * "board") al posto di un'icona generica. */
     clubLogoUrl: String? = null,
+    /** Vedi HomeViewModel.showInfoShine / markInfoSeen. */
+    showInfoShine: Boolean = false,
+    onInfoOpened: () -> Unit = {},
 ) {
     // Messaggi e Impostazioni sono ancorate agli angoli in basso (sinistra/destra), non
     // parte della griglia scorrevole - posizione fissa richiesta esplicitamente, non
@@ -540,12 +556,15 @@ private fun DesktopHomeGrid(
                 modifier = Modifier.weight(1f, fill = false).widthIn(max = 104.dp),
                 compact = true,
             )
-            // Aiuto in mezzo (la lingua, che prima stava qui come bandierina, ora si
+            // Info in mezzo (la lingua, che prima stava qui come bandierina, ora si
             // cambia da Impostazioni): apre la scelta tra "cosa puoi fare" e novità.
-            DesktopIconTile(
-                DesktopIcon("help", R.string.help_title, Icons.AutoMirrored.Filled.HelpOutline, { showHelpDialog = true }),
+            InfoTile(
+                showShine = showInfoShine,
+                onClick = {
+                    onInfoOpened()
+                    showHelpDialog = true
+                },
                 modifier = Modifier.weight(1f, fill = false).widthIn(max = 104.dp),
-                compact = true,
             )
             DesktopIconTile(
                 DesktopIcon("settings", R.string.settings_title, Icons.Default.Settings, desktop.onOpenSettings),
@@ -558,6 +577,77 @@ private fun DesktopHomeGrid(
                 onOpenFeatures = desktop.onOpenHelpFeatures,
                 onOpenChangelog = desktop.onOpenHelpChangelog,
                 onDismiss = { showHelpDialog = false },
+            )
+        }
+    }
+}
+
+/** Tile "Info" della riga in basso: icona "i" bianca su un cerchio dorato sfumato. Se
+ * [showShine] (prima apertura dopo un aggiornamento, finché non viene toccata - vedi
+ * HomeViewModel.showInfoShine) ci passa sopra periodicamente un riflesso di luce
+ * diagonale per attirare l'attenzione sulle novità. */
+@Composable
+private fun InfoTile(showShine: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val shape = CardDefaults.shape
+    Card(onClick = onClick, shape = shape, modifier = modifier.aspectRatio(1f).clip(shape).infoShine(showShine)) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(30.dp)
+                    .clip(CircleShape)
+                    .background(Brush.linearGradient(listOf(Color(0xFFF3D27A), ChessoraGold, Color(0xFFB8860B)))),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    "i",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.Serif,
+                )
+            }
+            Text(
+                stringResource(R.string.info_tile_label),
+                style = MaterialTheme.typography.labelSmall,
+                maxLines = 1,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+        }
+    }
+}
+
+/** Riflesso di luce: una banda chiara diagonale attraversa il contenuto da sinistra a
+ * destra in 1,4 s, poi pausa di 2,2 s, all'infinito. Disegnato SOPRA il contenuto
+ * (drawWithContent) e ritagliato dalla forma della card (clip prima di questo modifier). */
+private fun Modifier.infoShine(enabled: Boolean): Modifier = composed {
+    if (!enabled) return@composed this
+    val transition = rememberInfiniteTransition(label = "infoShine")
+    val progress by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(tween(durationMillis = 1400, delayMillis = 2200, easing = LinearEasing)),
+        label = "infoShineProgress",
+    )
+    drawWithContent {
+        drawContent()
+        // Banda verticale (gradiente orizzontale) ruotata di 20°: parte del tutto fuori a
+        // sinistra e finisce del tutto fuori a destra, così durante la pausa non resta
+        // nessuna velatura visibile.
+        val band = size.width * 0.45f
+        val x = -size.width * 0.5f - band + (size.width * 2f + 2 * band) * progress
+        rotate(degrees = 20f) {
+            drawRect(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(Color.Transparent, Color.White.copy(alpha = 0.5f), Color.Transparent),
+                    startX = x - band / 2,
+                    endX = x + band / 2,
+                ),
+                topLeft = Offset(-size.width, -size.height),
+                size = androidx.compose.ui.geometry.Size(size.width * 3, size.height * 3),
             )
         }
     }

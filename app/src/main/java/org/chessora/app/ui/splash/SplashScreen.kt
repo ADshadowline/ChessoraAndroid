@@ -15,13 +15,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -68,9 +75,22 @@ private val SplashMuted = Color(0xFF8A7A68)
  * [onFinished] viene chiamato una volta sola al termine dell'animazione:
  * ChessoraNavHost decide lì la vera destinazione (onboarding/identità/home) in
  * base allo stato già noto (circolo scelto? identità già risolta?).
+ *
+ * Mentre l'animazione gira, [checkServer] verifica che il server risponda: se no
+ * (tipicamente una pubblicazione in corso), invece di proseguire verso schermate
+ * vuote o piene di errori resta qui con l'avviso "Server in aggiornamento" e un
+ * pulsante Riprova.
  */
 @Composable
-fun SplashScreen(clubLogoUrl: String? = null, backgroundUri: String? = null, onFinished: () -> Unit) {
+fun SplashScreen(
+    clubLogoUrl: String? = null,
+    backgroundUri: String? = null,
+    checkServer: suspend () -> Boolean = { true },
+    onFinished: () -> Unit,
+) {
+    var serverDown by remember { mutableStateOf(false) }
+    var retrying by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
     var lineProgress by remember { mutableFloatStateOf(0f) }
     val glowScale = remember { Animatable(0.7f) }
     val glowAlpha = remember { Animatable(0f) }
@@ -106,8 +126,9 @@ fun SplashScreen(clubLogoUrl: String? = null, backgroundUri: String? = null, onF
         line.animateTo(1f, tween(550, easing = EaseOutCubic)) { lineProgress = value }
     }
     LaunchedEffect(Unit) {
+        val serverCheck = async { checkServer() }
         delay(5000)
-        onFinished()
+        if (serverCheck.await()) onFinished() else serverDown = true
     }
 
     Box(
@@ -212,6 +233,44 @@ fun SplashScreen(clubLogoUrl: String? = null, backgroundUri: String? = null, onF
                 letterSpacing = 1.sp,
                 modifier = Modifier.padding(top = 18.dp),
             )
+            if (serverDown) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .padding(top = 28.dp, start = 32.dp, end = 32.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(Color.White.copy(alpha = 0.85f))
+                        .padding(horizontal = 24.dp, vertical = 20.dp),
+                ) {
+                    Text(
+                        stringResource(R.string.server_maintenance_title),
+                        color = ChessoraInk,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                    )
+                    Text(
+                        stringResource(R.string.server_maintenance_body),
+                        color = ChessoraInk.copy(alpha = 0.8f),
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 6.dp),
+                    )
+                    if (retrying) {
+                        CircularProgressIndicator(color = SplashRuby, modifier = Modifier.padding(top = 14.dp).size(28.dp))
+                    } else {
+                        Button(
+                            onClick = {
+                                retrying = true
+                                scope.launch {
+                                    if (checkServer()) onFinished() else retrying = false
+                                }
+                            },
+                            modifier = Modifier.padding(top = 14.dp),
+                        ) { Text(stringResource(R.string.server_maintenance_retry)) }
+                    }
+                }
+            }
         }
     }
 }
