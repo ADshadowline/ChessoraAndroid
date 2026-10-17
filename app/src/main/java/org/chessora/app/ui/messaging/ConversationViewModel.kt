@@ -13,7 +13,17 @@ import org.chessora.app.data.repository.ChessoraRepository
 
 sealed interface ConversationState {
     data object Loading : ConversationState
-    data class Ready(val messages: List<ChatMessage>, val isReadOnly: Boolean, val sending: Boolean = false) : ConversationState
+    /** blockedByMe/blockedMe: solo per le dirette (vedi BlockStatus) - con uno dei due la
+     * chat resta leggibile ma il campo di invio è disabilitato. */
+    data class Ready(
+        val messages: List<ChatMessage>,
+        val isReadOnly: Boolean,
+        val sending: Boolean = false,
+        val blockedByMe: Boolean = false,
+        val blockedMe: Boolean = false,
+    ) : ConversationState {
+        val isBlocked: Boolean get() = blockedByMe || blockedMe
+    }
     data class Error(val message: String) : ConversationState
 }
 
@@ -34,6 +44,9 @@ class ConversationViewModel(
 
     private var idConversation = idConversationArg
     private var idPlayer: Int? = null
+    /** L'altro socio di una diretta: da [recipientId] se noto, altrimenti (apertura da una
+     * notifica push, recipientId = 0) ricavato dall'elenco conversazioni in [refreshBlockStatus]. */
+    private var otherIdPlayer: Int? = recipientId.takeIf { it > 0 && !isClubConversation }
 
     fun load() {
         viewModelScope.launch {
@@ -49,6 +62,35 @@ class ConversationViewModel(
                     .onSuccess { _state.value = ConversationState.Ready(it, isReadOnly = false) }
                     .onFailure { _state.value = ConversationState.Error("Connessione non riuscita, riprova.") }
             }
+            refreshBlockStatus()
+        }
+    }
+
+    /** Aggiorna blockedByMe/blockedMe nello stato Ready (nessun effetto sulla chat
+     * "Chessora" né sulle conversazioni con un circolo, che non si bloccano). */
+    private suspend fun refreshBlockStatus() {
+        val myIdPlayer = idPlayer ?: return
+        if (idConversationArg == 0 || isClubConversation) return
+
+        if (otherIdPlayer == null && idConversation > 0) {
+            val summary = repository.getConversations(myIdPlayer).getOrNull()
+                ?.firstOrNull { it.idConversation == idConversation }
+            if (summary == null || summary.isClubConversation) return
+            otherIdPlayer = summary.otherIdPlayer
+        }
+        val other = otherIdPlayer ?: return
+        repository.getBlockStatus(myIdPlayer, other).onSuccess { status ->
+            val latest = _state.value as? ConversationState.Ready ?: return@onSuccess
+            _state.value = latest.copy(blockedByMe = status.blockedByMe, blockedMe = status.blockedMe)
+        }
+    }
+
+    /** Sblocca l'altro socio direttamente dalla chat (avviso "Hai bloccato questo giocatore"). */
+    fun unblock() {
+        val myIdPlayer = idPlayer ?: return
+        val other = otherIdPlayer ?: return
+        viewModelScope.launch {
+            repository.unblockPlayer(myIdPlayer, other).onSuccess { refreshBlockStatus() }
         }
     }
 
@@ -67,6 +109,8 @@ class ConversationViewModel(
                 val latest = _state.value as? ConversationState.Ready ?: return@onSuccess
                 _state.value = latest.copy(messages = messages)
             }
+            // Anche il blocco può cambiare mentre si è nella chat (l'altro mi blocca o mi sblocca).
+            refreshBlockStatus()
         }
     }
 
@@ -74,7 +118,7 @@ class ConversationViewModel(
         val trimmed = body.trim()
         val myIdPlayer = idPlayer
         val current = _state.value as? ConversationState.Ready ?: return
-        if (trimmed.isEmpty() || myIdPlayer == null || current.sending) return
+        if (trimmed.isEmpty() || myIdPlayer == null || current.sending || current.isBlocked) return
 
         viewModelScope.launch {
             _state.value = current.copy(sending = true)
@@ -96,14 +140,24 @@ class ConversationViewModel(
                         // primo messaggio, cosi' il nome mittente/formattazione
                         // restano coerenti con quanto risolto lato server.
                         repository.getConversationMessages(newId, myIdPlayer)
-                            .onSuccess { _state.value = ConversationState.Ready(it, isReadOnly = false) }
-                            .onFailure { _state.value = ConversationState.Ready(current.messages, isReadOnly = false) }
+                            .onSuccess { _state.value = current.copy(messages = it, sending = false) }
+                            .onFailure { _state.value = current.copy(sending = false) }
                     }
-                    .onFailure { _state.value = ConversationState.Error("Invio non riuscito, riprova.") }
+                    .onFailure {
+                        // Rifiutato perché nel frattempo uno dei due ha bloccato l'altro:
+                        // l'avviso nel campo di invio spiega già il perché.
+                        _state.value = current.copy(sending = false)
+                        refreshBlockStatus()
+                        if ((_state.value as? ConversationState.Ready)?.isBlocked != true)
+                            _state.value = ConversationState.Error("Invio non riuscito, riprova.")
+                    }
             } else {
                 repository.sendMessage(idConversation, myIdPlayer, trimmed)
-                    .onSuccess { message -> _state.value = ConversationState.Ready(current.messages + message, isReadOnly = false) }
-                    .onFailure { _state.value = current.copy(sending = false) }
+                    .onSuccess { message -> _state.value = current.copy(messages = current.messages + message, sending = false) }
+                    .onFailure {
+                        _state.value = current.copy(sending = false)
+                        refreshBlockStatus()
+                    }
             }
         }
     }

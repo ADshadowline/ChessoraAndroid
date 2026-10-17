@@ -46,6 +46,29 @@
     <string name="messaging_conversation_empty">Aucun message. Écrivez le premier !</string>
     <string name="messaging_type_hint">Écrivez un message…</string>
     <string name="messaging_send">Envoyer</string>
+    <plurals name="messaging_selected_count">
+        <item quantity="one">%1$d sélectionnée</item>
+        <item quantity="other">%1$d sélectionnées</item>
+    </plurals>
+    <string name="messaging_cancel_selection">Annuler la sélection</string>
+    <string name="messaging_delete_selected">Supprimer les discussions</string>
+    <plurals name="messaging_delete_confirm_title">
+        <item quantity="one">Supprimer la discussion ?</item>
+        <item quantity="other">Supprimer %1$d discussions ?</item>
+    </plurals>
+    <string name="messaging_delete_confirm_body">Les discussions seront retirées uniquement de ta liste. Si l\'autre personne t\'écrit à nouveau, la discussion réapparaîtra avec seulement les nouveaux messages.</string>
+    <string name="messaging_delete">Supprimer</string>
+    <string name="messaging_cancel">Annuler</string>
+    <string name="messaging_more_options">Plus d\'options</string>
+    <string name="messaging_block">Bloquer le joueur</string>
+    <string name="messaging_unblock">Débloquer le joueur</string>
+    <string name="messaging_block_confirm_title">Bloquer %1$s ?</string>
+    <string name="messaging_block_confirm_body">Il ne pourra plus t\'envoyer de messages ni te trouver dans la recherche. Tu peux le débloquer à tout moment depuis le menu de la discussion.</string>
+    <string name="messaging_block_confirm">Bloquer</string>
+    <string name="messaging_blocked_label">Bloqué</string>
+    <string name="messaging_blocked_by_me_notice">Tu as bloqué ce joueur : débloque-le pour lui écrire.</string>
+    <string name="messaging_blocked_me_notice">Tu ne peux pas envoyer de messages à ce joueur.</string>
+    <string name="messaging_action_failed">L\'opération a échoué, réessaie.</string>
     <string name="messaging_tab_players">Joueurs</string>
     <string name="messaging_tab_clubs">Clubs</string>
     <string name="messaging_search_hint">Rechercher par nom…</string>
@@ -362,4 +385,26 @@
     <string name="language_name_russian">Русский</string>
     <string name="language_name_romanian">Română</string>
     <string name="language_name_turkish">Türkçe</string>
+    <string name="help_title">Aide</string>
+    <string name="help_features_title">Ce que tu peux faire avec Chessora</string>
+    <string name="help_features_subtitle">Les principales fonctions de l\'app, point par point</string>
+    <string name="help_changelog_title">Nouveautés et corrections</string>
+    <string name="help_changelog_subtitle">La liste des modifications de chaque version</string>
+    <string name="help_close">Fermer</string>
+    <string name="help_installed_version">Version installée : %1$s</string>
+    <string-array name="help_features">
+        <item>Choisis ton club et consulte ses informations : comité, contacts et emplacement sur la carte.</item>
+        <item>Utilise l\'accueil à icônes : réorganise-les en les faisant glisser, masque celles que tu n\'utilises pas et choisis le fond.</item>
+        <item>Consulte Événements et Calendrier avec les tournois et rendez-vous de tous les clubs, avec un compte à rebours.</item>
+        <item>Préinscris-toi aux tournois, retire-toi, vois les inscrits et lis le règlement.</item>
+        <item>Dans « Mes tournois », suis appariements, résultats et classement presque en temps réel, avec une alerte à chaque nouvelle ronde.</item>
+        <item>Si tu organises des tournois, « Gestion des tournois » te permet de générer et publier les rondes, saisir les résultats et gérer classement et prix.</item>
+        <item>Consulte le classement national et du club et l\'évolution de ton Elo.</item>
+        <item>Dans « Mes progrès », analyse tes parties en ligne sur Lichess et Chess.com : résultats, adversaires et ouvertures.</item>
+        <item>Dans « Mes parties », enregistre tes parties (en collant le PGN ou en les composant sur l\'échiquier) et rejoue-les coup par coup.</item>
+        <item>Écris aux autres joueurs et aux clubs, vois si tes messages ont été lus, supprime des discussions et bloque qui tu veux.</item>
+        <item>Lis les Actualités et regarde les Vidéos de ton club et du réseau.</item>
+        <item>Reçois des notifications pour les nouveautés, les rondes publiées et les nouveaux messages.</item>
+        <item>Personnalise l\'app dans Paramètres : langue (8 disponibles), photo, notifications, confidentialité et suppression du compte.</item>
+    </string-array>
 </resources>

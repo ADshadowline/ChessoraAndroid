@@ -72,6 +72,10 @@ object ChessoraDestinations {
     /** Canali YouTube spuntabili per la sezione Video - vedi
      * ui/settings/VideoChannelSettingsScreen.kt, raggiungibile solo da Impostazioni. */
     const val VIDEO_CHANNEL_SETTINGS = "video-channel-settings"
+    /** Aiuto (icona "?" della Home desktop, vedi ui/help/HelpScreens.kt): cosa puoi fare
+     * con l'app e novità per versione. */
+    const val HELP_FEATURES = "help-features"
+    const val HELP_CHANGELOG = "help-changelog"
     // Non più in bottom bar (spostati dentro "Altro") - raggiungibili solo da lì,
     // come Direttivo/Negozio.
     const val CALENDAR = "calendar"

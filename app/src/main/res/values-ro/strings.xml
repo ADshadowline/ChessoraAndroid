@@ -46,6 +46,31 @@
     <string name="messaging_conversation_empty">Niciun mesaj. Scrie primul!</string>
     <string name="messaging_type_hint">Scrie un mesaj…</string>
     <string name="messaging_send">Trimite</string>
+    <plurals name="messaging_selected_count">
+        <item quantity="one">%1$d selectată</item>
+        <item quantity="few">%1$d selectate</item>
+        <item quantity="other">%1$d selectate</item>
+    </plurals>
+    <string name="messaging_cancel_selection">Anulează selecția</string>
+    <string name="messaging_delete_selected">Șterge conversațiile</string>
+    <plurals name="messaging_delete_confirm_title">
+        <item quantity="one">Ștergi conversația?</item>
+        <item quantity="few">Ștergi %1$d conversații?</item>
+        <item quantity="other">Ștergi %1$d de conversații?</item>
+    </plurals>
+    <string name="messaging_delete_confirm_body">Conversațiile vor fi eliminate doar din lista ta. Dacă cealaltă persoană îți scrie din nou, conversația va reapărea doar cu mesajele noi.</string>
+    <string name="messaging_delete">Șterge</string>
+    <string name="messaging_cancel">Anulează</string>
+    <string name="messaging_more_options">Mai multe opțiuni</string>
+    <string name="messaging_block">Blochează jucătorul</string>
+    <string name="messaging_unblock">Deblochează jucătorul</string>
+    <string name="messaging_block_confirm_title">Blochezi pe %1$s?</string>
+    <string name="messaging_block_confirm_body">Nu îți va mai putea trimite mesaje și nu te va mai găsi la căutare. Îl poți debloca oricând din meniul conversației.</string>
+    <string name="messaging_block_confirm">Blochează</string>
+    <string name="messaging_blocked_label">Blocat</string>
+    <string name="messaging_blocked_by_me_notice">Ai blocat acest jucător: deblochează-l pentru a-i scrie.</string>
+    <string name="messaging_blocked_me_notice">Nu poți trimite mesaje acestui jucător.</string>
+    <string name="messaging_action_failed">Operațiunea nu a reușit, încearcă din nou.</string>
     <string name="messaging_tab_players">Jucători</string>
     <string name="messaging_tab_clubs">Cluburi</string>
     <string name="messaging_search_hint">Caută după nume…</string>
@@ -362,4 +387,26 @@
     <string name="language_name_russian">Русский</string>
     <string name="language_name_romanian">Română</string>
     <string name="language_name_turkish">Türkçe</string>
+    <string name="help_title">Ajutor</string>
+    <string name="help_features_title">Ce poți face cu Chessora</string>
+    <string name="help_features_subtitle">Principalele funcții ale aplicației, pe puncte</string>
+    <string name="help_changelog_title">Noutăți și corecturi</string>
+    <string name="help_changelog_subtitle">Lista modificărilor din fiecare versiune</string>
+    <string name="help_close">Închide</string>
+    <string name="help_installed_version">Versiunea instalată: %1$s</string>
+    <string-array name="help_features">
+        <item>Alege-ți clubul și vezi informațiile lui: comitetul, contactele și locația pe hartă.</item>
+        <item>Folosește ecranul principal cu pictograme: reordonează-le prin tragere, ascunde-le pe cele nefolosite și alege fundalul.</item>
+        <item>Consultă Evenimente și Calendar cu turneele și întâlnirile tuturor cluburilor, cu numărătoare inversă.</item>
+        <item>Preînscrie-te la turnee, retrage-te, vezi înscrișii și citește regulamentul.</item>
+        <item>În „Turneele mele” urmărește perechile, rezultatele și clasamentul aproape în timp real, cu o notificare la fiecare rundă nouă.</item>
+        <item>Dacă organizezi turnee, din „Gestionare turnee” generezi și publici rundele, introduci rezultatele și gestionezi clasamentul și premierea.</item>
+        <item>Vezi clasamentul național și al clubului și evoluția Elo-ului tău.</item>
+        <item>În „Progresul meu” îți analizezi partidele online de pe Lichess și Chess.com: rezultate, adversari și deschideri.</item>
+        <item>În „Partidele mele” îți salvezi partidele (lipind PGN-ul sau compunându-le pe tablă) și le revezi mutare cu mutare.</item>
+        <item>Scrie altor jucători și cluburilor, vezi dacă mesajele au fost citite, șterge conversații și blochează pe cine vrei.</item>
+        <item>Citește Știrile și urmărește Videoclipurile clubului tău și ale rețelei.</item>
+        <item>Primește notificări pentru noutăți, runde publicate și mesaje noi.</item>
+        <item>Personalizează aplicația din Setări: limba (8 disponibile), fotografia, notificările, confidențialitatea și ștergerea contului.</item>
+    </string-array>
 </resources>

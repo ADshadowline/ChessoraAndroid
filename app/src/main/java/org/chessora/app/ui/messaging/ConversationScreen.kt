@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -36,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import java.time.Instant
 import java.time.ZoneId
@@ -107,7 +109,30 @@ fun ConversationScreen(idConversation: Int, isClubConversation: Boolean, recipie
                     }
                 }
 
-                if (!current.isReadOnly) {
+                if (!current.isReadOnly && current.isBlocked) {
+                    // Chat con un blocco attivo (in qualunque direzione): resta leggibile,
+                    // ma al posto del campo di invio un avviso - con "Sblocca" se il
+                    // blocco l'ho messo io.
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(
+                            stringResource(if (current.blockedByMe) R.string.messaging_blocked_by_me_notice else R.string.messaging_blocked_me_notice),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                        )
+                        if (current.blockedByMe) {
+                            TextButton(onClick = { viewModel.unblock() }) {
+                                Text(stringResource(R.string.messaging_unblock))
+                            }
+                        }
+                    }
+                } else if (!current.isReadOnly) {
                     var text by remember { mutableStateOf("") }
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(8.dp),

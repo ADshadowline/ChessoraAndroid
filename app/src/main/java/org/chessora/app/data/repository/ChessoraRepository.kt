@@ -43,6 +43,9 @@ import org.chessora.app.data.remote.dto.RegisterDeviceRequest
 import org.chessora.app.data.remote.dto.ReportDeliveryRequest
 import org.chessora.app.data.remote.dto.SendMessageRequest
 import org.chessora.app.data.remote.dto.SetMessagingPlayerSettingsRequest
+import org.chessora.app.data.remote.dto.HideConversationsRequest
+import org.chessora.app.data.remote.dto.BlockPlayerRequest
+import org.chessora.app.data.remote.dto.BlockStatus
 import org.chessora.app.data.remote.dto.ShopProduct
 import org.chessora.app.data.remote.dto.StartClubConversationRequest
 import org.chessora.app.data.remote.dto.StartDirectConversationRequest
@@ -368,6 +371,18 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun setMessagingSettings(idPlayer: Int, hideDeliveryAndReadStatus: Boolean): Result<Unit> =
         safeCall { api.setMessagingSettings(SetMessagingPlayerSettingsRequest(idPlayer, hideDeliveryAndReadStatus)) }
+
+    suspend fun hideConversations(idPlayer: Int, idConversations: List<Int>): Result<Unit> =
+        safeCall { api.hideConversations(HideConversationsRequest(idPlayer, idConversations)) }
+
+    suspend fun blockPlayer(idPlayer: Int, blockedIdPlayer: Int): Result<Unit> =
+        safeCall { api.blockPlayer(BlockPlayerRequest(idPlayer, blockedIdPlayer)) }
+
+    suspend fun unblockPlayer(idPlayer: Int, blockedIdPlayer: Int): Result<Unit> =
+        safeCall { api.unblockPlayer(blockedIdPlayer, idPlayer) }
+
+    suspend fun getBlockStatus(idPlayer: Int, otherIdPlayer: Int): Result<BlockStatus> =
+        safeCall { api.getBlockStatus(idPlayer, otherIdPlayer) }
 
     // ---------- Notifiche push ----------
 

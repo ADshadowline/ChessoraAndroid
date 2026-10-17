@@ -53,6 +53,29 @@
     <string name="messaging_conversation_empty">Nessun messaggio. Scrivi il primo!</string>
     <string name="messaging_type_hint">Scrivi un messaggio…</string>
     <string name="messaging_send">Invia</string>
+    <plurals name="messaging_selected_count">
+        <item quantity="one">%1$d selezionata</item>
+        <item quantity="other">%1$d selezionate</item>
+    </plurals>
+    <string name="messaging_cancel_selection">Annulla selezione</string>
+    <string name="messaging_delete_selected">Elimina chat</string>
+    <plurals name="messaging_delete_confirm_title">
+        <item quantity="one">Eliminare la chat?</item>
+        <item quantity="other">Eliminare %1$d chat?</item>
+    </plurals>
+    <string name="messaging_delete_confirm_body">Le chat verranno tolte solo dal tuo elenco. Se l\'altra persona ti scrive di nuovo, la chat ricomparirà con i soli messaggi nuovi.</string>
+    <string name="messaging_delete">Elimina</string>
+    <string name="messaging_cancel">Annulla</string>
+    <string name="messaging_more_options">Altre opzioni</string>
+    <string name="messaging_block">Blocca giocatore</string>
+    <string name="messaging_unblock">Sblocca giocatore</string>
+    <string name="messaging_block_confirm_title">Bloccare %1$s?</string>
+    <string name="messaging_block_confirm_body">Non potrà più inviarti messaggi e non ti troverà nella ricerca. Puoi sbloccarlo in qualsiasi momento dal menu della chat.</string>
+    <string name="messaging_block_confirm">Blocca</string>
+    <string name="messaging_blocked_label">Bloccato</string>
+    <string name="messaging_blocked_by_me_notice">Hai bloccato questo giocatore: sbloccalo per scrivergli.</string>
+    <string name="messaging_blocked_me_notice">Non puoi inviare messaggi a questo giocatore.</string>
+    <string name="messaging_action_failed">Operazione non riuscita, riprova.</string>
     <string name="messaging_tab_players">Soci</string>
     <string name="messaging_tab_clubs">Circoli</string>
     <string name="messaging_search_hint">Cerca per nome…</string>
@@ -382,4 +405,26 @@
     <string name="language_name_russian">Русский</string>
     <string name="language_name_romanian">Română</string>
     <string name="language_name_turkish">Türkçe</string>
+    <string name="help_title">Aiuto</string>
+    <string name="help_features_title">Cosa puoi fare con Chessora</string>
+    <string name="help_features_subtitle">Le funzioni principali dell\'app, per punti</string>
+    <string name="help_changelog_title">Novità e correzioni</string>
+    <string name="help_changelog_subtitle">L\'elenco delle modifiche di ogni versione</string>
+    <string name="help_close">Chiudi</string>
+    <string name="help_installed_version">Versione installata: %1$s</string>
+    <string-array name="help_features">
+        <item>Scegli il tuo circolo e consulta le sue informazioni: direttivo, contatti e posizione sulla mappa.</item>
+        <item>Usa la Home a icone: riordinale trascinandole, nascondi quelle che non usi e scegli lo sfondo.</item>
+        <item>Consulta Eventi e Calendario con i tornei e gli appuntamenti di tutti i circoli, con il conto alla rovescia.</item>
+        <item>Preiscriviti ai tornei, ritirati, guarda gli iscritti e leggi il bando.</item>
+        <item>In \"I miei tornei\" segui abbinamenti, risultati e classifica quasi in tempo reale, con un avviso quando esce un nuovo turno.</item>
+        <item>Se organizzi tornei, da \"Gestione tornei\" generi e pubblichi i turni, inserisci i risultati e gestisci classifica e premiazione.</item>
+        <item>Guarda la classifica nazionale e del circolo e l\'andamento del tuo Elo nel tempo.</item>
+        <item>In \"I miei progressi\" analizzi le tue partite online di Lichess e Chess.com: risultati, avversari e aperture.</item>
+        <item>In \"Le mie partite\" salvi le tue partite (incollando il PGN o componendole sulla scacchiera) e le rivedi mossa per mossa.</item>
+        <item>Scrivi ad altri giocatori e ai circoli, vedi se i messaggi sono stati letti, elimina le chat e blocca chi non vuoi sentire.</item>
+        <item>Leggi le News e guarda i Video del tuo circolo e della rete.</item>
+        <item>Ricevi notifiche per le novità, i turni pubblicati e i nuovi messaggi.</item>
+        <item>Personalizza l\'app da Impostazioni: lingua (8 disponibili), foto, notifiche, privacy ed eliminazione dell\'account.</item>
+    </string-array>
 </resources>

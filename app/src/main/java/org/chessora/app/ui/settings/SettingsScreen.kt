@@ -44,6 +44,10 @@ import org.chessora.app.BuildConfig
 import org.chessora.app.R
 import org.chessora.app.data.local.ClubPreferences
 import org.chessora.app.ui.common.chessoraViewModel
+import org.chessora.app.ui.language.AppLanguage
+import org.chessora.app.ui.language.LanguagePickerDialog
+import org.chessora.app.ui.language.currentAppLanguageTag
+import org.chessora.app.ui.language.setAppLanguage
 
 /**
  * "La mia foto" è stata spostata qui da ui/more/MoreScreen.kt su richiesta esplicita.
@@ -74,6 +78,7 @@ fun SettingsScreen(
     val context = LocalContext.current
     var showResetConfirmation by remember { mutableStateOf(false) }
     var showDeleteAccountConfirmation by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
     val deletingAccount by viewModel.deletingAccount.collectAsState()
     val deleteAccountError by viewModel.deleteAccountError.collectAsState()
 
@@ -102,7 +107,17 @@ fun SettingsScreen(
     Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(16.dp)) {
         Text(stringResource(R.string.settings_title), style = MaterialTheme.typography.titleLarge)
 
-        OutlinedButton(onClick = onChangeClub, modifier = Modifier.fillMaxWidth().padding(top = 24.dp)) {
+        // Lingua spostata qui dalla Home desktop (richiesta esplicita) - stesso dialog del
+        // selettore al primo avvio, vedi ui/language/LanguagePicker.kt.
+        val currentLanguage = AppLanguage.entries.firstOrNull { it.tag == currentAppLanguageTag() }
+        OutlinedButton(onClick = { showLanguageDialog = true }, modifier = Modifier.fillMaxWidth().padding(top = 24.dp)) {
+            Text(
+                stringResource(R.string.language_tile_label) + ": " +
+                    (currentLanguage?.let { "${it.flag}  " + stringResource(it.labelRes) } ?: ""),
+            )
+        }
+
+        OutlinedButton(onClick = onChangeClub, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
             Text(stringResource(R.string.settings_change_club))
         }
 
@@ -273,6 +288,13 @@ fun SettingsScreen(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 4.dp, bottom = 16.dp),
+        )
+    }
+
+    if (showLanguageDialog) {
+        LanguagePickerDialog(
+            onSelect = { tag -> setAppLanguage(tag); showLanguageDialog = false },
+            onDismiss = { showLanguageDialog = false },
         )
     }
 

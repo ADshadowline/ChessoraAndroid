@@ -46,6 +46,29 @@
     <string name="messaging_conversation_empty">No messages. Write the first one!</string>
     <string name="messaging_type_hint">Write a message…</string>
     <string name="messaging_send">Send</string>
+    <plurals name="messaging_selected_count">
+        <item quantity="one">%1$d selected</item>
+        <item quantity="other">%1$d selected</item>
+    </plurals>
+    <string name="messaging_cancel_selection">Cancel selection</string>
+    <string name="messaging_delete_selected">Delete chats</string>
+    <plurals name="messaging_delete_confirm_title">
+        <item quantity="one">Delete this chat?</item>
+        <item quantity="other">Delete %1$d chats?</item>
+    </plurals>
+    <string name="messaging_delete_confirm_body">The chats will only be removed from your list. If the other person writes to you again, the chat will reappear with only the new messages.</string>
+    <string name="messaging_delete">Delete</string>
+    <string name="messaging_cancel">Cancel</string>
+    <string name="messaging_more_options">More options</string>
+    <string name="messaging_block">Block player</string>
+    <string name="messaging_unblock">Unblock player</string>
+    <string name="messaging_block_confirm_title">Block %1$s?</string>
+    <string name="messaging_block_confirm_body">They will no longer be able to message you or find you in search. You can unblock them at any time from the chat menu.</string>
+    <string name="messaging_block_confirm">Block</string>
+    <string name="messaging_blocked_label">Blocked</string>
+    <string name="messaging_blocked_by_me_notice">You blocked this player: unblock them to write to them.</string>
+    <string name="messaging_blocked_me_notice">You can\'t send messages to this player.</string>
+    <string name="messaging_action_failed">Something went wrong, please try again.</string>
     <string name="messaging_tab_players">Players</string>
     <string name="messaging_tab_clubs">Clubs</string>
     <string name="messaging_search_hint">Search by name…</string>
@@ -362,4 +385,26 @@
     <string name="language_name_russian">Русский</string>
     <string name="language_name_romanian">Română</string>
     <string name="language_name_turkish">Türkçe</string>
+    <string name="help_title">Help</string>
+    <string name="help_features_title">What you can do with Chessora</string>
+    <string name="help_features_subtitle">The main features of the app, point by point</string>
+    <string name="help_changelog_title">What\'s new and fixes</string>
+    <string name="help_changelog_subtitle">The list of changes in each version</string>
+    <string name="help_close">Close</string>
+    <string name="help_installed_version">Installed version: %1$s</string>
+    <string-array name="help_features">
+        <item>Choose your club and see its details: board, contacts and location on the map.</item>
+        <item>Use the icon Home: reorder icons by dragging, hide the ones you don\'t use and pick a background.</item>
+        <item>Browse Events and Calendar with tournaments and appointments from every club, with a countdown.</item>
+        <item>Pre-register for tournaments, withdraw, see who has entered and read the tournament notice.</item>
+        <item>In \"My tournaments\" follow pairings, results and standings almost in real time, with an alert when a new round is published.</item>
+        <item>If you organise tournaments, \"Tournament management\" lets you generate and publish rounds, enter results and handle standings and prizes.</item>
+        <item>See the national and club rankings and how your Elo has changed over time.</item>
+        <item>In \"My progress\" analyse your online games on Lichess and Chess.com: results, opponents and openings.</item>
+        <item>In \"My games\" save your games (paste a PGN or set them up on the board) and replay them move by move.</item>
+        <item>Message other players and clubs, see when messages are read, delete chats and block people you don\'t want to hear from.</item>
+        <item>Read the News and watch the Videos from your club and the network.</item>
+        <item>Get notifications for news, published rounds and new messages.</item>
+        <item>Customise the app in Settings: language (8 available), photo, notifications, privacy and account deletion.</item>
+    </string-array>
 </resources>

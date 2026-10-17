@@ -440,6 +440,8 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                             onOpenShop = { navController.navigate(ChessoraDestinations.SHOP) },
                             onOpenVideo = { navController.navigate(ChessoraDestinations.VIDEO) },
                             onOpenSettings = { navController.navigate(ChessoraDestinations.SETTINGS) },
+                            onOpenHelpFeatures = { navController.navigate(ChessoraDestinations.HELP_FEATURES) },
+                            onOpenHelpChangelog = { navController.navigate(ChessoraDestinations.HELP_CHANGELOG) },
                             onOpenTournamentManager = { navController.navigate(ChessoraDestinations.TOURNAMENT_MANAGER_LIST) },
                         ),
                         clubLogoUrl = NetworkModule.resolveAssetUrl(branding?.logoImage),
@@ -604,7 +606,9 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                 MessagingListScreen(
                     onOpenConversation = { conversation ->
                         navController.navigate(
-                            ChessoraDestinations.conversation(conversation.idConversation, conversation.isClubConversation, 0, conversation.displayName),
+                            // recipientId = l'altro socio per le dirette: serve alla chat per
+                            // sapere subito se c'è un blocco (invio disabilitato).
+                            ChessoraDestinations.conversation(conversation.idConversation, conversation.isClubConversation, conversation.otherIdPlayer ?: 0, conversation.displayName),
                         )
                     },
                     onNewMessage = { navController.navigate(ChessoraDestinations.NEW_MESSAGE) },
@@ -762,6 +766,12 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
             }
             composable(ChessoraDestinations.VIDEO_CHANNEL_SETTINGS) {
                 VideoChannelSettingsScreen()
+            }
+            composable(ChessoraDestinations.HELP_FEATURES) {
+                org.chessora.app.ui.help.HelpFeaturesScreen()
+            }
+            composable(ChessoraDestinations.HELP_CHANGELOG) {
+                org.chessora.app.ui.help.HelpChangelogScreen()
             }
         }
     }

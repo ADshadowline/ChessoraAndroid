@@ -37,6 +37,9 @@ import org.chessora.app.data.remote.dto.RankingResponse
 import org.chessora.app.data.remote.dto.SendMessageRequest
 import org.chessora.app.data.remote.dto.StartClubConversationRequest
 import org.chessora.app.data.remote.dto.SetMessagingPlayerSettingsRequest
+import org.chessora.app.data.remote.dto.HideConversationsRequest
+import org.chessora.app.data.remote.dto.BlockPlayerRequest
+import org.chessora.app.data.remote.dto.BlockStatus
 import org.chessora.app.data.remote.dto.StartConversationResult
 import org.chessora.app.data.remote.dto.StartDirectConversationRequest
 import org.chessora.app.data.remote.dto.RegisterDeviceRequest
@@ -360,6 +363,19 @@ interface ChessoraApi {
 
     @PUT("api/messaging/settings")
     suspend fun setMessagingSettings(@Body request: SetMessagingPlayerSettingsRequest)
+
+    /** Cancella le conversazioni dal solo elenco del chiamante. */
+    @POST("api/messaging/conversations/hide")
+    suspend fun hideConversations(@Body request: HideConversationsRequest)
+
+    @POST("api/messaging/blocks")
+    suspend fun blockPlayer(@Body request: BlockPlayerRequest)
+
+    @DELETE("api/messaging/blocks/{blockedIdPlayer}")
+    suspend fun unblockPlayer(@Path("blockedIdPlayer") blockedIdPlayer: Int, @Query("idPlayer") idPlayer: Int)
+
+    @GET("api/messaging/blocks/status")
+    suspend fun getBlockStatus(@Query("idPlayer") idPlayer: Int, @Query("otherIdPlayer") otherIdPlayer: Int): BlockStatus
 
     // ---------- Tornei (dettaglio/iscrizione dalla Home, ui/tournaments/) ----------
     // Pubblici come tutto il resto: orga.TournamentRegistrations non ha una colonna

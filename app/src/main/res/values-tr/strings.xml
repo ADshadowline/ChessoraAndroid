@@ -46,6 +46,29 @@
     <string name="messaging_conversation_empty">Mesaj yok. İlkini yaz!</string>
     <string name="messaging_type_hint">Bir mesaj yazın…</string>
     <string name="messaging_send">Gönder</string>
+    <plurals name="messaging_selected_count">
+        <item quantity="one">%1$d seçildi</item>
+        <item quantity="other">%1$d seçildi</item>
+    </plurals>
+    <string name="messaging_cancel_selection">Seçimi iptal et</string>
+    <string name="messaging_delete_selected">Sohbetleri sil</string>
+    <plurals name="messaging_delete_confirm_title">
+        <item quantity="one">Sohbet silinsin mi?</item>
+        <item quantity="other">%1$d sohbet silinsin mi?</item>
+    </plurals>
+    <string name="messaging_delete_confirm_body">Sohbetler yalnızca senin listenden kaldırılır. Karşı taraf sana yeniden yazarsa sohbet yalnızca yeni mesajlarla tekrar görünür.</string>
+    <string name="messaging_delete">Sil</string>
+    <string name="messaging_cancel">İptal</string>
+    <string name="messaging_more_options">Diğer seçenekler</string>
+    <string name="messaging_block">Oyuncuyu engelle</string>
+    <string name="messaging_unblock">Oyuncunun engelini kaldır</string>
+    <string name="messaging_block_confirm_title">%1$s engellensin mi?</string>
+    <string name="messaging_block_confirm_body">Artık sana mesaj gönderemeyecek ve aramada seni bulamayacak. Engeli istediğin zaman sohbet menüsünden kaldırabilirsin.</string>
+    <string name="messaging_block_confirm">Engelle</string>
+    <string name="messaging_blocked_label">Engellendi</string>
+    <string name="messaging_blocked_by_me_notice">Bu oyuncuyu engelledin: yazmak için engeli kaldır.</string>
+    <string name="messaging_blocked_me_notice">Bu oyuncuya mesaj gönderemezsin.</string>
+    <string name="messaging_action_failed">İşlem başarısız oldu, tekrar dene.</string>
     <string name="messaging_tab_players">Oyuncular</string>
     <string name="messaging_tab_clubs">Kulüpler</string>
     <string name="messaging_search_hint">Ada göre ara…</string>
@@ -362,4 +385,26 @@
     <string name="language_name_russian">Русский</string>
     <string name="language_name_romanian">Română</string>
     <string name="language_name_turkish">Türkçe</string>
+    <string name="help_title">Yardım</string>
+    <string name="help_features_title">Chessora ile neler yapabilirsin</string>
+    <string name="help_features_subtitle">Uygulamanın ana özellikleri, madde madde</string>
+    <string name="help_changelog_title">Yenilikler ve düzeltmeler</string>
+    <string name="help_changelog_subtitle">Her sürümdeki değişikliklerin listesi</string>
+    <string name="help_close">Kapat</string>
+    <string name="help_installed_version">Yüklü sürüm: %1$s</string>
+    <string-array name="help_features">
+        <item>Kulübünü seç ve bilgilerini gör: yönetim kurulu, iletişim bilgileri ve haritadaki konumu.</item>
+        <item>Simgeli ana ekranı kullan: simgeleri sürükleyerek sırala, kullanmadıklarını gizle ve arka planı seç.</item>
+        <item>Tüm kulüplerin turnuva ve etkinliklerini geri sayımla birlikte Etkinlikler ve Takvim\'de gör.</item>
+        <item>Turnuvalara ön kayıt ol, kaydını geri çek, katılımcıları gör ve turnuva duyurusunu oku.</item>
+        <item>\"Turnuvalarım\" bölümünde eşleşmeleri, sonuçları ve sıralamayı neredeyse anlık takip et; yeni tur yayınlandığında uyarı al.</item>
+        <item>Turnuva düzenliyorsan \"Turnuva yönetimi\" ile turları oluşturup yayınla, sonuçları gir, sıralamayı ve ödülleri yönet.</item>
+        <item>Ulusal ve kulüp sıralamasını ve Elo\'nun zaman içindeki değişimini gör.</item>
+        <item>\"Gelişimim\" bölümünde Lichess ve Chess.com\'daki çevrimiçi oyunlarını analiz et: sonuçlar, rakipler ve açılışlar.</item>
+        <item>\"Oyunlarım\" bölümünde oyunlarını kaydet (PGN yapıştırarak ya da tahtada kurarak) ve hamle hamle yeniden izle.</item>
+        <item>Diğer oyunculara ve kulüplere yaz, mesajlarının okunup okunmadığını gör, sohbetleri sil ve istemediğin kişileri engelle.</item>
+        <item>Kulübünün ve ağın Haberlerini oku, Videolarını izle.</item>
+        <item>Yenilikler, yayınlanan turlar ve yeni mesajlar için bildirim al.</item>
+        <item>Uygulamayı Ayarlar\'dan kişiselleştir: dil (8 seçenek), fotoğraf, bildirimler, gizlilik ve hesap silme.</item>
+    </string-array>
 </resources>

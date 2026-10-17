@@ -5,7 +5,8 @@ import kotlinx.serialization.Serializable
 /** Specchio di Chessora.Contracts.Messaging.ConversationSummaryDto (GET
  * /api/messaging/conversations). idConversation=0 è il segnaposto riservato alla
  * chat "Chessora" (storico notifiche push, sola lettura, sempre in testa - il
- * server la restituisce sempre come prima voce). */
+ * server la restituisce sempre come prima voce). otherIdPlayer/blockedByMe/blockedMe
+ * valgono solo per le conversazioni dirette (menu Blocca/Sblocca, invio disabilitato). */
 @Serializable
 data class ConversationSummary(
     val idConversation: Int,
@@ -15,7 +16,21 @@ data class ConversationSummary(
     val lastMessageBody: String? = null,
     val lastMessageAtUtc: String? = null,
     val unreadCount: Int = 0,
+    val otherIdPlayer: Int? = null,
+    val blockedByMe: Boolean = false,
+    val blockedMe: Boolean = false,
 )
+
+@Serializable
+data class HideConversationsRequest(val idPlayer: Int, val idConversations: List<Int>)
+
+@Serializable
+data class BlockPlayerRequest(val idPlayer: Int, val blockedIdPlayer: Int)
+
+/** blockedByMe = l'ho bloccato io (posso sbloccarlo); blockedMe = mi ha bloccato lui. In
+ * entrambi i casi la chat diretta resta visibile ma non si può più scrivere. */
+@Serializable
+data class BlockStatus(val blockedByMe: Boolean = false, val blockedMe: Boolean = false)
 
 /** isDelivered/isRead (doppia spunta) sono significativi solo quando isMine è true -
  * vedi Chessora.Contracts.Messaging.MessageDto. */

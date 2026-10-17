@@ -1,6 +1,8 @@
 package org.chessora.app.ui.language
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,10 +22,11 @@ import androidx.compose.ui.unit.sp
 import org.chessora.app.R
 
 /** Una riga per lingua (bandierina + nome), riusata sia nel selettore a tutto schermo del
- * primo avvio sia nel dialog richiamabile dalla tile "Lingua" in Home desktop. */
+ * primo avvio sia nel dialog richiamabile dalla voce "Lingua" in Impostazioni. */
 @Composable
 private fun LanguageOptionsList(onSelect: (String) -> Unit) {
-    Column {
+    // Scorrevole: con 8 lingue l'ultima restava tagliata nel dialog (visto su un S25).
+    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         AppLanguage.entries.forEach { language ->
             Card(
                 onClick = { onSelect(language.tag) },
@@ -65,9 +68,9 @@ fun LanguagePickerScreen(onSelected: (String) -> Unit) {
     }
 }
 
-/** Stesso elenco, in un dialog - richiamato dalla tile "Lingua" nella griglia Home
- * desktop (tra Messaggi e Impostazioni, vedi HomeScreen.DesktopHomeGrid) per cambiare
- * lingua in qualunque momento dopo il primo avvio. */
+/** Stesso elenco, in un dialog - richiamato dalla voce "Lingua" in Impostazioni (vedi
+ * ui/settings/SettingsScreen.kt) per cambiare lingua in qualunque momento dopo il primo
+ * avvio. */
 @Composable
 fun LanguagePickerDialog(onSelect: (String) -> Unit, onDismiss: () -> Unit) {
     AlertDialog(

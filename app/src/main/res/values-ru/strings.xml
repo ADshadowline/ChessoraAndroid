@@ -46,6 +46,33 @@
     <string name="messaging_conversation_empty">Нет сообщений. Напишите первое!</string>
     <string name="messaging_type_hint">Напишите сообщение…</string>
     <string name="messaging_send">Отправить</string>
+    <plurals name="messaging_selected_count">
+        <item quantity="one">Выбран %1$d чат</item>
+        <item quantity="few">Выбрано %1$d чата</item>
+        <item quantity="many">Выбрано %1$d чатов</item>
+        <item quantity="other">Выбрано %1$d чата</item>
+    </plurals>
+    <string name="messaging_cancel_selection">Отменить выбор</string>
+    <string name="messaging_delete_selected">Удалить чаты</string>
+    <plurals name="messaging_delete_confirm_title">
+        <item quantity="one">Удалить чат?</item>
+        <item quantity="few">Удалить %1$d чата?</item>
+        <item quantity="many">Удалить %1$d чатов?</item>
+        <item quantity="other">Удалить %1$d чата?</item>
+    </plurals>
+    <string name="messaging_delete_confirm_body">Чаты будут удалены только из вашего списка. Если собеседник снова напишет вам, чат появится снова, но только с новыми сообщениями.</string>
+    <string name="messaging_delete">Удалить</string>
+    <string name="messaging_cancel">Отмена</string>
+    <string name="messaging_more_options">Другие действия</string>
+    <string name="messaging_block">Заблокировать игрока</string>
+    <string name="messaging_unblock">Разблокировать игрока</string>
+    <string name="messaging_block_confirm_title">Заблокировать %1$s?</string>
+    <string name="messaging_block_confirm_body">Он больше не сможет отправлять вам сообщения и находить вас в поиске. Вы можете разблокировать его в любой момент в меню чата.</string>
+    <string name="messaging_block_confirm">Заблокировать</string>
+    <string name="messaging_blocked_label">Заблокирован</string>
+    <string name="messaging_blocked_by_me_notice">Вы заблокировали этого игрока: разблокируйте его, чтобы написать.</string>
+    <string name="messaging_blocked_me_notice">Вы не можете отправлять сообщения этому игроку.</string>
+    <string name="messaging_action_failed">Не удалось выполнить действие, попробуйте ещё раз.</string>
     <string name="messaging_tab_players">Игроки</string>
     <string name="messaging_tab_clubs">Клубы</string>
     <string name="messaging_search_hint">Поиск по имени…</string>
@@ -362,4 +389,26 @@
     <string name="language_name_russian">Русский</string>
     <string name="language_name_romanian">Română</string>
     <string name="language_name_turkish">Türkçe</string>
+    <string name="help_title">Помощь</string>
+    <string name="help_features_title">Что можно делать в Chessora</string>
+    <string name="help_features_subtitle">Основные возможности приложения по пунктам</string>
+    <string name="help_changelog_title">Новое и исправления</string>
+    <string name="help_changelog_subtitle">Список изменений каждой версии</string>
+    <string name="help_close">Закрыть</string>
+    <string name="help_installed_version">Установленная версия: %1$s</string>
+    <string-array name="help_features">
+        <item>Выберите свой клуб и смотрите его информацию: правление, контакты и место на карте.</item>
+        <item>Пользуйтесь главным экраном с иконками: меняйте их порядок перетаскиванием, скрывайте ненужные и выбирайте фон.</item>
+        <item>Смотрите События и Календарь с турнирами и встречами всех клубов, с обратным отсчётом.</item>
+        <item>Предварительно регистрируйтесь на турниры, отзывайте заявку, смотрите участников и положение о турнире.</item>
+        <item>В разделе «Мои турниры» следите за жеребьёвкой, результатами и таблицей почти в реальном времени, с уведомлением о новом туре.</item>
+        <item>Если вы организуете турниры, в «Управлении турнирами» создавайте и публикуйте туры, вносите результаты и ведите таблицу и награждение.</item>
+        <item>Смотрите национальный и клубный рейтинг и динамику своего Эло.</item>
+        <item>В разделе «Мой прогресс» анализируйте свои онлайн-партии на Lichess и Chess.com: результаты, соперников и дебюты.</item>
+        <item>В разделе «Мои партии» сохраняйте партии (вставив PGN или расставив их на доске) и просматривайте их ход за ходом.</item>
+        <item>Пишите другим игрокам и клубам, смотрите, прочитаны ли сообщения, удаляйте чаты и блокируйте нежелательных собеседников.</item>
+        <item>Читайте Новости и смотрите Видео своего клуба и всей сети.</item>
+        <item>Получайте уведомления о новостях, опубликованных турах и новых сообщениях.</item>
+        <item>Настраивайте приложение в Настройках: язык (8 на выбор), фото, уведомления, конфиденциальность и удаление аккаунта.</item>
+    </string-array>
 </resources>
