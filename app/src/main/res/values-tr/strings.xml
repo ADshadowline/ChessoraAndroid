@@ -411,4 +411,12 @@
     <string name="server_maintenance_body">Lütfen yaklaşık on dakika sonra tekrar dene.</string>
     <string name="server_maintenance_retry">Tekrar dene</string>
     <string name="info_tile_label">Bilgi</string>
+    <string name="messaging_attach_photo">Fotoğraf ekle</string>
+    <string name="messaging_gallery">Galeri</string>
+    <string name="messaging_camera">Kamera</string>
+    <string name="messaging_record_voice">Sesli mesaj kaydet</string>
+    <string name="messaging_recording">Kaydediliyor</string>
+    <string name="messaging_cancel_recording">Kaydı iptal et</string>
+    <string name="messaging_send_voice">Sesli mesajı gönder</string>
+    <string name="messaging_mic_permission_denied">Sesli mesaj göndermek için telefon ayarlarından Chessora\'nın mikrofonu kullanmasına izin ver.</string>
 </resources>

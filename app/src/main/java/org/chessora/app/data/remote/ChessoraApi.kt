@@ -40,6 +40,7 @@ import org.chessora.app.data.remote.dto.SetMessagingPlayerSettingsRequest
 import org.chessora.app.data.remote.dto.HideConversationsRequest
 import org.chessora.app.data.remote.dto.BlockPlayerRequest
 import org.chessora.app.data.remote.dto.BlockStatus
+import org.chessora.app.data.remote.dto.SendAttachmentResult
 import org.chessora.app.data.remote.dto.SetAppVersionRequest
 import org.chessora.app.data.remote.dto.StartConversationResult
 import org.chessora.app.data.remote.dto.StartDirectConversationRequest
@@ -374,6 +375,20 @@ interface ChessoraApi {
 
     @PUT("api/messaging/settings")
     suspend fun setMessagingSettings(@Body request: SetMessagingPlayerSettingsRequest)
+
+    /** Foto o vocale: idConversation per una chat esistente, altrimenti toIdPlayer/idClub
+     * per il primo messaggio (il server crea la conversazione). */
+    @Multipart
+    @POST("api/messaging/attachments")
+    suspend fun sendAttachment(
+        @Part("fromIdPlayer") fromIdPlayer: okhttp3.RequestBody,
+        @Part("idConversation") idConversation: okhttp3.RequestBody?,
+        @Part("toIdPlayer") toIdPlayer: okhttp3.RequestBody?,
+        @Part("idClub") idClub: okhttp3.RequestBody?,
+        @Part("kind") kind: okhttp3.RequestBody,
+        @Part("durationMs") durationMs: okhttp3.RequestBody?,
+        @Part file: okhttp3.MultipartBody.Part,
+    ): SendAttachmentResult
 
     /** Cancella le conversazioni dal solo elenco del chiamante. */
     @POST("api/messaging/conversations/hide")

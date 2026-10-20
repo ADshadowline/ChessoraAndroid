@@ -411,4 +411,12 @@
     <string name="server_maintenance_body">Bitte versuche es in etwa zehn Minuten erneut.</string>
     <string name="server_maintenance_retry">Erneut versuchen</string>
     <string name="info_tile_label">Info</string>
+    <string name="messaging_attach_photo">Foto anhängen</string>
+    <string name="messaging_gallery">Galerie</string>
+    <string name="messaging_camera">Kamera</string>
+    <string name="messaging_record_voice">Sprachnachricht aufnehmen</string>
+    <string name="messaging_recording">Aufnahme</string>
+    <string name="messaging_cancel_recording">Aufnahme abbrechen</string>
+    <string name="messaging_send_voice">Sprachnachricht senden</string>
+    <string name="messaging_mic_permission_denied">Um eine Sprachnachricht zu senden, erlaube Chessora in den Telefoneinstellungen die Nutzung des Mikrofons.</string>
 </resources>

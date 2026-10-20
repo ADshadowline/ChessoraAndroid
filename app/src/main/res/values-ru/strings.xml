@@ -415,4 +415,12 @@
     <string name="server_maintenance_body">Попробуйте снова минут через десять.</string>
     <string name="server_maintenance_retry">Повторить</string>
     <string name="info_tile_label">Инфо</string>
+    <string name="messaging_attach_photo">Прикрепить фото</string>
+    <string name="messaging_gallery">Галерея</string>
+    <string name="messaging_camera">Камера</string>
+    <string name="messaging_record_voice">Записать голосовое сообщение</string>
+    <string name="messaging_recording">Запись</string>
+    <string name="messaging_cancel_recording">Отменить запись</string>
+    <string name="messaging_send_voice">Отправить голосовое сообщение</string>
+    <string name="messaging_mic_permission_denied">Чтобы отправить голосовое сообщение, разрешите Chessora доступ к микрофону в настройках телефона.</string>
 </resources>

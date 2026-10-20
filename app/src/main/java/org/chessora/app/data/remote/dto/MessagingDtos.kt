@@ -33,7 +33,9 @@ data class BlockPlayerRequest(val idPlayer: Int, val blockedIdPlayer: Int)
 data class BlockStatus(val blockedByMe: Boolean = false, val blockedMe: Boolean = false)
 
 /** isDelivered/isRead (doppia spunta) sono significativi solo quando isMine è true -
- * vedi Chessora.Contracts.Messaging.MessageDto. */
+ * vedi Chessora.Contracts.Messaging.MessageDto. attachmentKind "image"/"audio" (null =
+ * solo testo): attachmentUrl è relativo all'Api e va scaricato autenticati con
+ * ?idPlayer= (vedi ui/messaging/ChatAttachments.kt). */
 @Serializable
 data class ChatMessage(
     val id: Int,
@@ -43,7 +45,14 @@ data class ChatMessage(
     val sentAtUtc: String,
     val isDelivered: Boolean = false,
     val isRead: Boolean = false,
+    val attachmentKind: String? = null,
+    val attachmentUrl: String? = null,
+    val attachmentDurationMs: Int? = null,
 )
+
+/** Esito di POST api/messaging/attachments. */
+@Serializable
+data class SendAttachmentResult(val idConversation: Int, val message: ChatMessage)
 
 @Serializable
 data class PlayerSearchResult(

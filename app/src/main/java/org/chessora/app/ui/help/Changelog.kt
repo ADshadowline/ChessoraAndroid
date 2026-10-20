@@ -13,6 +13,11 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
+    AppRelease("1.53.0", "ottobre 2026", listOf(
+        "Messaggi: puoi inviare una foto, dalla galleria o scattandola al momento.",
+        "Messaggi: puoi inviare un messaggio vocale (fino a 2 minuti) toccando il microfono.",
+        "Foto e vocali li vede solo chi partecipa alla chat; tocca una foto per vederla a tutto schermo.",
+    )),
     AppRelease("1.52.0", "ottobre 2026", listOf(
         "Se all'apertura il server non risponde (per esempio durante un aggiornamento), l'app lo dice chiaramente e ti fa riprovare.",
         "Direttivo: niente più scorrimento orizzontale, chi non ci sta va a capo; nomi centrati e mai troncati.",

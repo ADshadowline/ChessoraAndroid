@@ -161,4 +161,52 @@ class ConversationViewModel(
             }
         }
     }
+
+    /** idPlayer del chiamante, per scaricare gli allegati (vedi chatAttachmentUrl) - 0 finché
+     * [load] non l'ha letto. */
+    val myIdPlayer: Int get() = idPlayer ?: 0
+
+    private val _attachmentError = MutableStateFlow<String?>(null)
+    /** Messaggio da mostrare se una foto/un vocale non parte (troppo grande, formato, rete). */
+    val attachmentError: StateFlow<String?> = _attachmentError.asStateFlow()
+
+    fun clearAttachmentError() { _attachmentError.value = null }
+
+    fun sendImage(bytes: ByteArray) = sendAttachment("image", bytes, "image/jpeg", "foto.jpg", null)
+
+    fun sendVoice(file: java.io.File, durationMs: Int) {
+        val bytes = runCatching { file.readBytes() }.getOrNull()
+        file.delete()
+        if (bytes != null) sendAttachment("audio", bytes, "audio/mp4", "vocale.m4a", durationMs)
+    }
+
+    /** Foto o vocale: nella chat esistente, oppure - primo messaggio - verso [recipientId]
+     * (socio o circolo): il server crea la conversazione e ne restituisce l'id. */
+    private fun sendAttachment(kind: String, bytes: ByteArray, mimeType: String, fileName: String, durationMs: Int?) {
+        val myIdPlayer = idPlayer ?: return
+        val current = _state.value as? ConversationState.Ready ?: return
+        if (current.sending || current.isBlocked) return
+
+        viewModelScope.launch {
+            _state.value = current.copy(sending = true)
+            val existing = idConversation.takeIf { it > 0 }
+            repository.sendAttachment(
+                fromIdPlayer = myIdPlayer,
+                idConversation = existing,
+                toIdPlayer = if (existing == null && !isClubConversation) recipientId else null,
+                idClub = if (existing == null && isClubConversation) recipientId else null,
+                kind = kind, bytes = bytes, mimeType = mimeType, fileName = fileName, durationMs = durationMs,
+            ).onSuccess { result ->
+                idConversation = result.idConversation
+                val latest = _state.value as? ConversationState.Ready ?: current
+                _state.value = latest.copy(messages = latest.messages + result.message, sending = false)
+            }.onFailure {
+                _state.value = current.copy(sending = false)
+                refreshBlockStatus()
+                if ((_state.value as? ConversationState.Ready)?.isBlocked != true) {
+                    _attachmentError.value = if (kind == "image") "Invio della foto non riuscito, riprova." else "Invio del vocale non riuscito, riprova."
+                }
+            }
+        }
+    }
 }

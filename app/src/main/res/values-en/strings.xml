@@ -411,4 +411,12 @@
     <string name="server_maintenance_body">Please try again in about ten minutes.</string>
     <string name="server_maintenance_retry">Try again</string>
     <string name="info_tile_label">Info</string>
+    <string name="messaging_attach_photo">Attach a photo</string>
+    <string name="messaging_gallery">Gallery</string>
+    <string name="messaging_camera">Camera</string>
+    <string name="messaging_record_voice">Record a voice message</string>
+    <string name="messaging_recording">Recording</string>
+    <string name="messaging_cancel_recording">Cancel recording</string>
+    <string name="messaging_send_voice">Send voice message</string>
+    <string name="messaging_mic_permission_denied">To send a voice message, allow Chessora to use the microphone in your phone settings.</string>
 </resources>

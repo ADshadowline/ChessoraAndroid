@@ -431,4 +431,12 @@
     <string name="server_maintenance_body">Riprova tra una decina di minuti.</string>
     <string name="server_maintenance_retry">Riprova</string>
     <string name="info_tile_label">Info</string>
+    <string name="messaging_attach_photo">Allega una foto</string>
+    <string name="messaging_gallery">Galleria</string>
+    <string name="messaging_camera">Fotocamera</string>
+    <string name="messaging_record_voice">Registra un vocale</string>
+    <string name="messaging_recording">Registrazione</string>
+    <string name="messaging_cancel_recording">Annulla la registrazione</string>
+    <string name="messaging_send_voice">Invia il vocale</string>
+    <string name="messaging_mic_permission_denied">Per inviare un vocale consenti a Chessora di usare il microfono nelle impostazioni del telefono.</string>
 </resources>

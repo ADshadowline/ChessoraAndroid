@@ -16,6 +16,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- RECORD_AUDIO: messaggi vocali in chat (ui/messaging/ChatAttachments.kt), chiesto a
+         runtime solo al primo tocco sul microfono. La fotocamera NON serve come permesso:
+         la foto si scatta con l'app fotocamera di sistema (ACTION_IMAGE_CAPTURE). -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:name=".ChessoraApplication"
@@ -37,6 +41,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Per passare all'app fotocamera di sistema il file in cui salvare la foto da
+             mandare in chat (cache/camera, vedi res/xml/file_paths.xml). -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
         <!-- Servizio FCM: riceve i messaggi push e i refresh del token (vedi
              push/ChessoraFirebaseMessagingService.kt). Dichiarato con priorità

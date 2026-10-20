@@ -411,4 +411,12 @@
     <string name="server_maintenance_body">Vuelve a intentarlo dentro de unos diez minutos.</string>
     <string name="server_maintenance_retry">Reintentar</string>
     <string name="info_tile_label">Info</string>
+    <string name="messaging_attach_photo">Adjuntar una foto</string>
+    <string name="messaging_gallery">Galería</string>
+    <string name="messaging_camera">Cámara</string>
+    <string name="messaging_record_voice">Grabar un mensaje de voz</string>
+    <string name="messaging_recording">Grabando</string>
+    <string name="messaging_cancel_recording">Cancelar la grabación</string>
+    <string name="messaging_send_voice">Enviar el mensaje de voz</string>
+    <string name="messaging_mic_permission_denied">Para enviar un mensaje de voz, permite que Chessora use el micrófono en los ajustes del teléfono.</string>
 </resources>

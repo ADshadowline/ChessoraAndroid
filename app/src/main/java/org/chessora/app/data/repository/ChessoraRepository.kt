@@ -392,6 +392,29 @@ class ChessoraRepository(private val api: ChessoraApi) {
     suspend fun setMessagingSettings(idPlayer: Int, hideDeliveryAndReadStatus: Boolean): Result<Unit> =
         safeCall { api.setMessagingSettings(SetMessagingPlayerSettingsRequest(idPlayer, hideDeliveryAndReadStatus)) }
 
+    /** Foto ([kind] "image", JPEG già ridimensionato) o vocale ("audio", m4a) - vedi
+     * ui/messaging/ChatAttachments.kt. Esattamente uno tra idConversation (> 0), toIdPlayer
+     * e idClub identifica la chat. */
+    suspend fun sendAttachment(
+        fromIdPlayer: Int,
+        idConversation: Int?,
+        toIdPlayer: Int?,
+        idClub: Int?,
+        kind: String,
+        bytes: ByteArray,
+        mimeType: String,
+        fileName: String,
+        durationMs: Int?,
+    ): Result<org.chessora.app.data.remote.dto.SendAttachmentResult> = safeCall {
+        val text = "text/plain".toMediaType()
+        fun Int?.part() = this?.toString()?.toRequestBody(text)
+        val filePart = okhttp3.MultipartBody.Part.createFormData("file", fileName, bytes.toRequestBody(mimeType.toMediaType()))
+        api.sendAttachment(
+            fromIdPlayer.toString().toRequestBody(text), idConversation.part(), toIdPlayer.part(), idClub.part(),
+            kind.toRequestBody(text), durationMs.part(), filePart,
+        )
+    }
+
     suspend fun hideConversations(idPlayer: Int, idConversations: List<Int>): Result<Unit> =
         safeCall { api.hideConversations(HideConversationsRequest(idPlayer, idConversations)) }
 
