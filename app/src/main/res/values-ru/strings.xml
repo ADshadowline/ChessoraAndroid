@@ -160,6 +160,22 @@
     <string name="mygames_edit">Изменить</string>
     <string name="mygames_delete">Удалить</string>
     <string name="mygames_delete_confirm_title">Удалить партию?</string>
+    <string name="mygames_select_hint">Нажмите и удерживайте партию, чтобы выбрать её и создать PDF.</string>
+    <string name="mygames_cancel_selection">Отменить выбор</string>
+    <string name="mygames_select_all">Выбрать все</string>
+    <string name="mygames_pdf_create">Создать PDF</string>
+    <string name="mygames_pdf_share_title">Поделиться PDF с партиями</string>
+    <string name="mygames_pdf_failed">Не удалось создать PDF.</string>
+    <string name="mygames_pdf_me">Я</string>
+    <string name="mygames_pdf_colours">Белые: %1$s · Чёрные: %2$s</string>
+    <string name="mygames_pdf_continued">Партия против %1$s (продолжение)</string>
+    <string name="mygames_pdf_footer">Создано в Chessora %1$s</string>
+    <plurals name="mygames_selected_count">
+        <item quantity="one">%1$d партия</item>
+        <item quantity="few">%1$d партии</item>
+        <item quantity="many">%1$d партий</item>
+        <item quantity="other">%1$d партии</item>
+    </plurals>
     <string name="mygames_delete_confirm_body">Партия против %1$s будет удалена без возможности восстановления.</string>
     <string name="mygames_date_label">Дата партии</string>
     <string name="mygames_date_confirm">ОК</string>

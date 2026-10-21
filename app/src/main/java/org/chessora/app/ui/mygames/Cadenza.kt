@@ -21,10 +21,14 @@ enum class Cadenza(val tipologiaTempo: Int) {
     }
 }
 
+/** Etichetta della cadenza, anche fuori da Compose (es. il PDF di MyGamesPdf). */
+val Cadenza.labelRes: Int
+    get() = when (this) {
+        Cadenza.STANDARD -> R.string.performance_standard
+        Cadenza.RAPID -> R.string.performance_rapid
+        Cadenza.BLITZ -> R.string.performance_blitz
+        Cadenza.CORRISPONDENZA -> R.string.performance_correspondence
+    }
+
 @Composable
-fun Cadenza.label(): String = when (this) {
-    Cadenza.STANDARD -> stringResource(R.string.performance_standard)
-    Cadenza.RAPID -> stringResource(R.string.performance_rapid)
-    Cadenza.BLITZ -> stringResource(R.string.performance_blitz)
-    Cadenza.CORRISPONDENZA -> stringResource(R.string.performance_correspondence)
-}
+fun Cadenza.label(): String = stringResource(labelRes)

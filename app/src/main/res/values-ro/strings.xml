@@ -158,6 +158,21 @@
     <string name="mygames_edit">Modifică</string>
     <string name="mygames_delete">Șterge</string>
     <string name="mygames_delete_confirm_title">Ștergi partida?</string>
+    <string name="mygames_select_hint">Ține apăsat pe o partidă pentru a o selecta și a crea un PDF.</string>
+    <string name="mygames_cancel_selection">Anulează selecția</string>
+    <string name="mygames_select_all">Selectează tot</string>
+    <string name="mygames_pdf_create">Creează PDF</string>
+    <string name="mygames_pdf_share_title">Distribuie PDF-ul cu partide</string>
+    <string name="mygames_pdf_failed">PDF-ul nu a putut fi creat.</string>
+    <string name="mygames_pdf_me">Eu</string>
+    <string name="mygames_pdf_colours">Albe: %1$s · Negre: %2$s</string>
+    <string name="mygames_pdf_continued">Partida cu %1$s (continuare)</string>
+    <string name="mygames_pdf_footer">Generat cu Chessora la %1$s</string>
+    <plurals name="mygames_selected_count">
+        <item quantity="one">%1$d partidă</item>
+        <item quantity="few">%1$d partide</item>
+        <item quantity="other">%1$d de partide</item>
+    </plurals>
     <string name="mygames_delete_confirm_body">Partida împotriva lui %1$s va fi ștearsă definitiv.</string>
     <string name="mygames_date_label">Data partidei</string>
     <string name="mygames_date_confirm">OK</string>

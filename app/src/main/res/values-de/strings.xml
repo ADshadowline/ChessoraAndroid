@@ -156,6 +156,20 @@
     <string name="mygames_edit">Bearbeiten</string>
     <string name="mygames_delete">Löschen</string>
     <string name="mygames_delete_confirm_title">Partie löschen?</string>
+    <string name="mygames_select_hint">Halte eine Partie gedrückt, um sie auszuwählen und ein PDF zu erstellen.</string>
+    <string name="mygames_cancel_selection">Auswahl aufheben</string>
+    <string name="mygames_select_all">Alle auswählen</string>
+    <string name="mygames_pdf_create">PDF erstellen</string>
+    <string name="mygames_pdf_share_title">PDF der Partien teilen</string>
+    <string name="mygames_pdf_failed">Das PDF konnte nicht erstellt werden.</string>
+    <string name="mygames_pdf_me">Ich</string>
+    <string name="mygames_pdf_colours">Weiß: %1$s · Schwarz: %2$s</string>
+    <string name="mygames_pdf_continued">Partie gegen %1$s (Fortsetzung)</string>
+    <string name="mygames_pdf_footer">Erstellt mit Chessora am %1$s</string>
+    <plurals name="mygames_selected_count">
+        <item quantity="one">%1$d Partie</item>
+        <item quantity="other">%1$d Partien</item>
+    </plurals>
     <string name="mygames_delete_confirm_body">Die Partie gegen %1$s wird endgültig gelöscht.</string>
     <string name="mygames_date_label">Spieldatum</string>
     <string name="mygames_date_confirm">OK</string>

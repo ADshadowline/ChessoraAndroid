@@ -13,6 +13,10 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
+    AppRelease("1.54.0", "ottobre 2026", listOf(
+        "Le mie partite: tieni premuta una partita per selezionarla (anche più di una, o tutte).",
+        "Dalle partite selezionate puoi creare un PDF con intestazione, risultato, posizione finale e mosse, da salvare, inviare o stampare.",
+    )),
     AppRelease("1.53.0", "ottobre 2026", listOf(
         "Messaggi: puoi inviare una foto, dalla galleria o scattandola al momento.",
         "Messaggi: puoi inviare un messaggio vocale (fino a 2 minuti) toccando il microfono.",

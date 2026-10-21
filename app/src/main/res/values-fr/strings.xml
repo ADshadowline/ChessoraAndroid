@@ -156,6 +156,21 @@
     <string name="mygames_edit">Modifier</string>
     <string name="mygames_delete">Supprimer</string>
     <string name="mygames_delete_confirm_title">Supprimer la partie ?</string>
+    <string name="mygames_select_hint">Appuyez longuement sur une partie pour la sélectionner et créer un PDF.</string>
+    <string name="mygames_cancel_selection">Annuler la sélection</string>
+    <string name="mygames_select_all">Tout sélectionner</string>
+    <string name="mygames_pdf_create">Créer un PDF</string>
+    <string name="mygames_pdf_share_title">Partager le PDF des parties</string>
+    <string name="mygames_pdf_failed">Impossible de créer le PDF.</string>
+    <string name="mygames_pdf_me">Moi</string>
+    <string name="mygames_pdf_colours">Blancs : %1$s · Noirs : %2$s</string>
+    <string name="mygames_pdf_continued">Partie contre %1$s (suite)</string>
+    <string name="mygames_pdf_footer">Généré avec Chessora le %1$s</string>
+    <plurals name="mygames_selected_count">
+        <item quantity="one">%1$d partie</item>
+        <item quantity="many">%1$d parties</item>
+        <item quantity="other">%1$d parties</item>
+    </plurals>
     <string name="mygames_delete_confirm_body">La partie contre %1$s sera définitivement supprimée.</string>
     <string name="mygames_date_label">Date de la partie</string>
     <string name="mygames_date_confirm">OK</string>

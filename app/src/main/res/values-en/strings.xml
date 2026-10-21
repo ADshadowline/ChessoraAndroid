@@ -156,6 +156,20 @@
     <string name="mygames_edit">Edit</string>
     <string name="mygames_delete">Delete</string>
     <string name="mygames_delete_confirm_title">Delete this game?</string>
+    <string name="mygames_select_hint">Long-press a game to select it and create a PDF.</string>
+    <string name="mygames_cancel_selection">Cancel selection</string>
+    <string name="mygames_select_all">Select all</string>
+    <string name="mygames_pdf_create">Create PDF</string>
+    <string name="mygames_pdf_share_title">Share the games PDF</string>
+    <string name="mygames_pdf_failed">The PDF could not be created.</string>
+    <string name="mygames_pdf_me">Me</string>
+    <string name="mygames_pdf_colours">White: %1$s · Black: %2$s</string>
+    <string name="mygames_pdf_continued">Game against %1$s (continued)</string>
+    <string name="mygames_pdf_footer">Generated with Chessora on %1$s</string>
+    <plurals name="mygames_selected_count">
+        <item quantity="one">%1$d game</item>
+        <item quantity="other">%1$d games</item>
+    </plurals>
     <string name="mygames_delete_confirm_body">The game against %1$s will be permanently deleted.</string>
     <string name="mygames_date_label">Date played</string>
     <string name="mygames_date_confirm">OK</string>

@@ -93,7 +93,7 @@ fun ChessBoardView(fen: String, modifier: Modifier = Modifier, flipped: Boolean 
 /** Solo la piazzatura dei pezzi (il primo campo del FEN) - il resto (turno, arrocchi,
  * en passant, orologi) non serve per disegnare la scacchiera. Righe FEN nell'ordine
  * standard: la prima è la traversa 8 (in alto per il Bianco), l'ultima la traversa 1. */
-private fun parseFenPlacement(fen: String): Array<CharArray> {
+internal fun parseFenPlacement(fen: String): Array<CharArray> {
     val board = Array(8) { CharArray(8) { ' ' } }
     val placement = fen.substringBefore(' ')
     placement.split("/").forEachIndexed { rankIndex, row ->
@@ -112,7 +112,7 @@ private fun parseFenPlacement(fen: String): Array<CharArray> {
     return board
 }
 
-private val PIECE_DRAWABLES = mapOf(
+internal val PIECE_DRAWABLES = mapOf(
     'K' to R.drawable.piece_wk, 'Q' to R.drawable.piece_wq, 'R' to R.drawable.piece_wr,
     'B' to R.drawable.piece_wb, 'N' to R.drawable.piece_wn, 'P' to R.drawable.piece_wp,
     'k' to R.drawable.piece_bk, 'q' to R.drawable.piece_bq, 'r' to R.drawable.piece_br,
