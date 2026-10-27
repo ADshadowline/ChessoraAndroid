@@ -14,7 +14,7 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
     AppRelease("1.56.0", "ottobre 2026", listOf(
-        "Impostazioni → \"Usa grafica\": la Home a icone mostra icone illustrate a colori al posto di quelle semplici.",
+        "Nuove icone illustrate a colori nella Home a icone. Se preferisci quelle semplici, spegni \"Usa grafica\" in Impostazioni.",
         "Impostazioni: il pulsante Salva sotto gli username di Lichess e Chess.com si attiva solo quando scrivi un nome nuovo o diverso.",
     )),
     AppRelease("1.55.0", "ottobre 2026", listOf(

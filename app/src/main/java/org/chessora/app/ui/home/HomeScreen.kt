@@ -445,7 +445,7 @@ private fun DesktopHomeGrid(
     showInfoShine: Boolean = false,
     onInfoOpened: () -> Unit = {},
     /** Impostazioni → "Usa grafica": vedi [GRAPHIC_ICONS]. */
-    useGraphicIcons: Boolean = false,
+    useGraphicIcons: Boolean = true,
 ) {
     fun graphicFor(id: String): Int? = if (useGraphicIcons) GRAPHIC_ICONS[id] else null
     // Messaggi e Impostazioni sono ancorate agli angoli in basso (sinistra/destra), non

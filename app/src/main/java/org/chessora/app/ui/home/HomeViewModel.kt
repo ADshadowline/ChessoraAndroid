@@ -106,7 +106,7 @@ class HomeViewModel(
 
     /** Impostazioni → "Usa grafica": icone illustrate al posto di quelle vettoriali. */
     val useGraphicIcons: StateFlow<Boolean> = clubPreferences.useGraphicIcons
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
 
     /** Riordino diretto sulla griglia Home (trascinamento con le dita, vedi
      * DesktopHomeGrid) - stessa persistenza usata da ui/settings/IconSettingsScreen.kt,

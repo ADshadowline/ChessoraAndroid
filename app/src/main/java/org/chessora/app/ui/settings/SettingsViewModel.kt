@@ -34,7 +34,7 @@ class SettingsViewModel(
 
     /** "Usa grafica": icone illustrate nella Home desktop - vedi ClubPreferences.useGraphicIcons. */
     val useGraphicIcons: StateFlow<Boolean> = clubPreferences.useGraphicIcons
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
 
     fun setUseGraphicIcons(enabled: Boolean) {
         viewModelScope.launch { clubPreferences.setUseGraphicIcons(enabled) }

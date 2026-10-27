@@ -132,8 +132,9 @@ class ClubPreferences(context: Context) {
     }
 
     /** "Usa grafica" (Impostazioni): icone illustrate a colori nella Home desktop al posto
-     * di quelle vettoriali - vedi GRAPHIC_ICONS in ui/home/HomeScreen.kt. */
-    val useGraphicIcons: Flow<Boolean> = dataStore.data.map { it[Keys.USE_GRAPHIC_ICONS] ?: false }
+     * di quelle vettoriali - vedi GRAPHIC_ICONS in ui/home/HomeScreen.kt. Attiva di
+     * default: si spegne da Impostazioni. */
+    val useGraphicIcons: Flow<Boolean> = dataStore.data.map { it[Keys.USE_GRAPHIC_ICONS] ?: true }
 
     suspend fun setUseGraphicIcons(enabled: Boolean) {
         dataStore.edit { it[Keys.USE_GRAPHIC_ICONS] = enabled }
