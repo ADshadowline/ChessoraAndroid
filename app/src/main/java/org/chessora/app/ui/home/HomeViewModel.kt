@@ -104,6 +104,10 @@ class HomeViewModel(
     val desktopHiddenIcons: StateFlow<Set<String>> = clubPreferences.desktopHiddenIcons
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptySet())
 
+    /** Impostazioni → "Usa grafica": icone illustrate al posto di quelle vettoriali. */
+    val useGraphicIcons: StateFlow<Boolean> = clubPreferences.useGraphicIcons
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
     /** Riordino diretto sulla griglia Home (trascinamento con le dita, vedi
      * DesktopHomeGrid) - stessa persistenza usata da ui/settings/IconSettingsScreen.kt,
      * cosi' le due schermate restano sempre coerenti. */

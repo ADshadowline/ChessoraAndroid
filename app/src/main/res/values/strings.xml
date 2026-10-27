@@ -470,4 +470,6 @@
     <string name="chess_clock_resume">Riprendi</string>
     <string name="chess_clock_reset">Ricomincia</string>
     <string name="chess_clock_settings">Cambia cadenza</string>
+    <string name="settings_use_graphic_icons">Usa grafica</string>
+    <string name="settings_use_graphic_icons_hint">Icone illustrate a colori nella Home a icone al posto di quelle semplici.</string>
 </resources>

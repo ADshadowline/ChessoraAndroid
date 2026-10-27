@@ -450,4 +450,6 @@
     <string name="chess_clock_resume">Reanudar</string>
     <string name="chess_clock_reset">Reiniciar</string>
     <string name="chess_clock_settings">Cambiar ritmo</string>
+    <string name="settings_use_graphic_icons">Usar gráficos</string>
+    <string name="settings_use_graphic_icons_hint">Iconos ilustrados a color en el Inicio de iconos en lugar de los simples.</string>
 </resources>

@@ -32,6 +32,14 @@ class SettingsViewModel(
     val desktopBackgroundUri: StateFlow<String?> = clubPreferences.desktopBackgroundUri
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
+    /** "Usa grafica": icone illustrate nella Home desktop - vedi ClubPreferences.useGraphicIcons. */
+    val useGraphicIcons: StateFlow<Boolean> = clubPreferences.useGraphicIcons
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    fun setUseGraphicIcons(enabled: Boolean) {
+        viewModelScope.launch { clubPreferences.setUseGraphicIcons(enabled) }
+    }
+
     private val _deletingAccount = MutableStateFlow(false)
     val deletingAccount: StateFlow<Boolean> = _deletingAccount.asStateFlow()
 

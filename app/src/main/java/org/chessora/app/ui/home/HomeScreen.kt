@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
@@ -168,6 +169,7 @@ fun HomeScreen(
     val desktopIconOrder by viewModel.desktopIconOrder.collectAsState()
     val desktopHiddenIcons by viewModel.desktopHiddenIcons.collectAsState()
     val showInfoShine by viewModel.showInfoShine.collectAsState()
+    val useGraphicIcons by viewModel.useGraphicIcons.collectAsState()
 
     if (displayMode == ClubPreferences.DISPLAY_MODE_DESKTOP) {
         // Serve solo qui (non in modalità classica, dove EventsListScreen carica già gli
@@ -204,6 +206,7 @@ fun HomeScreen(
                 clubLogoUrl = clubLogoUrl,
                 showInfoShine = showInfoShine,
                 onInfoOpened = viewModel::markInfoSeen,
+                useGraphicIcons = useGraphicIcons,
             )
         }
     } else {
@@ -300,6 +303,28 @@ private data class DesktopIcon(
     /** Se non null, mostrata al posto di [icon] (usata solo per "Il Circolo": il logo
      * del circolo invece di un'icona generica, vedi DesktopIconTile). */
     val iconUrl: String? = null,
+    /** Immagine illustrata (Impostazioni → "Usa grafica", vedi [GRAPHIC_ICONS]) mostrata al
+     * posto di [icon]; null = icona vettoriale. */
+    val graphicRes: Int? = null,
+)
+
+/** Icone illustrate per "Usa grafica", per id (stessi id di DESKTOP_ICON_DESCRIPTORS, più
+ * le tessere fisse in basso). "board" (Il Circolo) non c'è: mostra già il logo del circolo. */
+private val GRAPHIC_ICONS = mapOf(
+    "events" to R.drawable.gfx_icon_events,
+    "calendar" to R.drawable.gfx_icon_calendar,
+    "news" to R.drawable.gfx_icon_news,
+    "registrations" to R.drawable.gfx_icon_registrations,
+    "ranking" to R.drawable.gfx_icon_ranking,
+    "performance" to R.drawable.gfx_icon_performance,
+    "myGames" to R.drawable.gfx_icon_my_games,
+    "chessClock" to R.drawable.gfx_icon_chess_clock,
+    "shop" to R.drawable.gfx_icon_shop,
+    "video" to R.drawable.gfx_icon_video,
+    "tournamentManager" to R.drawable.gfx_icon_tournament_manager,
+    "messaging" to R.drawable.gfx_icon_messaging,
+    "settings" to R.drawable.gfx_icon_settings,
+    "info" to R.drawable.gfx_icon_info,
 )
 
 /**
@@ -419,11 +444,14 @@ private fun DesktopHomeGrid(
     /** Vedi HomeViewModel.showInfoShine / markInfoSeen. */
     showInfoShine: Boolean = false,
     onInfoOpened: () -> Unit = {},
+    /** Impostazioni → "Usa grafica": vedi [GRAPHIC_ICONS]. */
+    useGraphicIcons: Boolean = false,
 ) {
+    fun graphicFor(id: String): Int? = if (useGraphicIcons) GRAPHIC_ICONS[id] else null
     // Messaggi e Impostazioni sono ancorate agli angoli in basso (sinistra/destra), non
     // parte della griglia scorrevole - posizione fissa richiesta esplicitamente, non
     // riordinabili/nascondibili da Impostazioni > Icone Home.
-    val baseIcons = remember(desktop, isPlatformMode, iconOrder, hiddenIcons, registeredTournamentsCount, registeredTournamentStartingSoon, hasTournamentInProgress, nextEventStart, hasManageableTournaments, hasShopItems, clubLogoUrl) {
+    val baseIcons = remember(desktop, isPlatformMode, iconOrder, hiddenIcons, registeredTournamentsCount, registeredTournamentStartingSoon, hasTournamentInProgress, nextEventStart, hasManageableTournaments, hasShopItems, clubLogoUrl, useGraphicIcons) {
         val defaults = DESKTOP_ICON_DESCRIPTORS
             .filter { !(isPlatformMode && it.hiddenInPlatformMode) }
             .filter { it.id != "tournamentManager" || hasManageableTournaments }
@@ -438,7 +466,7 @@ private fun DesktopHomeGrid(
                 }
                 val showLiveDot = descriptor.id == "registrations" && hasTournamentInProgress
                 val iconUrl = if (descriptor.id == "board") clubLogoUrl else null
-                DesktopIcon(descriptor.id, descriptor.labelRes, descriptor.icon, onClick, badgeCount, countdownTarget, showLiveDot, iconUrl)
+                DesktopIcon(descriptor.id, descriptor.labelRes, descriptor.icon, onClick, badgeCount, countdownTarget, showLiveDot, iconUrl, graphicFor(descriptor.id))
             }
         }
     }
@@ -556,13 +584,14 @@ private fun DesktopHomeGrid(
             // Più piccole delle icone della griglia sopra - restano comunque ancorate
             // agli angoli, solo più discrete.
             DesktopIconTile(
-                DesktopIcon("messaging", R.string.nav_messaging, Icons.AutoMirrored.Filled.Chat, desktop.onOpenMessaging, unreadMessagesCount),
+                DesktopIcon("messaging", R.string.nav_messaging, Icons.AutoMirrored.Filled.Chat, desktop.onOpenMessaging, unreadMessagesCount, graphicRes = graphicFor("messaging")),
                 modifier = Modifier.weight(1f, fill = false).widthIn(max = 104.dp),
                 compact = true,
             )
             // Info in mezzo (la lingua, che prima stava qui come bandierina, ora si
             // cambia da Impostazioni): apre la scelta tra "cosa puoi fare" e novità.
             InfoTile(
+                graphicRes = graphicFor("info"),
                 showShine = showInfoShine,
                 onClick = {
                     onInfoOpened()
@@ -571,7 +600,7 @@ private fun DesktopHomeGrid(
                 modifier = Modifier.weight(1f, fill = false).widthIn(max = 104.dp),
             )
             DesktopIconTile(
-                DesktopIcon("settings", R.string.settings_title, Icons.Default.Settings, desktop.onOpenSettings),
+                DesktopIcon("settings", R.string.settings_title, Icons.Default.Settings, desktop.onOpenSettings, graphicRes = graphicFor("settings")),
                 modifier = Modifier.weight(1f, fill = false).widthIn(max = 104.dp),
                 compact = true,
             )
@@ -591,7 +620,7 @@ private fun DesktopHomeGrid(
  * HomeViewModel.showInfoShine) ci passa sopra periodicamente un riflesso di luce
  * diagonale per attirare l'attenzione sulle novità. */
 @Composable
-private fun InfoTile(showShine: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun InfoTile(showShine: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier, graphicRes: Int? = null) {
     val shape = CardDefaults.shape
     Card(onClick = onClick, shape = shape, modifier = modifier.aspectRatio(1f).clip(shape).infoShine(showShine)) {
         Column(
@@ -599,7 +628,9 @@ private fun InfoTile(showShine: Boolean, onClick: () -> Unit, modifier: Modifier
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Box(
+            if (graphicRes != null) {
+                Image(painterResource(graphicRes), contentDescription = null, modifier = Modifier.size(GRAPHIC_COMPACT_SIZE))
+            } else Box(
                 modifier = Modifier
                     .size(30.dp)
                     .clip(CircleShape)
@@ -701,7 +732,7 @@ private fun DesktopIconTile(entry: DesktopIcon, modifier: Modifier = Modifier, c
                 // Meno spazio sopra quando l'icona è già grande (logo del circolo, vedi
                 // TileIcon) - lascia posto alla scritta invece di spingerla fuori dal
                 // riquadro.
-                modifier = Modifier.padding(top = if (entry.iconUrl != null) 2.dp else 8.dp),
+                modifier = Modifier.padding(top = if (entry.iconUrl != null || entry.graphicRes != null) 2.dp else 8.dp),
             )
         }
     }
@@ -723,10 +754,16 @@ private fun TileIcon(entry: DesktopIcon, size: androidx.compose.ui.unit.Dp) {
             contentScale = ContentScale.Crop,
             modifier = Modifier.offset(y = (-6).dp).size(size * 1.6f).clip(CircleShape),
         )
+    } else if (entry.graphicRes != null) {
+        // Illustrazione a colori: più grande dell'icona vettoriale, ha dettagli da vedere.
+        Image(painterResource(entry.graphicRes), contentDescription = null, modifier = Modifier.size(size * 1.6f))
     } else {
         Icon(entry.icon, contentDescription = null, modifier = Modifier.size(size))
     }
 }
+
+/** Dimensione dell'illustrazione nelle tessere piccole in basso (24dp × 1.6, come TileIcon). */
+private val GRAPHIC_COMPACT_SIZE = 38.dp
 
 /** Conto alla rovescia mm:ss verso [target], visibile SOLO nell'ultima ora prima
  * dell'orario (null altrimenti - né troppo presto né a evento già iniziato, vedi

@@ -75,6 +75,7 @@ fun SettingsScreen(
     val hideReadReceipts by viewModel.hideReadReceipts.collectAsState()
     val lichessUsername by viewModel.lichessUsername.collectAsState()
     val chessComUsername by viewModel.chessComUsername.collectAsState()
+    val useGraphicIcons by viewModel.useGraphicIcons.collectAsState()
     val context = LocalContext.current
     var showResetConfirmation by remember { mutableStateOf(false) }
     var showDeleteAccountConfirmation by remember { mutableStateOf(false) }
@@ -147,6 +148,25 @@ fun SettingsScreen(
             )
         }
 
+        // "Usa grafica": icone illustrate a colori nella Home a icone al posto di quelle
+        // vettoriali (vedi GRAPHIC_ICONS in ui/home/HomeScreen.kt).
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(stringResource(R.string.settings_use_graphic_icons), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+            Switch(
+                checked = useGraphicIcons,
+                onCheckedChange = { viewModel.setUseGraphicIcons(it) },
+            )
+        }
+        Text(
+            stringResource(R.string.settings_use_graphic_icons_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
         if (identifiedPlayerName != null) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
@@ -187,8 +207,10 @@ fun SettingsScreen(
                 placeholder = { Text(stringResource(R.string.settings_lichess_placeholder)) },
                 singleLine = true,
             )
+            // Salva attivo solo se l'username è nuovo o diverso da quello salvato.
             OutlinedButton(
                 onClick = { viewModel.setLichessUsername(lichessInput) },
+                enabled = lichessInput.trim() != (lichessUsername ?: "").trim(),
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
             ) {
                 Text(stringResource(R.string.settings_lichess_save))
@@ -215,6 +237,7 @@ fun SettingsScreen(
             )
             OutlinedButton(
                 onClick = { viewModel.setChessComUsername(chessComInput) },
+                enabled = chessComInput.trim() != (chessComUsername ?: "").trim(),
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
             ) {
                 Text(stringResource(R.string.settings_lichess_save))

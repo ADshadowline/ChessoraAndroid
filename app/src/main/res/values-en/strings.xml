@@ -449,4 +449,6 @@
     <string name="chess_clock_resume">Resume</string>
     <string name="chess_clock_reset">Restart</string>
     <string name="chess_clock_settings">Change time control</string>
+    <string name="settings_use_graphic_icons">Use graphics</string>
+    <string name="settings_use_graphic_icons_hint">Colourful illustrated icons on the icon Home instead of the plain ones.</string>
 </resources>

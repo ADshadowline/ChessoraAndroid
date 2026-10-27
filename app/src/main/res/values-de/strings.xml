@@ -449,4 +449,6 @@
     <string name="chess_clock_resume">Fortsetzen</string>
     <string name="chess_clock_reset">Neu starten</string>
     <string name="chess_clock_settings">Bedenkzeit ändern</string>
+    <string name="settings_use_graphic_icons">Grafik verwenden</string>
+    <string name="settings_use_graphic_icons_hint">Farbige illustrierte Symbole auf der Symbol-Startseite statt der einfachen.</string>
 </resources>

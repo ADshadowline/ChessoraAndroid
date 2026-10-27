@@ -60,6 +60,7 @@ class ClubPreferences(context: Context) {
         val DESKTOP_ICON_ORDER = stringPreferencesKey("desktop_icon_order")
         val DESKTOP_HIDDEN_ICONS = stringPreferencesKey("desktop_hidden_icons")
         val INFO_SEEN_VERSION_CODE = intPreferencesKey("info_seen_version_code")
+        val USE_GRAPHIC_ICONS = booleanPreferencesKey("use_graphic_icons")
     }
 
     val selectedClub: Flow<String?> = dataStore.data.map { it[Keys.SELECTED_CLUB_CODE] }
@@ -128,6 +129,14 @@ class ClubPreferences(context: Context) {
      * [desktopIconOrder]) - vedi ui/settings/IconSettingsScreen.kt. */
     val desktopHiddenIcons: Flow<Set<String>> = dataStore.data.map {
         it[Keys.DESKTOP_HIDDEN_ICONS]?.split(',')?.filter { id -> id.isNotBlank() }?.toSet() ?: emptySet()
+    }
+
+    /** "Usa grafica" (Impostazioni): icone illustrate a colori nella Home desktop al posto
+     * di quelle vettoriali - vedi GRAPHIC_ICONS in ui/home/HomeScreen.kt. */
+    val useGraphicIcons: Flow<Boolean> = dataStore.data.map { it[Keys.USE_GRAPHIC_ICONS] ?: false }
+
+    suspend fun setUseGraphicIcons(enabled: Boolean) {
+        dataStore.edit { it[Keys.USE_GRAPHIC_ICONS] = enabled }
     }
 
     suspend fun setDesktopIconOrder(order: List<String>) {

@@ -452,4 +452,6 @@
     <string name="chess_clock_resume">Reia</string>
     <string name="chess_clock_reset">Reîncepe</string>
     <string name="chess_clock_settings">Schimbă ritmul</string>
+    <string name="settings_use_graphic_icons">Folosește grafica</string>
+    <string name="settings_use_graphic_icons_hint">Pictograme ilustrate color pe ecranul principal cu pictograme, în locul celor simple.</string>
 </resources>

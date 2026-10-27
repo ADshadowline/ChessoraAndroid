@@ -449,4 +449,6 @@
     <string name="chess_clock_resume">Devam et</string>
     <string name="chess_clock_reset">Yeniden başla</string>
     <string name="chess_clock_settings">Süreyi değiştir</string>
+    <string name="settings_use_graphic_icons">Grafik kullan</string>
+    <string name="settings_use_graphic_icons_hint">Simge ana ekranında sade simgeler yerine renkli çizimli simgeler.</string>
 </resources>
