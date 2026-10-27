@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
@@ -38,6 +39,7 @@ import kotlinx.coroutines.delay
 import org.chessora.app.data.remote.dto.EntrantDto
 import org.chessora.app.data.remote.dto.Pairing
 import org.chessora.app.data.remote.dto.StandingsRow
+import org.chessora.app.data.remote.dto.TournamentPrizes
 import org.chessora.app.data.remote.dto.TournamentViewMode
 import org.chessora.app.ui.common.UiStateContent
 import org.chessora.app.ui.common.chessoraViewModel
@@ -59,6 +61,7 @@ fun TournamentManagerRoundsScreen(idTournament: Int, totalRounds: Int) {
     val viewModel = chessoraViewModel { app -> TournamentManagerRoundsViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
     val standings by viewModel.standings.collectAsState()
+    val prizes by viewModel.prizes.collectAsState()
     val entrants by viewModel.entrants.collectAsState()
     val viewMode by viewModel.viewMode.collectAsState()
     val busy by viewModel.busy.collectAsState()
@@ -124,8 +127,8 @@ fun TournamentManagerRoundsScreen(idTournament: Int, totalRounds: Int) {
         Column(modifier = Modifier.fillMaxSize()) {
             when {
                 viewMode == TournamentViewMode.PREMIAZIONE -> {
-                    val sections = remember(standings, titleByEntrantId) { computePrizeSections(standings, titleByEntrantId) }
-                    PremiazioneContent(sections, modifier = Modifier.weight(1f))
+                    val sections = remember(standings, prizes, titleByEntrantId) { computePrizeSections(standings, prizes, titleByEntrantId) }
+                    PremiazioneContent(sections, hasPrizes(prizes), modifier = Modifier.weight(1f))
                 }
                 rounds.isEmpty() -> EntrantsContent(entrants, modifier = Modifier.weight(1f))
                 viewMode == TournamentViewMode.STANDINGS -> {
@@ -169,7 +172,8 @@ fun TournamentManagerRoundsScreen(idTournament: Int, totalRounds: Int) {
             val showPremiazione = viewMode == TournamentViewMode.PREMIAZIONE
             val showStandingsToggle = !showPremiazione && (viewMode == TournamentViewMode.STANDINGS || (rounds.isNotEmpty() && !hasPendingRound && latestRoundComplete))
             val showGenerate = rounds.isEmpty() || (!hasPendingRound && !isFinalRound && (viewMode == TournamentViewMode.STANDINGS || !latestRoundComplete))
-            val showPremiazioneButton = !showPremiazione && viewMode == TournamentViewMode.STANDINGS && !hasPendingRound && latestRoundComplete && isFinalRound
+            // Come sul sito: la Premiazione compare solo se il torneo ha dei premi inseriti.
+            val showPremiazioneButton = !showPremiazione && viewMode == TournamentViewMode.STANDINGS && !hasPendingRound && latestRoundComplete && isFinalRound && hasPrizes(prizes)
             Row(
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -330,111 +334,97 @@ private fun OrganizerStandingsRow(row: StandingsRow) {
 private fun formatScore(n: Double): String = if (n % 1.0 == 0.0) n.toInt().toString() else n.toString().replace('.', ',')
 
 // ---------------- Premiazione ----------------
-// Stessa logica di abbinamenti-risultati.html (Assoluti poi Fasce Elo poi Categorie, mai
-// cumulabili: chi vince in un gruppo non ricompare nei successivi), con gli importi di
-// DEFAULT del sito (monte premi/fasce/percentuali) - la configurazione personalizzata di
-// un organizzatore vive SOLO nel localStorage del suo browser, il server non la conosce e
-// quindi l'app non può leggerla (vedi la richiesta dell'utente/la spiegazione data prima
-// di implementare questa schermata).
+// Stessa logica della Premiazione di tourn.chessora.org (abbinamenti-risultati.html): i premi
+// sono quelli inseriti in "Crea torneo" (GET .../premi, vedi TournamentPrizes) - testi
+// liberi nell'ordine della classifica. Prima i premi assoluti, poi le fasce Elo
+// nell'ordine inserito, mai cumulabili: chi vince un premio non ricompare dopo.
 
-private data class PrizeFascia(val label: String, val min: Int?, val max: Int?)
-private data class PrizeRankConfig(val percent: Boolean, val value: Int)
-private data class PrizeRow(val entrantId: Int, val rank: Int, val name: String, val title: String?, val rating: Int?, val amount: Int)
-private data class PrizeGroup(val label: String, val rows: List<PrizeRow>)
-private data class PrizeSections(val assoluti: List<PrizeRow>, val fasce: List<PrizeGroup>, val categorie: List<PrizeGroup>)
+private data class PrizeRow(
+    val entrantId: Int,
+    val rank: Int,
+    val name: String,
+    val title: String?,
+    val category: String?,
+    val rating: Int?,
+    val premio: String,
+)
+private data class PrizeGroup(val label: String, val rows: List<PrizeRow>, val unrecognized: Boolean)
+private data class PrizeSections(val assoluti: List<PrizeRow>, val fasce: List<PrizeGroup>)
 
-private object PrizeDefaults {
-    const val MONTE_PREMI = 1000
-    val FASCE_ELO = listOf(
-        PrizeFascia("Over 2000", 2000, null),
-        PrizeFascia("1800–1999", 1800, 1999),
-        PrizeFascia("1600–1799", 1600, 1799),
-        PrizeFascia("1400–1599", 1400, 1599),
-        PrizeFascia("Under 1400", null, 1399),
-    )
-    const val ASSOLUTI_COUNT = 3
-    const val FASCE_COUNT = 3
-    const val CATEGORIE_COUNT = 3
-    val ASSOLUTI_RANKS = listOf(PrizeRankConfig(true, 25), PrizeRankConfig(true, 15), PrizeRankConfig(true, 10))
-    val FASCE_RANKS = listOf(PrizeRankConfig(false, 40), PrizeRankConfig(false, 25), PrizeRankConfig(false, 15))
-    val CATEGORIE_RANKS = listOf(PrizeRankConfig(false, 30), PrizeRankConfig(false, 20), PrizeRankConfig(false, 10))
-}
+/** Come prizesEnabled() del sito: la Premiazione esiste solo se il torneo ha dei premi. */
+private fun hasPrizes(prizes: TournamentPrizes): Boolean =
+    prizes.premiAssoluti.any { it.isNotBlank() } || prizes.fasce.any { it.limite.isNotBlank() && it.premi.isNotEmpty() }
 
-private val CATEGORY_ORDER = listOf("GM", "IM", "FM", "CM", "1N", "2N", "3N", "NC")
-
-private fun categoryFor(title: String?, rating: Int?): String {
-    if (!title.isNullOrBlank()) return title
-    val elo = rating ?: 0
+/** Limite di una fascia scritto a mano → intervallo Elo, come fasciaRange del sito:
+ * "Under 1800"/"U1800" (< 1800), "fino a 1800" (<= 1800), "Over 2000"/"2000+" (>= 2000),
+ * "1600-1799" (estremi inclusi). Null se non contiene un Elo riconoscibile. */
+private fun fasciaRange(limite: String): IntRange? {
+    val t = limite.lowercase()
+    val nums = Regex("\\d{3,4}").findAll(t).map { it.value.toInt() }.toList()
+    if (nums.size >= 2) return minOf(nums[0], nums[1])..maxOf(nums[0], nums[1])
+    val n = nums.firstOrNull() ?: return null
     return when {
-        elo >= 1800 -> "1N"
-        elo >= 1600 -> "2N"
-        elo >= 1400 -> "3N"
-        else -> "NC"
+        Regex("under|sotto|meno di|inferiore|<(?!=)|\\bu\\s?\\d").containsMatchIn(t) -> Int.MIN_VALUE..(n - 1)
+        Regex("fino|max|entro|<=|≤").containsMatchIn(t) -> Int.MIN_VALUE..n
+        Regex("over|oltre|sopra|almeno|da |>=|≥|>|\\+").containsMatchIn(t) -> n..Int.MAX_VALUE
+        else -> null
     }
 }
 
-private fun prizeAmount(rank: PrizeRankConfig?): Int {
-    if (rank == null) return 0
-    val raw = if (rank.percent) PrizeDefaults.MONTE_PREMI * rank.value / 100.0 else rank.value.toDouble()
-    return (Math.round(raw / 5.0) * 5).toInt()
-}
-
-private fun computePrizeSections(standings: List<StandingsRow>, titleByEntrantId: Map<Int, String?>): PrizeSections {
-    fun toRow(r: StandingsRow, rank: Int, rankConfig: PrizeRankConfig?) =
-        PrizeRow(r.entrantId, rank, r.name, titleByEntrantId[r.entrantId], r.rating, prizeAmount(rankConfig))
+private fun computePrizeSections(
+    standings: List<StandingsRow>,
+    prizes: TournamentPrizes,
+    titleByEntrantId: Map<Int, String?>,
+): PrizeSections {
+    fun toRow(r: StandingsRow, rank: Int, premio: String) =
+        PrizeRow(r.entrantId, rank, r.name, titleByEntrantId[r.entrantId], r.category, r.rating, premio)
 
     val awarded = mutableSetOf<Int>()
-
-    val assoluti = standings.take(PrizeDefaults.ASSOLUTI_COUNT)
-        .mapIndexed { i, r -> toRow(r, i + 1, PrizeDefaults.ASSOLUTI_RANKS.getOrNull(i)) }
+    val premiAssoluti = prizes.premiAssoluti.filter { it.isNotBlank() }
+    val assoluti = standings.take(premiAssoluti.size).mapIndexed { i, r -> toRow(r, i + 1, premiAssoluti[i]) }
     assoluti.forEach { awarded += it.entrantId }
 
-    var remaining = standings.filter { it.entrantId !in awarded }
-    val fasce = PrizeDefaults.FASCE_ELO.mapNotNull { f ->
-        val min = f.min ?: Int.MIN_VALUE
-        val max = f.max ?: Int.MAX_VALUE
-        val source = remaining.filter { (it.rating ?: 0) in min..max }.take(PrizeDefaults.FASCE_COUNT)
-        if (source.isEmpty()) return@mapNotNull null
-        PrizeGroup(f.label, source.mapIndexed { i, r -> toRow(r, i + 1, PrizeDefaults.FASCE_RANKS.getOrNull(i)) })
+    val fasce = prizes.fasce.filter { it.limite.isNotBlank() && it.premi.isNotEmpty() }.map { band ->
+        val range = fasciaRange(band.limite)
+        val rows = if (range == null) emptyList() else standings
+            .filter { it.entrantId !in awarded && (it.rating ?: 0) in range }
+            .take(band.premi.size)
+            .mapIndexed { i, r -> toRow(r, i + 1, band.premi[i]) }
+        rows.forEach { awarded += it.entrantId }
+        PrizeGroup(band.limite, rows, unrecognized = range == null)
     }
-    fasce.forEach { g -> g.rows.forEach { awarded += it.entrantId } }
-
-    remaining = standings.filter { it.entrantId !in awarded }
-    val byCategory = remaining.groupBy { categoryFor(titleByEntrantId[it.entrantId], it.rating) }
-    val categorie = CATEGORY_ORDER.mapNotNull { cat ->
-        val source = byCategory[cat] ?: return@mapNotNull null
-        PrizeGroup(cat, source.take(PrizeDefaults.CATEGORIE_COUNT).mapIndexed { i, r -> toRow(r, i + 1, PrizeDefaults.CATEGORIE_RANKS.getOrNull(i)) })
-    }
-
-    return PrizeSections(assoluti, fasce, categorie)
+    return PrizeSections(assoluti, fasce)
 }
 
-private fun formatEuro(n: Int): String = "€ $n"
-
 @Composable
-private fun PremiazioneContent(sections: PrizeSections, modifier: Modifier = Modifier) {
+private fun PremiazioneContent(sections: PrizeSections, hasPrizes: Boolean, modifier: Modifier = Modifier) {
     LazyColumn(modifier = modifier.fillMaxWidth().padding(16.dp)) {
         item {
             Text("Premiazione", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 16.dp))
         }
-        item { PrizeSectionTitle("Assoluti") }
+        if (!hasPrizes) {
+            item { Text("Per questo torneo non sono stati inseriti premi.", style = MaterialTheme.typography.bodyMedium) }
+            return@LazyColumn
+        }
+        item { PrizeSectionTitle("Premi assoluti") }
         if (sections.assoluti.isEmpty()) {
-            item { Text("Nessun dato disponibile.", style = MaterialTheme.typography.bodySmall) }
+            item { Text("Nessun premio assoluto previsto.", style = MaterialTheme.typography.bodySmall) }
         } else {
             items(sections.assoluti, key = { "a-${it.entrantId}" }) { PrizeRowCard(it) }
         }
         if (sections.fasce.isNotEmpty()) {
-            item { PrizeSectionTitle("Fasce Elo") }
-            sections.fasce.forEach { group ->
-                item { PrizeGroupLabel(group) }
-                items(group.rows, key = { "f-${group.label}-${it.entrantId}" }) { PrizeRowCard(it) }
-            }
-        }
-        if (sections.categorie.isNotEmpty()) {
-            item { PrizeSectionTitle("Categorie") }
-            sections.categorie.forEach { group ->
-                item { PrizeGroupLabel(group) }
-                items(group.rows, key = { "c-${group.label}-${it.entrantId}" }) { PrizeRowCard(it) }
+            item { PrizeSectionTitle("Premi per fascia Elo") }
+            sections.fasce.forEachIndexed { index, group ->
+                item(key = "fl-$index") { PrizeGroupLabel(group) }
+                when {
+                    group.unrecognized -> item(key = "fu-$index") {
+                        Text("Limite non riconosciuto: indica un Elo, es. «Under 1800», «1600-1799», «Over 2000».", style = MaterialTheme.typography.bodySmall)
+                    }
+                    group.rows.isEmpty() -> item(key = "fe-$index") {
+                        Text("Nessun giocatore in questa fascia.", style = MaterialTheme.typography.bodySmall)
+                    }
+                    else -> items(group.rows, key = { "f-$index-${it.entrantId}" }) { PrizeRowCard(it) }
+                }
             }
         }
     }
@@ -469,9 +459,17 @@ private fun PrizeRowCard(row: PrizeRow) {
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                Text("Elo ${row.rating ?: "—"}", style = MaterialTheme.typography.bodySmall)
+                // Categoria come sul sito: anagrafica FSI, poi titolo FIDE, altrimenti NC.
+                val category = row.category?.takeIf { it.isNotBlank() } ?: row.title?.takeIf { it.isNotBlank() } ?: "NC"
+                Text("Elo ${row.rating ?: "—"} · $category", style = MaterialTheme.typography.bodySmall)
             }
-            Text(formatEuro(row.amount), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Text(
+                row.premio,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.End,
+                modifier = Modifier.padding(start = 8.dp).widthIn(max = 160.dp),
+            )
         }
     }
 }

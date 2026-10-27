@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import org.chessora.app.data.remote.apiErrorMessage
 import org.chessora.app.data.remote.dto.EntrantDto
 import org.chessora.app.data.remote.dto.StandingsRow
+import org.chessora.app.data.remote.dto.TournamentPrizes
 import org.chessora.app.data.remote.dto.TournamentRound
 import org.chessora.app.data.remote.dto.TournamentViewMode
 import org.chessora.app.data.repository.ChessoraRepository
@@ -24,6 +25,11 @@ class TournamentManagerRoundsViewModel(private val repository: ChessoraRepositor
 
     private val _standings = MutableStateFlow<List<StandingsRow>>(emptyList())
     val standings: StateFlow<List<StandingsRow>> = _standings.asStateFlow()
+
+    /** Premi inseriti alla creazione del torneo (GET .../premi), come la Premiazione di
+     * tourn.chessora.org - vuoti = nessuna premiazione per questo torneo. */
+    private val _prizes = MutableStateFlow(TournamentPrizes())
+    val prizes: StateFlow<TournamentPrizes> = _prizes.asStateFlow()
 
     /** Iscritti effettivi - servono solo quando non c'è ancora nessun turno generato (vedi
      * TournamentManagerRoundsScreen), ma vengono comunque ricaricati a ogni giro insieme al
@@ -55,6 +61,7 @@ class TournamentManagerRoundsViewModel(private val repository: ChessoraRepositor
             if (_state.value !is UiState.Success) _state.value = UiState.Loading
             _state.value = repository.getOrganizerRounds(idTournament).toUiState()
             repository.getTournamentStandings(idTournament).onSuccess { _standings.value = it }
+            repository.getTournamentPrizes(idTournament).onSuccess { _prizes.value = it }
             repository.getTournamentViewState(idTournament).onSuccess { remote -> _viewMode.value = remote }
             repository.getEntrants(idTournament).onSuccess { _entrants.value = it }
             repository.getPollingIntervalMs(idTournament).onSuccess { _pollingIntervalMs.value = it.toLong() }

@@ -53,6 +53,7 @@ import org.chessora.app.data.remote.dto.StartClubConversationRequest
 import org.chessora.app.data.remote.dto.StartDirectConversationRequest
 import org.chessora.app.data.remote.dto.SiteSettings
 import org.chessora.app.data.remote.dto.StandingsRow
+import org.chessora.app.data.remote.dto.TournamentPrizes
 import org.chessora.app.data.remote.dto.SubmitResultRequestDto
 import org.chessora.app.data.remote.dto.TournamentViewMode
 import org.chessora.app.data.remote.dto.TournamentViewStateDto
@@ -202,6 +203,9 @@ class ChessoraRepository(private val api: ChessoraApi) {
 
     suspend fun getTournamentStandings(id: Int): Result<List<StandingsRow>> =
         safeCall { api.getTournamentStandings(id) }
+
+    suspend fun getTournamentPrizes(id: Int): Result<TournamentPrizes> =
+        safeCall { api.getTournamentPrizes(id) }
 
     suspend fun getPollingIntervalMs(id: Int): Result<Int> =
         safeCall { api.getPollingIntervalMs(id) }

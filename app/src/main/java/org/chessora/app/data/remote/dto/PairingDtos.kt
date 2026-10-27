@@ -54,7 +54,26 @@ data class StandingsRow(
     val rating: Int? = null,
     val score: Double = 0.0,
     val buchholz: Double = 0.0,
+    /** Categoria nazionale FSI dall'anagrafica (GM, IM, M, CM, 1N...), null se assente. */
+    val category: String? = null,
 )
+
+/** Specchio di Chessora.Contracts.Tournaments.TournamentPrizesDto (GET
+ * /api/tornei/{id}/premi, pubblico): i premi inseriti in "Crea torneo" (wizard o
+ * tourn.chessora.org), testi liberi ("1° classificato: 300€") nell'ordine della
+ * classifica - la stessa fonte della Premiazione del sito. */
+@Serializable
+data class TournamentPrizes(
+    val premiAssoluti: List<String> = emptyList(),
+    val fasce: List<TournamentPrizeBand> = emptyList(),
+    val quotaIscrizione: String? = null,
+    val montepremiComplessivo: Double? = null,
+)
+
+/** Fascia Elo con premi dedicati: [limite] è il testo dell'organizzatore ("Under 1800",
+ * "1600-1799", "Over 2000"...). */
+@Serializable
+data class TournamentPrizeBand(val limite: String = "", val premi: List<String> = emptyList())
 
 /** Specchio di Chessora.Contracts.Tournaments.EntrantDto (GET
  * api/tornei/admin/{id}/entrants, organizzatore) - un iscritto EFFETTIVO al torneo,

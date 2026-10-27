@@ -16,6 +16,7 @@ val APP_CHANGELOG: List<AppRelease> = listOf(
     AppRelease("1.56.0", "ottobre 2026", listOf(
         "Nuove icone illustrate a colori nella Home a icone. Se preferisci quelle semplici, spegni \"Usa grafica\" in Impostazioni.",
         "Impostazioni: il pulsante Salva sotto gli username di Lichess e Chess.com si attiva solo quando scrivi un nome nuovo o diverso.",
+        "Gestione tornei: la Premiazione è la stessa di tourn.chessora.org, con i premi assoluti e di fascia inseriti alla creazione del torneo. Compare solo se il torneo ha dei premi.",
     )),
     AppRelease("1.55.0", "ottobre 2026", listOf(
         "Nuova icona \"Orologio\": scegli tempo e incremento (o una cadenza rapida come 3+2 o 15+10) e il telefono diventa un orologio da scacchi.",

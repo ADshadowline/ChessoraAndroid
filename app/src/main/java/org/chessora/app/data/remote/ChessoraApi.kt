@@ -51,6 +51,7 @@ import org.chessora.app.data.remote.dto.ShopHasProducts
 import org.chessora.app.data.remote.dto.ShopProduct
 import org.chessora.app.data.remote.dto.SiteSettings
 import org.chessora.app.data.remote.dto.StandingsRow
+import org.chessora.app.data.remote.dto.TournamentPrizes
 import org.chessora.app.data.remote.dto.SubmitResultRequestDto
 import org.chessora.app.data.remote.dto.TournamentViewStateDto
 import org.chessora.app.data.remote.dto.TournamentPreRegistrationResult
@@ -444,6 +445,11 @@ interface ChessoraApi {
      * turno) - nessuna autenticazione richiesta. */
     @GET("api/tornei/{id}/standings")
     suspend fun getTournamentStandings(@Path("id") id: Int): List<StandingsRow>
+
+    /** Premi inseriti in "Crea torneo" (premi assoluti e fasce Elo) - pubblico, stessa
+     * fonte della Premiazione di tourn.chessora.org. */
+    @GET("api/tornei/{id}/premi")
+    suspend fun getTournamentPrizes(@Path("id") id: Int): TournamentPrizes
 
     /** Ogni quanti millisecondi ricontrollare abbinamenti/risultati/classifica di questo
      * torneo (Club.PollingIntervalMs, configurabile per circolo dalla superamministrazione)
