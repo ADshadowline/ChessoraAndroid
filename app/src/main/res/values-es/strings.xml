@@ -421,6 +421,7 @@
         <item>Lee las Noticias y mira los Vídeos de tu club y de la red.</item>
         <item>Recibe notificaciones de novedades, rondas publicadas y nuevos mensajes.</item>
         <item>Personaliza la app en Ajustes: idioma (8 disponibles), foto, notificaciones, privacidad y eliminación de la cuenta.</item>
+    <item>Usa el Reloj de ajedrez en partidas presenciales: elige tiempo e incremento, coloca el móvil junto al tablero y cada jugador toca su mitad después de mover.</item>
     </string-array>
     <string name="server_maintenance_title">Servidor en actualización</string>
     <string name="server_maintenance_body">Vuelve a intentarlo dentro de unos diez minutos.</string>
@@ -434,4 +435,19 @@
     <string name="messaging_cancel_recording">Cancelar la grabación</string>
     <string name="messaging_send_voice">Enviar el mensaje de voz</string>
     <string name="messaging_mic_permission_denied">Para enviar un mensaje de voz, permite que Chessora use el micrófono en los ajustes del teléfono.</string>
+    <string name="chess_clock_title">Reloj de ajedrez</string>
+    <string name="chess_clock_setup_hint">Elige tiempo e incremento y coloca el móvil junto al tablero: cada jugador ve su tiempo desde su lado.</string>
+    <string name="chess_clock_minutes">Minutos por jugador</string>
+    <string name="chess_clock_increment">Incremento (segundos por jugada)</string>
+    <string name="chess_clock_presets">Ritmos rápidos</string>
+    <string name="chess_clock_start">Iniciar</string>
+    <string name="chess_clock_invalid">Indica de 1 a 600 minutos y un incremento de 0 a 600 segundos.</string>
+    <string name="chess_clock_tap_to_start">Toca para iniciar el reloj del rival</string>
+    <string name="chess_clock_moves">Jugadas: %1$d</string>
+    <string name="chess_clock_flag">Tiempo agotado</string>
+    <string name="chess_clock_paused">En pausa</string>
+    <string name="chess_clock_pause">Pausa</string>
+    <string name="chess_clock_resume">Reanudar</string>
+    <string name="chess_clock_reset">Reiniciar</string>
+    <string name="chess_clock_settings">Cambiar ritmo</string>
 </resources>

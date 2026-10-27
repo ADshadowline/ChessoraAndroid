@@ -99,6 +99,8 @@ object ChessoraDestinations {
     const val MY_GAMES_ADD = "my-games/add"
     const val MY_GAME_VIEWER = "my-games/view/{id}"
     const val MY_GAME_EDIT = "my-games/edit/{id}"
+    /** Orologio da scacchi a due lati per giocare dal vivo - vedi ui/chessclock/. */
+    const val CHESS_CLOCK = "chess-clock"
     const val PROFILE_PHOTO = "profile-photo"
     const val TOURNAMENT_DETAIL = "tornei/{idTournament}"
     /** Abbinamenti/classifica di un torneo AVVIATO (LifecycleStatus InCorso/Concluso) -

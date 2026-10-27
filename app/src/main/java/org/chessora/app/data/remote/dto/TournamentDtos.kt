@@ -87,7 +87,7 @@ data class TournamentPreRegistrationResult(
 
 /** Specchio di Chessora.Contracts.Tournaments.PublicRegisteredPlayerDto (GET
  * /api/tornei/{id}/iscritti) - elenco pubblico dei preiscritti a un torneo, nessuna
- * autenticazione richiesta. rating è sempre valorizzato (1440 di default per chi non
+ * autenticazione richiesta. rating è sempre valorizzato (1399 di default per chi non
  * ha un Elo FIDE reale, risolto lato server). idPlayer è null se non risolvibile da
  * idFide (nessuna chat possibile con questo iscritto, vedi TournamentDetailScreen). */
 @Serializable

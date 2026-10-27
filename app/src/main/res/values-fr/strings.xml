@@ -421,6 +421,7 @@
         <item>Lis les Actualités et regarde les Vidéos de ton club et du réseau.</item>
         <item>Reçois des notifications pour les nouveautés, les rondes publiées et les nouveaux messages.</item>
         <item>Personnalise l\'app dans Paramètres : langue (8 disponibles), photo, notifications, confidentialité et suppression du compte.</item>
+    <item>Utilise la Pendule pour les parties sur l\'échiquier : choisis le temps et l\'incrément, pose le téléphone à côté de l\'échiquier et chaque joueur touche sa moitié après avoir joué.</item>
     </string-array>
     <string name="server_maintenance_title">Serveur en cours de mise à jour</string>
     <string name="server_maintenance_body">Réessaie dans une dizaine de minutes.</string>
@@ -434,4 +435,19 @@
     <string name="messaging_cancel_recording">Annuler l\'enregistrement</string>
     <string name="messaging_send_voice">Envoyer le message vocal</string>
     <string name="messaging_mic_permission_denied">Pour envoyer un message vocal, autorise Chessora à utiliser le micro dans les réglages du téléphone.</string>
+    <string name="chess_clock_title">Pendule</string>
+    <string name="chess_clock_setup_hint">Choisis le temps et l\'incrément, puis pose le téléphone à côté de l\'échiquier : chaque joueur voit son temps de son côté.</string>
+    <string name="chess_clock_minutes">Minutes par joueur</string>
+    <string name="chess_clock_increment">Incrément (secondes par coup)</string>
+    <string name="chess_clock_presets">Cadences rapides</string>
+    <string name="chess_clock_start">Démarrer</string>
+    <string name="chess_clock_invalid">Indique de 1 à 600 minutes et un incrément de 0 à 600 secondes.</string>
+    <string name="chess_clock_tap_to_start">Touche pour lancer la pendule de l\'adversaire</string>
+    <string name="chess_clock_moves">Coups : %1$d</string>
+    <string name="chess_clock_flag">Temps écoulé</string>
+    <string name="chess_clock_paused">En pause</string>
+    <string name="chess_clock_pause">Pause</string>
+    <string name="chess_clock_resume">Reprendre</string>
+    <string name="chess_clock_reset">Recommencer</string>
+    <string name="chess_clock_settings">Changer de cadence</string>
 </resources>

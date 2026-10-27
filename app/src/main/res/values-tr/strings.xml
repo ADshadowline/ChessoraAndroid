@@ -420,6 +420,7 @@
         <item>Kulübünün ve ağın Haberlerini oku, Videolarını izle.</item>
         <item>Yenilikler, yayınlanan turlar ve yeni mesajlar için bildirim al.</item>
         <item>Uygulamayı Ayarlar\'dan kişiselleştir: dil (8 seçenek), fotoğraf, bildirimler, gizlilik ve hesap silme.</item>
+    <item>Tahtada oynanan oyunlar için Satranç saatini kullan: süreyi ve artışı seç, telefonu tahtanın yanına koy ve her oyuncu hamlesinden sonra kendi yarısına dokunsun.</item>
     </string-array>
     <string name="server_maintenance_title">Sunucu güncelleniyor</string>
     <string name="server_maintenance_body">Lütfen yaklaşık on dakika sonra tekrar dene.</string>
@@ -433,4 +434,19 @@
     <string name="messaging_cancel_recording">Kaydı iptal et</string>
     <string name="messaging_send_voice">Sesli mesajı gönder</string>
     <string name="messaging_mic_permission_denied">Sesli mesaj göndermek için telefon ayarlarından Chessora\'nın mikrofonu kullanmasına izin ver.</string>
+    <string name="chess_clock_title">Satranç saati</string>
+    <string name="chess_clock_setup_hint">Süreyi ve artışı seç, sonra telefonu tahtanın yanına koy: her oyuncu kendi süresini kendi tarafından görür.</string>
+    <string name="chess_clock_minutes">Oyuncu başına dakika</string>
+    <string name="chess_clock_increment">Artış (hamle başına saniye)</string>
+    <string name="chess_clock_presets">Hızlı seçimler</string>
+    <string name="chess_clock_start">Başlat</string>
+    <string name="chess_clock_invalid">1 ile 600 dakika arası ve 0 ile 600 saniye arası bir artış gir.</string>
+    <string name="chess_clock_tap_to_start">Rakibin saatini başlatmak için dokun</string>
+    <string name="chess_clock_moves">Hamle: %1$d</string>
+    <string name="chess_clock_flag">Süre doldu</string>
+    <string name="chess_clock_paused">Duraklatıldı</string>
+    <string name="chess_clock_pause">Duraklat</string>
+    <string name="chess_clock_resume">Devam et</string>
+    <string name="chess_clock_reset">Yeniden başla</string>
+    <string name="chess_clock_settings">Süreyi değiştir</string>
 </resources>

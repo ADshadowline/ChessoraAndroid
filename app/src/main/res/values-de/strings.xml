@@ -420,6 +420,7 @@
         <item>Lies die News und sieh dir die Videos deines Vereins und des Netzwerks an.</item>
         <item>Erhalte Benachrichtigungen zu Neuigkeiten, veröffentlichten Runden und neuen Nachrichten.</item>
         <item>Passe die App in den Einstellungen an: Sprache (8 verfügbar), Foto, Benachrichtigungen, Datenschutz und Kontolöschung.</item>
+    <item>Nutze die Schachuhr für Partien am Brett: Bedenkzeit und Inkrement wählen, das Handy neben das Brett legen, und jeder tippt nach seinem Zug auf seine Hälfte.</item>
     </string-array>
     <string name="server_maintenance_title">Server wird aktualisiert</string>
     <string name="server_maintenance_body">Bitte versuche es in etwa zehn Minuten erneut.</string>
@@ -433,4 +434,19 @@
     <string name="messaging_cancel_recording">Aufnahme abbrechen</string>
     <string name="messaging_send_voice">Sprachnachricht senden</string>
     <string name="messaging_mic_permission_denied">Um eine Sprachnachricht zu senden, erlaube Chessora in den Telefoneinstellungen die Nutzung des Mikrofons.</string>
+    <string name="chess_clock_title">Schachuhr</string>
+    <string name="chess_clock_setup_hint">Wähle Bedenkzeit und Inkrement und lege das Handy neben das Brett: Jeder Spieler sieht seine Zeit von seiner Seite.</string>
+    <string name="chess_clock_minutes">Minuten pro Spieler</string>
+    <string name="chess_clock_increment">Inkrement (Sekunden pro Zug)</string>
+    <string name="chess_clock_presets">Schnellauswahl</string>
+    <string name="chess_clock_start">Starten</string>
+    <string name="chess_clock_invalid">Gib 1 bis 600 Minuten und ein Inkrement von 0 bis 600 Sekunden ein.</string>
+    <string name="chess_clock_tap_to_start">Tippen, um die Uhr des Gegners zu starten</string>
+    <string name="chess_clock_moves">Züge: %1$d</string>
+    <string name="chess_clock_flag">Zeit abgelaufen</string>
+    <string name="chess_clock_paused">Pausiert</string>
+    <string name="chess_clock_pause">Pause</string>
+    <string name="chess_clock_resume">Fortsetzen</string>
+    <string name="chess_clock_reset">Neu starten</string>
+    <string name="chess_clock_settings">Bedenkzeit ändern</string>
 </resources>

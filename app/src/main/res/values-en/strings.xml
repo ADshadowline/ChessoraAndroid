@@ -420,6 +420,7 @@
         <item>Read the News and watch the Videos from your club and the network.</item>
         <item>Get notifications for news, published rounds and new messages.</item>
         <item>Customise the app in Settings: language (8 available), photo, notifications, privacy and account deletion.</item>
+    <item>Use the Chess clock for over-the-board games: pick time and increment, place the phone next to the board and each player taps their half after moving.</item>
     </string-array>
     <string name="server_maintenance_title">Server being updated</string>
     <string name="server_maintenance_body">Please try again in about ten minutes.</string>
@@ -433,4 +434,19 @@
     <string name="messaging_cancel_recording">Cancel recording</string>
     <string name="messaging_send_voice">Send voice message</string>
     <string name="messaging_mic_permission_denied">To send a voice message, allow Chessora to use the microphone in your phone settings.</string>
+    <string name="chess_clock_title">Chess clock</string>
+    <string name="chess_clock_setup_hint">Choose time and increment, then place the phone next to the board: each player sees their own time from their side.</string>
+    <string name="chess_clock_minutes">Minutes per player</string>
+    <string name="chess_clock_increment">Increment (seconds per move)</string>
+    <string name="chess_clock_presets">Quick time controls</string>
+    <string name="chess_clock_start">Start</string>
+    <string name="chess_clock_invalid">Enter 1 to 600 minutes and an increment of 0 to 600 seconds.</string>
+    <string name="chess_clock_tap_to_start">Tap to start your opponent\'s clock</string>
+    <string name="chess_clock_moves">Moves: %1$d</string>
+    <string name="chess_clock_flag">Time\'s up</string>
+    <string name="chess_clock_paused">Paused</string>
+    <string name="chess_clock_pause">Pause</string>
+    <string name="chess_clock_resume">Resume</string>
+    <string name="chess_clock_reset">Restart</string>
+    <string name="chess_clock_settings">Change time control</string>
 </resources>

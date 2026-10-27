@@ -59,6 +59,7 @@ import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -130,6 +131,7 @@ data class DesktopHomeCallbacks(
     val onOpenRanking: () -> Unit,
     val onOpenPerformance: () -> Unit,
     val onOpenMyGames: () -> Unit,
+    val onOpenChessClock: () -> Unit,
     val onOpenClub: () -> Unit,
     val onOpenShop: () -> Unit,
     val onOpenVideo: () -> Unit,
@@ -325,6 +327,7 @@ val DESKTOP_ICON_DESCRIPTORS = listOf(
     DesktopIconDescriptor("ranking", R.string.nav_ranking, Icons.Default.Leaderboard),
     DesktopIconDescriptor("performance", R.string.more_performance, Icons.AutoMirrored.Filled.ShowChart),
     DesktopIconDescriptor("myGames", R.string.more_my_games, Icons.Default.History),
+    DesktopIconDescriptor("chessClock", R.string.chess_clock_title, Icons.Default.Timer),
     DesktopIconDescriptor("board", R.string.nav_club, Icons.Default.Groups, hiddenInPlatformMode = true),
     DesktopIconDescriptor("shop", R.string.desktop_icon_shop, Icons.Default.ShoppingCart, hiddenInPlatformMode = true),
     DesktopIconDescriptor("video", R.string.desktop_icon_video, Icons.Default.PlayCircle, hiddenInPlatformMode = true),
@@ -357,6 +360,7 @@ private fun callbackFor(id: String, desktop: DesktopHomeCallbacks): (() -> Unit)
     "ranking" -> desktop.onOpenRanking
     "performance" -> desktop.onOpenPerformance
     "myGames" -> desktop.onOpenMyGames
+    "chessClock" -> desktop.onOpenChessClock
     "board" -> desktop.onOpenClub
     "shop" -> desktop.onOpenShop
     "video" -> desktop.onOpenVideo

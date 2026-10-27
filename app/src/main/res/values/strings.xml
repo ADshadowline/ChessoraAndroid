@@ -441,6 +441,7 @@
         <item>Leggi le News e guarda i Video del tuo circolo e della rete.</item>
         <item>Ricevi notifiche per le novità, i turni pubblicati e i nuovi messaggi.</item>
         <item>Personalizza l\'app da Impostazioni: lingua (8 disponibili), foto, notifiche, privacy ed eliminazione dell\'account.</item>
+    <item>Usa l\'Orologio per le partite dal vivo: scegli tempo e incremento, appoggia il telefono accanto alla scacchiera e ogni giocatore tocca la sua metà dopo aver mosso.</item>
     </string-array>
     <string name="server_maintenance_title">Server in aggiornamento</string>
     <string name="server_maintenance_body">Riprova tra una decina di minuti.</string>
@@ -454,4 +455,19 @@
     <string name="messaging_cancel_recording">Annulla la registrazione</string>
     <string name="messaging_send_voice">Invia il vocale</string>
     <string name="messaging_mic_permission_denied">Per inviare un vocale consenti a Chessora di usare il microfono nelle impostazioni del telefono.</string>
+    <string name="chess_clock_title">Orologio</string>
+    <string name="chess_clock_setup_hint">Scegli tempo e incremento, poi appoggia il telefono accanto alla scacchiera: ogni giocatore vede il proprio tempo dal suo lato.</string>
+    <string name="chess_clock_minutes">Minuti per giocatore</string>
+    <string name="chess_clock_increment">Incremento (secondi per mossa)</string>
+    <string name="chess_clock_presets">Cadenze rapide</string>
+    <string name="chess_clock_start">Avvia</string>
+    <string name="chess_clock_invalid">Indica da 1 a 600 minuti e un incremento da 0 a 600 secondi.</string>
+    <string name="chess_clock_tap_to_start">Tocca per avviare il tempo dell\'avversario</string>
+    <string name="chess_clock_moves">Mosse: %1$d</string>
+    <string name="chess_clock_flag">Tempo scaduto</string>
+    <string name="chess_clock_paused">In pausa</string>
+    <string name="chess_clock_pause">Pausa</string>
+    <string name="chess_clock_resume">Riprendi</string>
+    <string name="chess_clock_reset">Ricomincia</string>
+    <string name="chess_clock_settings">Cambia cadenza</string>
 </resources>

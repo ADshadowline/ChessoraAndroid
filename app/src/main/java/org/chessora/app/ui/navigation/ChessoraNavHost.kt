@@ -93,6 +93,7 @@ import org.chessora.app.push.TournamentRoundEvents
 import org.chessora.app.ui.mygames.AddMyGameScreen
 import org.chessora.app.ui.mygames.MyGameViewerScreen
 import org.chessora.app.ui.mygames.MyGamesListScreen
+import org.chessora.app.ui.chessclock.ChessClockScreen
 import org.chessora.app.ui.performance.EloRatingType
 import org.chessora.app.ui.performance.PerformanceScreen
 import org.chessora.app.ui.performance.chesscom.ChessComGameViewerScreen
@@ -446,6 +447,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                             onOpenRanking = { navController.navigate(ChessoraDestinations.RANKING) },
                             onOpenPerformance = { navController.navigate(ChessoraDestinations.performance()) },
                             onOpenMyGames = { navController.navigate(ChessoraDestinations.MY_GAMES) },
+                            onOpenChessClock = { navController.navigate(ChessoraDestinations.CHESS_CLOCK) },
                             onOpenClub = { navController.navigate(ChessoraDestinations.CLUB) },
                             onOpenShop = { navController.navigate(ChessoraDestinations.SHOP) },
                             onOpenVideo = { navController.navigate(ChessoraDestinations.VIDEO) },
@@ -531,6 +533,9 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                     onAddGame = { navController.navigate(ChessoraDestinations.MY_GAMES_ADD) },
                     onOpenGame = { id -> navController.navigate(ChessoraDestinations.myGameViewer(id)) },
                 )
+            }
+            composable(ChessoraDestinations.CHESS_CLOCK) {
+                ChessClockScreen(onBack = { navController.popBackStack() })
             }
             composable(ChessoraDestinations.MY_GAMES_ADD) {
                 AddMyGameScreen(onSaved = { navController.popBackStack() })
@@ -661,6 +666,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                     onRankingClick = { navController.navigate(ChessoraDestinations.RANKING) },
                     onPerformanceClick = { navController.navigate(ChessoraDestinations.performance()) },
                     onMyGamesClick = { navController.navigate(ChessoraDestinations.MY_GAMES) },
+                    onChessClockClick = { navController.navigate(ChessoraDestinations.CHESS_CLOCK) },
                     onClubClick = { navController.navigate(ChessoraDestinations.CLUB) },
                     onShopClick = { navController.navigate(ChessoraDestinations.SHOP) },
                     onVideoClick = { navController.navigate(ChessoraDestinations.VIDEO) },

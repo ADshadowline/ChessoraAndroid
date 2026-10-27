@@ -423,6 +423,7 @@
         <item>Citește Știrile și urmărește Videoclipurile clubului tău și ale rețelei.</item>
         <item>Primește notificări pentru noutăți, runde publicate și mesaje noi.</item>
         <item>Personalizează aplicația din Setări: limba (8 disponibile), fotografia, notificările, confidențialitatea și ștergerea contului.</item>
+    <item>Folosește Ceasul de șah pentru partidele la tablă: alege timpul și incrementul, așază telefonul lângă tablă și fiecare jucător își atinge jumătatea după mutare.</item>
     </string-array>
     <string name="server_maintenance_title">Serverul se actualizează</string>
     <string name="server_maintenance_body">Încearcă din nou în aproximativ zece minute.</string>
@@ -436,4 +437,19 @@
     <string name="messaging_cancel_recording">Anulează înregistrarea</string>
     <string name="messaging_send_voice">Trimite mesajul vocal</string>
     <string name="messaging_mic_permission_denied">Pentru a trimite un mesaj vocal, permite aplicației Chessora să folosească microfonul din setările telefonului.</string>
+    <string name="chess_clock_title">Ceas de șah</string>
+    <string name="chess_clock_setup_hint">Alege timpul și incrementul, apoi așază telefonul lângă tablă: fiecare jucător își vede timpul din partea sa.</string>
+    <string name="chess_clock_minutes">Minute per jucător</string>
+    <string name="chess_clock_increment">Increment (secunde pe mutare)</string>
+    <string name="chess_clock_presets">Ritmuri rapide</string>
+    <string name="chess_clock_start">Pornește</string>
+    <string name="chess_clock_invalid">Introdu între 1 și 600 de minute și un increment între 0 și 600 de secunde.</string>
+    <string name="chess_clock_tap_to_start">Atinge pentru a porni ceasul adversarului</string>
+    <string name="chess_clock_moves">Mutări: %1$d</string>
+    <string name="chess_clock_flag">Timp expirat</string>
+    <string name="chess_clock_paused">În pauză</string>
+    <string name="chess_clock_pause">Pauză</string>
+    <string name="chess_clock_resume">Reia</string>
+    <string name="chess_clock_reset">Reîncepe</string>
+    <string name="chess_clock_settings">Schimbă ritmul</string>
 </resources>

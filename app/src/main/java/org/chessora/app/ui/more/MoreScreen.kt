@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
@@ -43,6 +44,7 @@ fun MoreScreen(
     onRankingClick: () -> Unit,
     onPerformanceClick: () -> Unit,
     onMyGamesClick: () -> Unit,
+    onChessClockClick: () -> Unit,
     onClubClick: () -> Unit,
     onShopClick: () -> Unit,
     onVideoClick: () -> Unit,
@@ -82,6 +84,12 @@ fun MoreScreen(
             leadingContent = { Icon(Icons.Default.History, contentDescription = null) },
             trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
             modifier = Modifier.clickable(onClick = onMyGamesClick),
+        )
+        ListItem(
+            headlineContent = { Text(stringResource(R.string.chess_clock_title)) },
+            leadingContent = { Icon(Icons.Default.Timer, contentDescription = null) },
+            trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
+            modifier = Modifier.clickable(onClick = onChessClockClick),
         )
         if (!isPlatformMode) {
             ListItem(

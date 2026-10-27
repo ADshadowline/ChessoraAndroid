@@ -426,6 +426,7 @@
         <item>Читайте Новости и смотрите Видео своего клуба и всей сети.</item>
         <item>Получайте уведомления о новостях, опубликованных турах и новых сообщениях.</item>
         <item>Настраивайте приложение в Настройках: язык (8 на выбор), фото, уведомления, конфиденциальность и удаление аккаунта.</item>
+    <item>Используйте Шахматные часы для партий за доской: выберите время и добавление, положите телефон рядом с доской, и каждый игрок нажимает свою половину после хода.</item>
     </string-array>
     <string name="server_maintenance_title">Сервер обновляется</string>
     <string name="server_maintenance_body">Попробуйте снова минут через десять.</string>
@@ -439,4 +440,19 @@
     <string name="messaging_cancel_recording">Отменить запись</string>
     <string name="messaging_send_voice">Отправить голосовое сообщение</string>
     <string name="messaging_mic_permission_denied">Чтобы отправить голосовое сообщение, разрешите Chessora доступ к микрофону в настройках телефона.</string>
+    <string name="chess_clock_title">Шахматные часы</string>
+    <string name="chess_clock_setup_hint">Выберите время и добавление, затем положите телефон рядом с доской: каждый игрок видит своё время со своей стороны.</string>
+    <string name="chess_clock_minutes">Минут на игрока</string>
+    <string name="chess_clock_increment">Добавление (секунд за ход)</string>
+    <string name="chess_clock_presets">Быстрый выбор</string>
+    <string name="chess_clock_start">Старт</string>
+    <string name="chess_clock_invalid">Укажите от 1 до 600 минут и добавление от 0 до 600 секунд.</string>
+    <string name="chess_clock_tap_to_start">Нажмите, чтобы запустить часы соперника</string>
+    <string name="chess_clock_moves">Ходов: %1$d</string>
+    <string name="chess_clock_flag">Время вышло</string>
+    <string name="chess_clock_paused">На паузе</string>
+    <string name="chess_clock_pause">Пауза</string>
+    <string name="chess_clock_resume">Продолжить</string>
+    <string name="chess_clock_reset">Начать заново</string>
+    <string name="chess_clock_settings">Изменить контроль</string>
 </resources>

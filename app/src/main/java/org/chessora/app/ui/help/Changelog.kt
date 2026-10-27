@@ -13,6 +13,11 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
+    AppRelease("1.55.0", "ottobre 2026", listOf(
+        "Nuova icona \"Orologio\": scegli tempo e incremento (o una cadenza rapida come 3+2 o 15+10) e il telefono diventa un orologio da scacchi.",
+        "Lo schermo si divide in due: appoggia il telefono accanto alla scacchiera, ognuno vede il proprio tempo dal suo lato e tocca la sua metà dopo aver mosso.",
+        "Pausa, ricomincia e cambio cadenza dalla barra al centro; negli ultimi 10 secondi compaiono i decimi e a tempo scaduto la metà diventa rossa.",
+    )),
     AppRelease("1.54.0", "ottobre 2026", listOf(
         "Le mie partite: tieni premuta una partita per selezionarla (anche più di una, o tutte).",
         "Dalle partite selezionate puoi creare un PDF con intestazione, risultato, posizione finale e mosse, da salvare, inviare o stampare.",
