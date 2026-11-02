@@ -13,6 +13,12 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
+    AppRelease("1.58.0", "novembre 2026", listOf(
+        "Eventi: per un torneo già iniziato o concluso non c'è più \"Preiscriviti\", ma \"Risultati e classifica\".",
+        "Abbinamenti: sotto ogni scacchiera le probabilità di vittoria del Bianco, di patta e di vittoria del Nero, calcolate dall'Elo come su tourn.chessora.org.",
+        "Classifica di un torneo in corso: per ogni giocatore la probabilità di vincere il torneo e di salire sul podio.",
+        "I turni ora si leggono 1°, 2°, 3°… per far stare più turni nella barra.",
+    )),
     AppRelease("1.57.0", "novembre 2026", listOf(
         "Se hai fatto l'accesso e scegli un circolo (anche partendo da \"non sono iscritto a nessun circolo\"), il tuo nome resta nella barra in alto.",
         "Accanto al nome, nella barra in alto, compaiono anche il tuo ID FIDE e la tessera FSI, se li hai.",

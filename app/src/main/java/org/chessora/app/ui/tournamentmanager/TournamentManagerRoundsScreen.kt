@@ -149,7 +149,7 @@ fun TournamentManagerRoundsScreen(idTournament: Int, totalRounds: Int) {
                                 Tab(
                                     selected = r.roundNumber == round?.roundNumber,
                                     onClick = { selectedRoundNumber = r.roundNumber },
-                                    text = { Text("Turno ${r.roundNumber}" + if (r.status == "Pending") " · bozza" else "") },
+                                    text = { Text("${r.roundNumber}°" + if (r.status == "Pending") " · bozza" else "") },
                                 )
                             }
                         }

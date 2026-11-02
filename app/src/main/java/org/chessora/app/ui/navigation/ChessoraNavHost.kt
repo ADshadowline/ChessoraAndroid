@@ -481,6 +481,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                     idTournament = idTournament,
                     onLogin = { navController.navigate(ChessoraDestinations.AUTH_LOGIN) },
                     onMessagePlayer = { idPlayer, displayName -> openDirectConversation(scope, sessionViewModel, navController, idPlayer, displayName) },
+                    onOpenResults = { id -> navController.navigate(ChessoraDestinations.tournamentPairings(id)) },
                 )
             }
             composable(ChessoraDestinations.NEWS_LIST) {

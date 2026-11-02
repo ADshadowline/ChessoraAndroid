@@ -59,7 +59,12 @@ private val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.IT
  * tra cui scegliere UNA SOLA preiscrizione: richiede il login (vedi ui/auth/), l'identità
  * usata è sempre quella dell'utente autenticato, mai chiesta a mano qui. */
 @Composable
-fun TournamentDetailScreen(idTournament: Int, onLogin: () -> Unit, onMessagePlayer: (idPlayer: Int, displayName: String) -> Unit) {
+fun TournamentDetailScreen(
+    idTournament: Int,
+    onLogin: () -> Unit,
+    onMessagePlayer: (idPlayer: Int, displayName: String) -> Unit,
+    onOpenResults: (idTournament: Int) -> Unit,
+) {
     val viewModel = chessoraViewModel { app -> TournamentDetailViewModel(app.repository, app.clubPreferences) }
     val state by viewModel.state.collectAsState()
     val registering by viewModel.registering.collectAsState()
@@ -97,6 +102,7 @@ fun TournamentDetailScreen(idTournament: Int, onLogin: () -> Unit, onMessagePlay
                     loadingRegistrants = option.tournament.id in loadingRegisteredPlayers,
                     onShowRegistrants = { viewModel.loadRegisteredPlayersIfNeeded(option.tournament.id) },
                     onMessagePlayer = onMessagePlayer,
+                    onOpenResults = { onOpenResults(option.tournament.id) },
                     onRegister = {
                         viewModel.register(
                             option.tournament.id,
@@ -199,6 +205,7 @@ private fun TournamentOptionCard(
     loadingRegistrants: Boolean,
     onShowRegistrants: () -> Unit,
     onMessagePlayer: (idPlayer: Int, displayName: String) -> Unit,
+    onOpenResults: () -> Unit,
     onRegister: () -> Unit,
     onCancel: () -> Unit,
 ) {
@@ -207,6 +214,9 @@ private fun TournamentOptionCard(
     val unlimited = tournament.limiteIscrizioni <= 0
     val full = !unlimited && count >= tournament.limiteIscrizioni
     val registrationWindow = registrationWindowStatus(tournament)
+    // Torneo avviato (InCorso/Concluso): niente più (dis)iscrizioni, come su tourn si
+    // passa a turni, risultati, classifica e probabilità (vedi ui/pairings/PairingsScreen).
+    val started = registrationWindow == RegistrationWindow.STARTED
     var registrantsExpanded by remember(tournament.id) { mutableStateOf(false) }
 
     Card(modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp)) {
@@ -229,9 +239,10 @@ private fun TournamentOptionCard(
                     )
                     Text(
                         when {
+                            started && tournament.lifecycleStatus == 2 -> stringResource(R.string.tournament_registration_concluded)
+                            started -> stringResource(R.string.tournament_registration_started)
                             option.isRegistered -> stringResource(R.string.tournament_already_registered)
                             disabledByOther -> stringResource(R.string.tournament_registered_other_option)
-                            registrationWindow == RegistrationWindow.STARTED -> stringResource(R.string.tournament_registration_started)
                             registrationWindow == RegistrationWindow.NOT_YET_OPEN -> stringResource(R.string.tournament_registration_not_open_yet)
                             registrationWindow == RegistrationWindow.CLOSED -> stringResource(R.string.tournament_registration_closed)
                             full -> stringResource(R.string.tournament_seats_full)
@@ -242,6 +253,9 @@ private fun TournamentOptionCard(
                     )
                 }
                 when {
+                    started -> Button(onClick = onOpenResults) {
+                        Text(stringResource(R.string.tournament_results_standings))
+                    }
                     option.isRegistered -> Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             Icons.Default.CheckCircle,
