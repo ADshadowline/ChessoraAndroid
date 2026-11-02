@@ -89,6 +89,8 @@ class SessionViewModel(
         _registeredTournamentStartingSoon.value = null
         _hasTournamentInProgress.value = false
         _unreadMessagesCount.value = 0
+        _identifiedIdFide.value = null
+        _identifiedIdFsi.value = null
         OrganizerSession.token = null
         viewModelScope.launch {
             AuthSessionPersister.clear(authPreferences)
@@ -140,6 +142,13 @@ class SessionViewModel(
 
     private val _identifiedPlayerName = MutableStateFlow<String?>(null)
     val identifiedPlayerName: StateFlow<String?> = _identifiedPlayerName
+
+    /** ID FIDE e tessera FSI dell'utente loggato (da GET api/me), mostrati accanto al nome
+     * nella barra in alto - null se non ne ha o non è loggato. */
+    private val _identifiedIdFide = MutableStateFlow<Int?>(null)
+    val identifiedIdFide: StateFlow<Int?> = _identifiedIdFide
+    private val _identifiedIdFsi = MutableStateFlow<Int?>(null)
+    val identifiedIdFsi: StateFlow<Int?> = _identifiedIdFsi
 
     /** True se il socio identificato ha il ruolo pubblico "Responsabile dei tornei" nel
      * circolo scelto (vedi GET /api/players/{idPlayer}/roles, nessun login richiesto) -
@@ -267,10 +276,29 @@ class SessionViewModel(
 
         _identityResolved.value = clubPreferences.identityResolved.first()
         _identifiedPlayerName.value = clubPreferences.identifiedPlayerName.first()
+        refreshAccountIdentity()
         val idPlayer = clubPreferences.identifiedPlayerId.first()
         _isTournamentManager.value = false
         if (idPlayer != null && club != null) {
             loadTournamentManagerStatus(idPlayer, club)
+        }
+    }
+
+    /** Identità dell'ACCOUNT loggato (GET api/me): nome da mostrare se non c'è già quello
+     * del socio identificato (es. login Google/email senza giocatore collegato), più ID FIDE
+     * e tessera FSI per la barra in alto. Non dipende dal circolo scelto. */
+    private suspend fun refreshAccountIdentity() {
+        if (AuthSession.accessToken.isNullOrBlank()) {
+            _identifiedIdFide.value = null
+            _identifiedIdFsi.value = null
+            return
+        }
+        repository.getMe().onSuccess { me ->
+            if (_identifiedPlayerName.value.isNullOrBlank() && !me.displayName.isNullOrBlank()) {
+                _identifiedPlayerName.value = me.displayName
+            }
+            _identifiedIdFide.value = me.idFide
+            _identifiedIdFsi.value = me.idFsi
         }
     }
 
@@ -293,9 +321,17 @@ class SessionViewModel(
     fun clearSelectedClub() {
         _selectedClub.value = null
         _branding.value = null
+        _isTournamentManager.value = false
+        // Con un login vero l'identità è dell'ACCOUNT, non del circolo: cambiare circolo
+        // (es. da "nessun circolo" a uno scelto) non deve togliere il nome dalla barra in
+        // alto né scollegare il socio. Solo senza login vale ancora la vecchia
+        // identificazione per-circolo, da rifare per il nuovo circolo.
+        if (_isLoggedIn.value) {
+            viewModelScope.launch { clubPreferences.clearSelectedClub() }
+            return
+        }
         _identityResolved.value = false
         _identifiedPlayerName.value = null
-        _isTournamentManager.value = false
         viewModelScope.launch {
             clubPreferences.clearSelectedClub()
             clubPreferences.clearIdentity()

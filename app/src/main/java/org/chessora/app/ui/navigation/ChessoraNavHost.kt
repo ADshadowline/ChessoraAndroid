@@ -219,6 +219,8 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
 
     val branding by sessionViewModel.branding.collectAsState()
     val identifiedPlayerName by sessionViewModel.identifiedPlayerName.collectAsState()
+    val identifiedIdFide by sessionViewModel.identifiedIdFide.collectAsState()
+    val identifiedIdFsi by sessionViewModel.identifiedIdFsi.collectAsState()
     val isTournamentManager by sessionViewModel.isTournamentManager.collectAsState()
     val registeredTournamentsCount by sessionViewModel.registeredTournamentsCount.collectAsState()
     val registeredTournamentStartingSoon by sessionViewModel.registeredTournamentStartingSoon.collectAsState()
@@ -247,6 +249,8 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                 ClubBrandingTopBar(
                     branding = branding,
                     identifiedPlayerName = identifiedPlayerName,
+                    identifiedIdFide = identifiedIdFide,
+                    identifiedIdFsi = identifiedIdFsi,
                     isTournamentManager = isTournamentManager,
                     // Nessun login/gestione nativa in app (nessun account con password
                     // esiste qui) - apre il wizard nel browser, dove il gestore usa le sue
@@ -843,6 +847,8 @@ private fun openDirectConversation(
 private fun ClubBrandingTopBar(
     branding: SiteBranding?,
     identifiedPlayerName: String? = null,
+    identifiedIdFide: Int? = null,
+    identifiedIdFsi: Int? = null,
     isTournamentManager: Boolean = false,
     onManageTournamentsClick: () -> Unit = {},
 ) {
@@ -869,7 +875,12 @@ private fun ClubBrandingTopBar(
                     .padding(start = 16.dp, end = 16.dp, top = 3.dp, bottom = 3.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                IdentifiedBadgeContent(name = identifiedPlayerName, modifier = Modifier.weight(1f))
+                IdentifiedBadgeContent(
+                    name = identifiedPlayerName,
+                    idFide = identifiedIdFide,
+                    idFsi = identifiedIdFsi,
+                    modifier = Modifier.weight(1f),
+                )
                 if (isTournamentManager) {
                     Icon(
                         imageVector = Icons.Default.EmojiEvents,
@@ -887,7 +898,7 @@ private fun ClubBrandingTopBar(
 }
 
 @Composable
-private fun IdentifiedBadgeContent(name: String, modifier: Modifier = Modifier) {
+private fun IdentifiedBadgeContent(name: String, idFide: Int? = null, idFsi: Int? = null, modifier: Modifier = Modifier) {
     // Il nome può arrivare in due formati (vedi AuthSessionPersister): "Cognome, Nome"
     // per un socio risolto da anagrafica FIDE, "Nome Cognome" per un amatoriale
     // (nome/cognome digitati alla registrazione) - senza distinguerli, il primo formato
@@ -910,6 +921,18 @@ private fun IdentifiedBadgeContent(name: String, modifier: Modifier = Modifier) 
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(start = 6.dp),
         )
+        // ID FIDE e tessera FSI, se presenti, accanto al nome (su una riga, mai a capo).
+        val ids = listOfNotNull(idFide?.let { "FIDE $it" }, idFsi?.let { "FSI $it" }).joinToString(" · ")
+        if (ids.isNotEmpty()) {
+            Text(
+                text = "· $ids",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+                maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                modifier = Modifier.padding(start = 6.dp),
+            )
+        }
     }
 }
 

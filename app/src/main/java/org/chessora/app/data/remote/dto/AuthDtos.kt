@@ -66,6 +66,11 @@ data class MeDto(
     val email: String? = null,
     val firstName: String? = null,
     val lastName: String? = null,
+    /** Nome da mostrare nella barra in alto (mai l'email, null se non ce n'è uno). */
+    val displayName: String? = null,
+    /** ID FIDE dell'account o del giocatore collegato, tessera FSI del giocatore collegato. */
+    val idFide: Int? = null,
+    val idFsi: Int? = null,
 )
 
 /** Usato quando un ID FIDE risulta valido ma non ancora associato a nessun utente
