@@ -13,6 +13,10 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
+    AppRelease("1.57.0", "novembre 2026", listOf(
+        "Se hai fatto l'accesso e scegli un circolo (anche partendo da \"non sono iscritto a nessun circolo\"), il tuo nome resta nella barra in alto.",
+        "Accanto al nome, nella barra in alto, compaiono anche il tuo ID FIDE e la tessera FSI, se li hai.",
+    )),
     AppRelease("1.56.0", "ottobre 2026", listOf(
         "Nuove icone illustrate a colori nella Home a icone. Se preferisci quelle semplici, spegni \"Usa grafica\" in Impostazioni.",
         "Impostazioni: il pulsante Salva sotto gli username di Lichess e Chess.com si attiva solo quando scrivi un nome nuovo o diverso.",
