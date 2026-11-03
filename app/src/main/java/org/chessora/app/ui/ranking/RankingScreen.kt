@@ -91,6 +91,8 @@ private fun RankingList(players: List<RankingPlayer>) {
         Text(stringResource(R.string.ranking_no_data), modifier = Modifier.fillMaxSize().padding(16.dp))
         return
     }
+    // Classifica di circolo: arrivano tutti i soci, anche senza Elo in questa cadenza (in
+    // fondo, in ordine alfabetico) - la posizione la ha solo chi ha un punteggio.
     LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         itemsIndexed(players) { index, player ->
             Row(
@@ -100,7 +102,10 @@ private fun RankingList(players: List<RankingPlayer>) {
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     PlayerAvatar(idPlayer = player.idPlayer, modifier = Modifier.padding(end = 10.dp))
-                    Text("${index + 1}. ${player.name}", fontWeight = FontWeight.Medium)
+                    Text(
+                        if (player.elo != null) "${index + 1}. ${player.name}" else player.name,
+                        fontWeight = if (player.elo != null) FontWeight.Medium else FontWeight.Normal,
+                    )
                 }
                 Text(player.elo?.toString() ?: "—", style = MaterialTheme.typography.bodyMedium)
             }

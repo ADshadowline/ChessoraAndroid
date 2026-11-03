@@ -274,7 +274,8 @@ class ChessoraRepository(private val api: ChessoraApi) {
     suspend fun getRankingNazionale(limit: Int = 20): Result<RankingResponse> =
         safeCall { api.getRankingNazionale(limit) }
 
-    suspend fun getRankingCircolo(club: String, limit: Int = 20): Result<RankingResponse> =
+    /** limit 0 = tutti i soci dell'anno, anche senza Elo (in fondo, in ordine alfabetico). */
+    suspend fun getRankingCircolo(club: String, limit: Int = 0): Result<RankingResponse> =
         safeCall { api.getRankingCircolo(club, limit) }
 
     // ---------- Direttivo ----------
