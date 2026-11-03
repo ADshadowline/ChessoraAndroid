@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -103,7 +104,8 @@ private fun RankingList(players: List<RankingPlayer>) {
             ) {
                 // weight + ellipsis: un nome lungo si accorcia con "…" invece di finire sopra il punteggio.
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                    PlayerAvatar(idPlayer = player.idPlayer, modifier = Modifier.padding(end = 10.dp))
+                    PlayerAvatar(idPlayer = player.idPlayer, fideImage = player.image, modifier = Modifier.padding(end = 10.dp))
+                    flagEmoji(player.flag)?.let { Text(it, modifier = Modifier.padding(end = 6.dp)) }
                     Text(
                         if (player.elo != null) "${index + 1}. ${player.name}" else player.name,
                         fontWeight = if (player.elo != null) FontWeight.Medium else FontWeight.Normal,
@@ -121,24 +123,49 @@ private fun RankingList(players: List<RankingPlayer>) {
     }
 }
 
-/** Foto profilo del socio (ui/profile/), se ne ha scelta una - con [idPlayer]
- * null (classifica Assoluta, giocatori FIDE nel mondo) mostra subito l'icona
- * generica senza fare alcuna chiamata; altrimenti prova a caricarla e ricade
- * sulla stessa icona se il socio non ne ha ancora caricata una (404). */
+/** Bandiera della nazionalità come emoji: l'Api manda il nome del file SVG del sito
+ * ("it.svg"), le cui due lettere sono il codice ISO del paese. Null se manca o non è un
+ * codice a due lettere. */
+private fun flagEmoji(flag: String?): String? {
+    val code = flag?.substringBefore('.')?.uppercase() ?: return null
+    if (code.length != 2 || !code.all { it in 'A'..'Z' }) return null
+    return code.map { String(Character.toChars(0x1F1E6 + (it - 'A'))) }.joinToString("")
+}
+
+/** Foto del giocatore: quella caricata dal socio nell'app (ui/profile/) se c'è, altrimenti
+ * la foto FIDE ([fideImage], raccolta dal task "PlayerPhoto"), altrimenti l'icona generica.
+ * Senza [idPlayer] (classifica Assoluta, giocatori FIDE nel mondo) prova solo la foto FIDE. */
 @Composable
-private fun PlayerAvatar(idPlayer: Int?, modifier: Modifier = Modifier) {
+private fun PlayerAvatar(idPlayer: Int?, fideImage: String?, modifier: Modifier = Modifier) {
+    val fideUrl = fideImage?.let { NetworkModule.resolveAssetUrl(it) }
     Box(modifier = modifier.size(32.dp), contentAlignment = Alignment.Center) {
-        if (idPlayer != null) {
-            SubcomposeAsyncImage(
+        when {
+            idPlayer != null -> SubcomposeAsyncImage(
                 model = NetworkModule.resolveAssetUrl("/api/players/$idPlayer/photo"),
                 contentDescription = null,
                 modifier = Modifier.size(32.dp).clip(CircleShape),
             ) {
-                if (painter.state is AsyncImagePainter.State.Success) SubcomposeAsyncImageContent() else PlaceholderAvatarIcon()
+                when {
+                    painter.state is AsyncImagePainter.State.Success -> SubcomposeAsyncImageContent()
+                    painter.state is AsyncImagePainter.State.Error && fideUrl != null -> FideAvatar(fideUrl)
+                    else -> PlaceholderAvatarIcon()
+                }
             }
-        } else {
-            PlaceholderAvatarIcon()
+            fideUrl != null -> FideAvatar(fideUrl)
+            else -> PlaceholderAvatarIcon()
         }
+    }
+}
+
+@Composable
+private fun FideAvatar(url: String) {
+    SubcomposeAsyncImage(
+        model = url,
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier.size(32.dp).clip(CircleShape),
+    ) {
+        if (painter.state is AsyncImagePainter.State.Success) SubcomposeAsyncImageContent() else PlaceholderAvatarIcon()
     }
 }
 
