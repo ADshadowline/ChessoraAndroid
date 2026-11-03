@@ -166,10 +166,14 @@ fun uciLineToText(fen: String, uci: List<String>, max: Int = 10): String = runCa
 
 /** Giudizio su una mossa in base a quanto ha fatto scendere la probabilità di vittoria di chi
  * l'ha giocata (soglie di Lichess: 10/20/30 punti percentuali). */
-enum class MoveJudgement(val symbol: String, val label: String, val color: Color) {
-    INACCURACY("?!", "Imprecisione", Color(0xFFE6B800)),
-    MISTAKE("?", "Errore", Color(0xFFE67E22)),
-    BLUNDER("??", "Svista", Color(0xFFD9534F)),
+enum class MoveJudgement(val symbol: String, val label: String, val plural: String, val color: Color) {
+    INACCURACY("?!", "Imprecisione", "imprecisioni", Color(0xFFE6B800)),
+    MISTAKE("?", "Errore", "errori", Color(0xFFE67E22)),
+    BLUNDER("??", "Svista", "sviste", Color(0xFFD9534F)),
+    ;
+
+    /** "1 imprecisione", "2 imprecisioni", "0 errori". */
+    fun count(n: Int) = "$n " + if (n == 1) label.lowercase() else plural
 }
 
 data class JudgedMove(val ply: Int, val san: String, val judgement: MoveJudgement, val best: String?)
@@ -463,7 +467,7 @@ private fun GameSummary(
         val counts = judged.groupingBy { it.judgement }.eachCount()
         Text(
             if (judged.isEmpty()) "Nessuna imprecisione rilevata."
-            else MoveJudgement.entries.joinToString(" · ") { "${counts[it] ?: 0} ${it.label.lowercase()}" },
+            else MoveJudgement.entries.joinToString(" · ") { it.count(counts[it] ?: 0) },
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),

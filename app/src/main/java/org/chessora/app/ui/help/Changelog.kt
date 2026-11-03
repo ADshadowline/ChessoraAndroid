@@ -13,7 +13,7 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
-    AppRelease("1.61.0", "novembre 2026", listOf(
+    AppRelease("1.61.0 – 1.61.1", "novembre 2026", listOf(
         "Analisi computer con Stockfish 17: nelle partite di persona e online un pulsante apre i parametri (posizione o partita intera, profondità o tempo, linee, processori, memoria).",
         "Analisi della posizione: valutazione e linee migliori, aggiornate mentre scorri le mosse. Analisi della partita: grafico della valutazione e imprecisioni, errori e sviste.",
         "Alla prima analisi l'app scarica una sola volta la rete neurale di Stockfish (circa 75 MB).",
