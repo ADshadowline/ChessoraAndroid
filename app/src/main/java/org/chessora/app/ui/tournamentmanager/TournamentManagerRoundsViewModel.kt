@@ -94,6 +94,25 @@ class TournamentManagerRoundsViewModel(private val repository: ChessoraRepositor
         }
     }
 
+    /** true dopo "Chiudi torneo" riuscito: il pulsante sparisce e la schermata lo segnala. */
+    private val _concluded = MutableStateFlow(false)
+    val concluded: StateFlow<Boolean> = _concluded.asStateFlow()
+
+    /** "Chiudi torneo" (come "Concludi torneo" sul sito): il torneo passa a Concluso. */
+    fun concludeTournament(idTournament: Int, onDone: () -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            _busy.value = true
+            repository.concludeTournament(idTournament)
+                .onSuccess {
+                    _concluded.value = true
+                    onDone()
+                    load(idTournament)
+                }
+                .onFailure { onError(it.apiErrorMessage() ?: "Impossibile chiudere il torneo. Riprova.") }
+            _busy.value = false
+        }
+    }
+
     fun submitResult(idTournament: Int, pairingId: Int, result: String?, onError: (String) -> Unit) {
         viewModelScope.launch {
             _busy.value = true

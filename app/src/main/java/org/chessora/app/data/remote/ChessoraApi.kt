@@ -507,6 +507,10 @@ interface ChessoraApi {
     @POST("api/tornei/admin/{id}/rounds/{roundId}/publish")
     suspend fun publishRound(@Header("Authorization") auth: String, @Path("id") id: Int, @Path("roundId") roundId: Int, @Body body: EmptyRequestBody = EmptyRequestBody())
 
+    /** "Chiudi torneo": il torneo passa a Concluso (come "Concludi torneo" sul sito). */
+    @POST("api/tornei/admin/{id}/conclude")
+    suspend fun concludeTournament(@Header("Authorization") auth: String, @Path("id") id: Int, @Body body: EmptyRequestBody = EmptyRequestBody())
+
     @PUT("api/tornei/admin/{id}/pairings/{pairingId}/result")
     suspend fun submitOrganizerResult(@Header("Authorization") auth: String, @Path("id") id: Int, @Path("pairingId") pairingId: Int, @Body body: SubmitResultRequestDto)
 

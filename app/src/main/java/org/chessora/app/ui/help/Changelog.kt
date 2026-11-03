@@ -13,6 +13,11 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
+    AppRelease("1.62.0", "novembre 2026", listOf(
+        "Gestione tornei: a fine torneo, accanto a Premiazione, il pulsante \"Chiudi torneo\" (con conferma).",
+        "Gestione tornei: quando i pulsanti in basso sono tre o più, diventano icone per starci tutti.",
+        "La classifica Nazionale contiene ora solo giocatori italiani.",
+    )),
     AppRelease("1.61.0 – 1.61.1", "novembre 2026", listOf(
         "Analisi computer con Stockfish 17: nelle partite di persona e online un pulsante apre i parametri (posizione o partita intera, profondità o tempo, linee, processori, memoria).",
         "Analisi della posizione: valutazione e linee migliori, aggiornate mentre scorri le mosse. Analisi della partita: grafico della valutazione e imprecisioni, errori e sviste.",

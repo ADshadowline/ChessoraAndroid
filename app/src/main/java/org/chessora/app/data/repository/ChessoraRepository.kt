@@ -257,6 +257,9 @@ class ChessoraRepository(private val api: ChessoraApi) {
     suspend fun publishRound(id: Int, roundId: Int): Result<Unit> =
         withOrganizerAuth { auth -> api.publishRound(auth, id, roundId) }
 
+    suspend fun concludeTournament(id: Int): Result<Unit> =
+        withOrganizerAuth { auth -> api.concludeTournament(auth, id) }
+
     suspend fun submitOrganizerResult(id: Int, pairingId: Int, result: String?): Result<Unit> =
         withOrganizerAuth { auth -> api.submitOrganizerResult(auth, id, pairingId, SubmitResultRequestDto(result)) }
 

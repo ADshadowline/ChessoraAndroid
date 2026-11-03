@@ -1,5 +1,13 @@
 package org.chessora.app.ui.tournamentmanager
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Flag
+import androidx.compose.material.icons.filled.Leaderboard
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Publish
+import androidx.compose.material3.Icon
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -69,6 +77,27 @@ fun TournamentManagerRoundsScreen(idTournament: Int, totalRounds: Int) {
     val context = LocalContext.current
     var selectedRoundNumber by remember { mutableStateOf<Int?>(null) }
     var resultDialogPairing by remember { mutableStateOf<Pairing?>(null) }
+    val concluded by viewModel.concluded.collectAsState()
+    var showConcludeConfirm by remember { mutableStateOf(false) }
+
+    if (showConcludeConfirm) {
+        AlertDialog(
+            onDismissRequest = { showConcludeConfirm = false },
+            title = { Text("Chiudere il torneo?") },
+            text = { Text("Il torneo passa a concluso: la classifica diventa definitiva e non si generano più turni.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showConcludeConfirm = false
+                    viewModel.concludeTournament(
+                        idTournament,
+                        onDone = { Toast.makeText(context, "Torneo chiuso.", Toast.LENGTH_SHORT).show() },
+                        onError = { Toast.makeText(context, it, Toast.LENGTH_SHORT).show() },
+                    )
+                }) { Text("Chiudi torneo") }
+            },
+            dismissButton = { TextButton(onClick = { showConcludeConfirm = false }) { Text("Annulla") } },
+        )
+    }
 
     // Aggiornamento quasi in tempo reale: un risultato/turno può cambiare dal sito (o da
     // un altro organizzatore) mentre questa schermata resta aperta - senza un
@@ -174,52 +203,60 @@ fun TournamentManagerRoundsScreen(idTournament: Int, totalRounds: Int) {
             val showGenerate = rounds.isEmpty() || (!hasPendingRound && !isFinalRound && (viewMode == TournamentViewMode.STANDINGS || !latestRoundComplete))
             // Come sul sito: la Premiazione compare solo se il torneo ha dei premi inseriti.
             val showPremiazioneButton = !showPremiazione && viewMode == TournamentViewMode.STANDINGS && !hasPendingRound && latestRoundComplete && isFinalRound && hasPrizes(prizes)
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
+            // "Chiudi torneo" (come "Concludi torneo" sul sito): a fine torneo, accanto alla
+            // Premiazione - anche se il torneo non ha premi.
+            val showConclude = !concluded && rounds.isNotEmpty() && !hasPendingRound && latestRoundComplete && isFinalRound &&
+                viewMode != TournamentViewMode.PAIRINGS
+            val actions = buildList {
                 if (showPremiazione) {
                     // Condivisa col sito come lo stato Pairings/Standings (vedi sopra):
                     // tornare alla classifica da qui sposta anche tourn.chessora.org, e
                     // viceversa passare da "Premiazione" a "Classifica finale" sul sito
                     // sposta anche questa schermata entro pochi secondi.
-                    OutlinedButton(onClick = { viewModel.setViewMode(idTournament, TournamentViewMode.STANDINGS) }, modifier = Modifier.weight(1f)) {
-                        Text("Torna alla classifica")
-                    }
+                    add(ManagerAction("Torna alla classifica", Icons.Default.Leaderboard, primary = false) {
+                        viewModel.setViewMode(idTournament, TournamentViewMode.STANDINGS)
+                    })
                 } else {
                     // Condivisa col sito (vedi TournamentManagerRoundsViewModel.setViewMode):
                     // se sposti la vista da qui, tourn.chessora.org la segue entro pochi
                     // secondi, e viceversa. Mai mostrata prima che esista un turno.
                     if (showStandingsToggle) {
-                        OutlinedButton(
-                            onClick = {
-                                val next = if (viewMode == TournamentViewMode.PAIRINGS) TournamentViewMode.STANDINGS else TournamentViewMode.PAIRINGS
-                                viewModel.setViewMode(idTournament, next)
-                            },
-                            modifier = Modifier.weight(1f),
-                        ) { Text(if (viewMode == TournamentViewMode.PAIRINGS) "Classifica provvisoria" else "Torna agli abbinamenti") }
+                        val toStandings = viewMode == TournamentViewMode.PAIRINGS
+                        add(ManagerAction(
+                            if (toStandings) "Classifica provvisoria" else "Torna agli abbinamenti",
+                            if (toStandings) Icons.Default.Leaderboard else Icons.AutoMirrored.Filled.List,
+                            primary = false,
+                        ) { viewModel.setViewMode(idTournament, if (toStandings) TournamentViewMode.STANDINGS else TournamentViewMode.PAIRINGS) })
                     }
-
                     if (showGenerate) {
-                        Button(
-                            onClick = { viewModel.generateRound(idTournament, onError = ::showError) },
+                        add(ManagerAction(
+                            if (rounds.isEmpty()) "Genera turno 1" else "Genera turno successivo",
+                            Icons.Default.PlayArrow,
                             enabled = !busy && latestRoundComplete,
-                            modifier = Modifier.weight(1f),
-                        ) { Text(if (rounds.isEmpty()) "Genera turno 1" else "Genera turno successivo") }
+                        ) { viewModel.generateRound(idTournament, onError = ::showError) })
                     }
-
                     if (showPremiazioneButton) {
-                        Button(onClick = { viewModel.setViewMode(idTournament, TournamentViewMode.PREMIAZIONE) }, modifier = Modifier.weight(1f)) { Text("Premiazione") }
+                        add(ManagerAction("Premiazione", Icons.Default.EmojiEvents) {
+                            viewModel.setViewMode(idTournament, TournamentViewMode.PREMIAZIONE)
+                        })
                     }
-
                     if (viewMode == TournamentViewMode.PAIRINGS && round?.status == "Pending") {
-                        Button(
-                            onClick = { viewModel.publishRound(idTournament, round.id, onError = ::showError) },
-                            enabled = !busy,
-                            modifier = Modifier.weight(1f),
-                        ) { Text("Pubblica turno") }
+                        add(ManagerAction("Pubblica turno", Icons.Default.Publish, enabled = !busy) {
+                            viewModel.publishRound(idTournament, round.id, onError = ::showError)
+                        })
                     }
                 }
+                if (showConclude) {
+                    add(ManagerAction("Chiudi torneo", Icons.Default.Flag, enabled = !busy) { showConcludeConfirm = true })
+                }
+            }
+            ManagerActionsRow(actions)
+            if (concluded) {
+                Text(
+                    "Torneo chiuso.",
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+                )
             }
         }
     }
@@ -233,6 +270,43 @@ fun TournamentManagerRoundsScreen(idTournament: Int, totalRounds: Int) {
                 resultDialogPairing = null
             },
         )
+    }
+}
+
+/** Un pulsante della barra in basso della gestione torneo. */
+private data class ManagerAction(
+    val label: String,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector,
+    val primary: Boolean = true,
+    val enabled: Boolean = true,
+    val onClick: () -> Unit,
+)
+
+/** Fino a 2 azioni: pulsanti con il testo. Da 3 in su non ci starebbero: pulsanti con la sola
+ * icona (il nome resta nella descrizione per l'accessibilità). */
+@Composable
+private fun ManagerActionsRow(actions: List<ManagerAction>) {
+    if (actions.isEmpty()) return
+    val compact = actions.size >= 3
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        actions.forEach { a ->
+            val content: @Composable () -> Unit = {
+                if (compact) {
+                    Icon(a.icon, contentDescription = a.label)
+                } else {
+                    Icon(a.icon, contentDescription = null, modifier = Modifier.padding(end = 6.dp))
+                    Text(a.label, maxLines = 1)
+                }
+            }
+            if (a.primary) {
+                Button(onClick = a.onClick, enabled = a.enabled, modifier = Modifier.weight(1f)) { content() }
+            } else {
+                OutlinedButton(onClick = a.onClick, enabled = a.enabled, modifier = Modifier.weight(1f)) { content() }
+            }
+        }
     }
 }
 
