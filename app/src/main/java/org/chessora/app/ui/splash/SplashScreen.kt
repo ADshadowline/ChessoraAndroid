@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -41,7 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import org.chessora.app.ui.common.ClubLogoChip
 import kotlinx.coroutines.delay
 import org.chessora.app.R
 import org.chessora.app.ui.common.BackgroundImageWithScrim
@@ -183,10 +182,21 @@ fun SplashScreen(
                     }
                     .padding(bottom = 4.dp)
                 if (clubLogoUrl != null) {
-                    AsyncImage(
-                        model = clubLogoUrl,
-                        contentDescription = null,
-                        modifier = iconModifier.clip(CircleShape),
+                    // Intero e con lo sfondo adatto al logo (vedi ClubLogoChip): sul riquadro
+                    // bianco semitrasparente un logo chiaro (PoliTO, scritte bianche) spariva.
+                    ClubLogoChip(
+                        url = clubLogoUrl,
+                        modifier = Modifier
+                            .graphicsLayer {
+                                alpha = iconAlpha.value
+                                scaleX = iconScale.value
+                                scaleY = iconScale.value
+                            }
+                            .padding(bottom = 8.dp)
+                            .width(220.dp)
+                            .height(120.dp),
+                        cornerRadius = 18.dp,
+                        contentPadding = 12.dp,
                     )
                 } else {
                     Image(

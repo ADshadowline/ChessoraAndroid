@@ -13,8 +13,9 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
-    AppRelease("1.58.2", "novembre 2026", listOf(
+    AppRelease("1.58.2 – 1.58.3", "novembre 2026", listOf(
         "Logo del circolo: lo sfondo si adatta al logo, scuro per i loghi chiari (che sul bianco sparivano) e bianco per quelli scuri; più largo per i loghi orizzontali.",
+        "Lo stesso vale nella schermata di apertura dell'app.",
     )),
     AppRelease("1.58.1", "novembre 2026", listOf(
         "Il logo del circolo si vede intero, su un riquadro chiaro, invece che ritagliato in un cerchio.",
