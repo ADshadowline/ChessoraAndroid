@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -81,6 +82,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -747,13 +749,28 @@ private fun TileIcon(entry: DesktopIcon, size: androidx.compose.ui.unit.Dp) {
         // produzione il 28/09/2026, l'app non partiva più) lo sposta verso l'alto nel
         // riquadro, lasciando spazio sotto per la scritta (che altrimenti, con
         // un'icona così grande, finiva tagliata fuori dal riquadro - vedi anche il
-        // padding ridotto sopra la Text in DesktopIconTile).
-        AsyncImage(
-            model = entry.iconUrl,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.offset(y = (-6).dp).size(size * 1.6f).clip(CircleShape),
-        )
+        // padding ridotto sopra la Text in DesktopIconTile). Intero (Fit, mai ritagliato in
+        // un cerchio: i loghi con scritte, es. PoliTO, perdevano metà del testo) su un
+        // riquadro chiaro con bordo e ombra leggera, come i loghi dei circoli su tourn.
+        val shape = RoundedCornerShape(12.dp)
+        Box(
+            modifier = Modifier
+                .offset(y = (-6).dp)
+                .size(size * 1.6f)
+                .shadow(3.dp, shape)
+                .clip(shape)
+                .background(Color.White)
+                .border(1.dp, Color.Black.copy(alpha = 0.08f), shape)
+                .padding(5.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            AsyncImage(
+                model = entry.iconUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
     } else if (entry.graphicRes != null) {
         // Illustrazione a colori: più grande dell'icona vettoriale, ha dettagli da vedere.
         Image(painterResource(entry.graphicRes), contentDescription = null, modifier = Modifier.size(size * 1.6f))

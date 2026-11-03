@@ -6,7 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.ShowChart
@@ -99,8 +100,11 @@ fun MoreScreen(
                         Image(
                             painter = rememberAsyncImagePainter(clubLogoUrl),
                             contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.size(48.dp).clip(CircleShape),
+                            // Intero su fondo chiaro: ritagliato in un cerchio un logo con
+                            // scritte perdeva metà del testo (vedi TileIcon in HomeScreen).
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier.size(48.dp).clip(RoundedCornerShape(10.dp))
+                                .background(androidx.compose.ui.graphics.Color.White).padding(4.dp),
                         )
                     } else {
                         Icon(Icons.Default.Groups, contentDescription = null)

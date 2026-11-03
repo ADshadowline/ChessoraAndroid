@@ -13,6 +13,10 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
+    AppRelease("1.58.1", "novembre 2026", listOf(
+        "Il logo del circolo si vede intero, su un riquadro chiaro, invece che ritagliato in un cerchio.",
+        "Eventi: il pulsante \"Preiscriviti\" non viene più schiacciato quando accanto c'è una nota lunga.",
+    )),
     AppRelease("1.58.0", "novembre 2026", listOf(
         "Eventi: per un torneo già iniziato o concluso non c'è più \"Preiscriviti\", ma \"Risultati e classifica\".",
         "Abbinamenti: sotto ogni scacchiera le probabilità di vittoria del Bianco, di patta e di vittoria del Nero, calcolate dall'Elo come su tourn.chessora.org.",

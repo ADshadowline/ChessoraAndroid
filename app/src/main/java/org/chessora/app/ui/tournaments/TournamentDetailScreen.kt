@@ -231,7 +231,10 @@ private fun TournamentOptionCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Column {
+                // weight: il testo va a capo nello spazio che resta, il pulsante tiene la sua
+                // larghezza (senza, una nota lunga come "Preiscritto a un altro torneo di
+                // questo evento" lo schiacciava in una pillola vuota).
+                Column(modifier = Modifier.weight(1f).padding(end = 10.dp)) {
                     Text(
                         if (unlimited) stringResource(R.string.tournament_registered_count, count)
                         else stringResource(R.string.tournament_registered_count_limit, count, tournament.limiteIscrizioni),
