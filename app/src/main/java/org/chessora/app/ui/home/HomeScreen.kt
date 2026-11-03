@@ -352,8 +352,9 @@ val DESKTOP_ICON_DESCRIPTORS = listOf(
     DesktopIconDescriptor("news", R.string.nav_news, Icons.Default.Newspaper),
     DesktopIconDescriptor("registrations", R.string.nav_registrations, Icons.Default.HowToReg),
     DesktopIconDescriptor("ranking", R.string.nav_ranking, Icons.Default.Leaderboard),
+    // "Il mio gioco": apre il menu con Andamento Elo, partite di persona ("Le mie partite",
+    // non più un'icona a sé) e partite online - vedi ui/performance/MyGameMenuScreen.kt.
     DesktopIconDescriptor("performance", R.string.more_performance, Icons.AutoMirrored.Filled.ShowChart),
-    DesktopIconDescriptor("myGames", R.string.more_my_games, Icons.Default.History),
     DesktopIconDescriptor("chessClock", R.string.chess_clock_title, Icons.Default.Timer),
     DesktopIconDescriptor("board", R.string.nav_club, Icons.Default.Groups, hiddenInPlatformMode = true),
     DesktopIconDescriptor("shop", R.string.desktop_icon_shop, Icons.Default.ShoppingCart, hiddenInPlatformMode = true),

@@ -90,7 +90,7 @@
 
     <!-- More menu -->
     <string name="more_calendar">Calendar</string>
-    <string name="more_performance">Progresele mele</string>
+    <string name="more_performance">Jocul meu</string>
     <string name="ranking_no_data">Nu sunt date disponibile.</string>
     <string name="fide_id_label">ID FIDE %1$s</string>
     <string name="update_available_title">Versiune nouă disponibilă</string>
@@ -125,6 +125,8 @@
     <string name="online_games_openings_empty">Nicio deschidere disponibilă.</string>
     <string name="online_games_opening_count">%1$d partide (Li %2$d · CC %3$d)</string>
     <string name="more_my_games">Partidele mele</string>
+    <string name="my_game_menu_otb">Partidele mele față în față</string>
+    <string name="my_game_menu_online">Partidele mele online</string>
     <string name="mygames_not_identified">Conectează-te pentru a-ți înregistra partidele.</string>
     <string name="mygames_empty">Nicio partidă înregistrată.</string>
     <string name="mygames_search_hint">Caută după adversar sau turneu</string>

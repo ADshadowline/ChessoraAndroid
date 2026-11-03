@@ -40,8 +40,8 @@ import org.chessora.app.R
 fun MoreScreen(
     onCalendarClick: () -> Unit,
     onRankingClick: () -> Unit,
+    /** "Il mio gioco": menu con Andamento Elo e partite di persona/online (MyGameMenuScreen). */
     onPerformanceClick: () -> Unit,
-    onMyGamesClick: () -> Unit,
     onChessClockClick: () -> Unit,
     onClubClick: () -> Unit,
     onShopClick: () -> Unit,
@@ -76,12 +76,6 @@ fun MoreScreen(
             leadingContent = { Icon(Icons.AutoMirrored.Filled.ShowChart, contentDescription = null) },
             trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
             modifier = Modifier.clickable(onClick = onPerformanceClick),
-        )
-        ListItem(
-            headlineContent = { Text(stringResource(R.string.more_my_games)) },
-            leadingContent = { Icon(Icons.Default.History, contentDescription = null) },
-            trailingContent = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null) },
-            modifier = Modifier.clickable(onClick = onMyGamesClick),
         )
         ListItem(
             headlineContent = { Text(stringResource(R.string.chess_clock_title)) },

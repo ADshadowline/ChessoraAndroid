@@ -462,7 +462,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                             onOpenRegistrations = { navController.navigate(ChessoraDestinations.REGISTRATIONS) },
                             onOpenMessaging = { navController.navigate(ChessoraDestinations.MESSAGING) },
                             onOpenRanking = { navController.navigate(ChessoraDestinations.RANKING) },
-                            onOpenPerformance = { navController.navigate(ChessoraDestinations.performance()) },
+                            onOpenPerformance = { navController.navigate(ChessoraDestinations.MY_GAME_MENU) },
                             onOpenMyGames = { navController.navigate(ChessoraDestinations.MY_GAMES) },
                             onOpenChessClock = { navController.navigate(ChessoraDestinations.CHESS_CLOCK) },
                             onOpenClub = { navController.navigate(ChessoraDestinations.CLUB) },
@@ -534,7 +534,10 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
             }
             composable(
                 ChessoraDestinations.PERFORMANCE,
-                arguments = listOf(navArgument("focus") { type = NavType.StringType; nullable = true; defaultValue = null }),
+                arguments = listOf(
+                    navArgument("focus") { type = NavType.StringType; nullable = true; defaultValue = null },
+                    navArgument("section") { type = NavType.StringType; nullable = true; defaultValue = null },
+                ),
             ) { backStack ->
                 val focus = EloRatingType.fromRouteValue(backStack.arguments?.getString("focus"))
                 PerformanceScreen(
@@ -543,6 +546,14 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                     onOpenSettings = { navController.navigate(ChessoraDestinations.SETTINGS) },
                     onOpenLichessGame = { gameId -> navController.navigate(ChessoraDestinations.lichessGameViewer(gameId)) },
                     onOpenChessComGame = { gameId -> navController.navigate(ChessoraDestinations.chessComGameViewer(gameId)) },
+                    section = backStack.arguments?.getString("section"),
+                )
+            }
+            composable(ChessoraDestinations.MY_GAME_MENU) {
+                org.chessora.app.ui.performance.MyGameMenuScreen(
+                    onOpenElo = { navController.navigate(ChessoraDestinations.performance(section = "elo")) },
+                    onOpenMyGames = { navController.navigate(ChessoraDestinations.MY_GAMES) },
+                    onOpenOnlineGames = { navController.navigate(ChessoraDestinations.performance(section = "online")) },
                 )
             }
             composable(ChessoraDestinations.MY_GAMES) {
@@ -682,8 +693,7 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                 MoreScreen(
                     onCalendarClick = { navController.navigate(ChessoraDestinations.CALENDAR) },
                     onRankingClick = { navController.navigate(ChessoraDestinations.RANKING) },
-                    onPerformanceClick = { navController.navigate(ChessoraDestinations.performance()) },
-                    onMyGamesClick = { navController.navigate(ChessoraDestinations.MY_GAMES) },
+                    onPerformanceClick = { navController.navigate(ChessoraDestinations.MY_GAME_MENU) },
                     onChessClockClick = { navController.navigate(ChessoraDestinations.CHESS_CLOCK) },
                     onClubClick = { navController.navigate(ChessoraDestinations.CLUB) },
                     onShopClick = { navController.navigate(ChessoraDestinations.SHOP) },

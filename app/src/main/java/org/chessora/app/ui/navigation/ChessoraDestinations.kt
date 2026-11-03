@@ -85,7 +85,12 @@ object ChessoraDestinations {
     // vedi il click sui punteggi Elo in ChessoraNavHost.ClubBrandingTopBar. Stringa
     // vuota di default (non null: NavType.StringType non ammette argomenti opzionali
     // nulli) equivale a "mostra tutte e tre le cadenze", il comportamento preesistente.
-    const val PERFORMANCE = "performance?focus={focus}"
+    // [section] facoltativo ("elo"/"online", dal menu "Il mio gioco"): solo quella parte,
+    // senza la riga di schede - vedi PerformanceScreen.
+    const val PERFORMANCE = "performance?focus={focus}&section={section}"
+    /** Menu "Il mio gioco" (icona della Home): Andamento Elo, partite di persona, partite
+     * online - vedi ui/performance/MyGameMenuScreen.kt. */
+    const val MY_GAME_MENU = "my-game"
     /** Scacchiera di una partita Lichess/Chess.com aperta dalla scheda "Scacchi Online" di
      * Le mie performance - vedi ui/performance/online/OnlineGamesScreen.kt e
      * ui/performance/lichess/LichessGameViewerScreen.kt /
@@ -136,7 +141,9 @@ object ChessoraDestinations {
     fun newsDetail(idNews: Int, club: String?) =
         "news/$idNews/${if (club != null) java.net.URLEncoder.encode(club, "UTF-8") else "_all_"}"
 
-    fun performance(focus: String? = null) = if (focus != null) "performance?focus=$focus" else "performance"
+    fun performance(focus: String? = null, section: String? = null) =
+        "performance" + listOfNotNull(focus?.let { "focus=$it" }, section?.let { "section=$it" })
+            .takeIf { it.isNotEmpty() }?.joinToString("&", prefix = "?").orEmpty()
 
     fun lichessGameViewer(gameId: String) = "lichess-game/${java.net.URLEncoder.encode(gameId, "UTF-8")}"
 

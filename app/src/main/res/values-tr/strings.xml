@@ -88,7 +88,7 @@
 
     <!-- More menu -->
     <string name="more_calendar">Takvim</string>
-    <string name="more_performance">İlerlemem</string>
+    <string name="more_performance">Oyunum</string>
     <string name="ranking_no_data">Veri bulunmuyor.</string>
     <string name="fide_id_label">FIDE ID %1$s</string>
     <string name="update_available_title">Yeni sürüm mevcut</string>
@@ -123,6 +123,8 @@
     <string name="online_games_openings_empty">Kullanılabilir açılış yok.</string>
     <string name="online_games_opening_count">%1$d parti (Li %2$d · CC %3$d)</string>
     <string name="more_my_games">Partilerim</string>
+    <string name="my_game_menu_otb">Yüz yüze partilerim</string>
+    <string name="my_game_menu_online">Çevrimiçi partilerim</string>
     <string name="mygames_not_identified">Partilerini kaydetmek için giriş yap.</string>
     <string name="mygames_empty">Kayıtlı parti yok.</string>
     <string name="mygames_search_hint">Rakibe veya turnuvaya göre ara</string>

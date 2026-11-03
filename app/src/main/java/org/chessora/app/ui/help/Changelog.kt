@@ -13,6 +13,10 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
+    AppRelease("1.60.0", "novembre 2026", listOf(
+        "\"I miei progressi\" si chiama ora \"Il mio gioco\" e apre un menu: Andamento Elo, Le mie partite di persona, Le mie partite online.",
+        "L'icona \"Le mie partite\" non c'è più in Home: le trovi in Il mio gioco → Le mie partite di persona.",
+    )),
     AppRelease("1.59.0 – 1.59.3", "novembre 2026", listOf(
         "Se quest'anno sei socio di più circoli, l'app ti chiede quale usare; lo puoi cambiare quando vuoi da Impostazioni → Cambia circolo.",
         "Classifica del circolo: ci sono tutti i soci, anche chi non ha ancora un Elo (in fondo, in ordine alfabetico).",

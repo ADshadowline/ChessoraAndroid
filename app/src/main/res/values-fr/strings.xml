@@ -88,7 +88,7 @@
 
     <!-- More menu -->
     <string name="more_calendar">Calendrier</string>
-    <string name="more_performance">Mes progrès</string>
+    <string name="more_performance">Mon jeu</string>
     <string name="ranking_no_data">Aucune donnée disponible.</string>
     <string name="fide_id_label">ID FIDE %1$s</string>
     <string name="update_available_title">Nouvelle version disponible</string>
@@ -123,6 +123,8 @@
     <string name="online_games_openings_empty">Aucune ouverture disponible.</string>
     <string name="online_games_opening_count">%1$d parties (Li %2$d · CC %3$d)</string>
     <string name="more_my_games">Mes parties</string>
+    <string name="my_game_menu_otb">Mes parties sur l\'échiquier</string>
+    <string name="my_game_menu_online">Mes parties en ligne</string>
     <string name="mygames_not_identified">Connectez-vous pour enregistrer vos parties.</string>
     <string name="mygames_empty">Aucune partie enregistrée.</string>
     <string name="mygames_search_hint">Rechercher par adversaire ou tournoi</string>

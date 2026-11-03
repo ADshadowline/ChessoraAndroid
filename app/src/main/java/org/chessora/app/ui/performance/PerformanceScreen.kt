@@ -144,6 +144,8 @@ private fun filterByPeriod(points: List<PerformancePointDto>, period: Performanc
  * indipendenti, nessun dato condiviso tra le due. */
 private enum class PerformanceTab { ELO, ONLINE }
 
+/** [section] "elo" o "online" (dal menu "Il mio gioco", vedi MyGameMenuScreen): mostra solo
+ * quella parte, senza la riga di schede; null = entrambe le schede come prima. */
 @Composable
 fun PerformanceScreen(
     onIdentify: () -> Unit,
@@ -151,7 +153,15 @@ fun PerformanceScreen(
     onOpenSettings: () -> Unit = {},
     onOpenLichessGame: (String) -> Unit = {},
     onOpenChessComGame: (String) -> Unit = {},
+    section: String? = null,
 ) {
+    when (section) {
+        "elo" -> { EloPerformanceTab(onIdentify, focus); return }
+        "online" -> {
+            OnlineGamesScreen(onOpenSettings = onOpenSettings, onOpenLichessGame = onOpenLichessGame, onOpenChessComGame = onOpenChessComGame)
+            return
+        }
+    }
     var tab by remember { mutableStateOf(PerformanceTab.ELO) }
 
     Column(modifier = Modifier.fillMaxSize()) {

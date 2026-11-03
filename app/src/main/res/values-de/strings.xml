@@ -88,7 +88,7 @@
 
     <!-- More menu -->
     <string name="more_calendar">Kalender</string>
-    <string name="more_performance">Meine Fortschritte</string>
+    <string name="more_performance">Mein Spiel</string>
     <string name="ranking_no_data">Keine Daten verfügbar.</string>
     <string name="fide_id_label">FIDE-ID %1$s</string>
     <string name="update_available_title">Neue Version verfügbar</string>
@@ -123,6 +123,8 @@
     <string name="online_games_openings_empty">Keine Eröffnung verfügbar.</string>
     <string name="online_games_opening_count">%1$d Partien (Li %2$d · CC %3$d)</string>
     <string name="more_my_games">Meine Partien</string>
+    <string name="my_game_menu_otb">Meine Partien am Brett</string>
+    <string name="my_game_menu_online">Meine Online-Partien</string>
     <string name="mygames_not_identified">Melde dich an, um deine Partien zu erfassen.</string>
     <string name="mygames_empty">Keine Partie erfasst.</string>
     <string name="mygames_search_hint">Nach Gegner oder Turnier suchen</string>

@@ -92,7 +92,7 @@
 
     <!-- More menu -->
     <string name="more_calendar">Календарь</string>
-    <string name="more_performance">Мой прогресс</string>
+    <string name="more_performance">Моя игра</string>
     <string name="ranking_no_data">Нет доступных данных.</string>
     <string name="fide_id_label">ID ФИДЕ %1$s</string>
     <string name="update_available_title">Доступна новая версия</string>
@@ -127,6 +127,8 @@
     <string name="online_games_openings_empty">Нет доступных дебютов.</string>
     <string name="online_games_opening_count">%1$d партий (Li %2$d · CC %3$d)</string>
     <string name="more_my_games">Мои партии</string>
+    <string name="my_game_menu_otb">Мои очные партии</string>
+    <string name="my_game_menu_online">Мои онлайн-партии</string>
     <string name="mygames_not_identified">Войдите, чтобы сохранять свои партии.</string>
     <string name="mygames_empty">Нет сохранённых партий.</string>
     <string name="mygames_search_hint">Поиск по сопернику или турниру</string>
