@@ -1,5 +1,13 @@
 package org.chessora.app.ui.analysis
 
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import android.content.Context
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
@@ -164,19 +172,25 @@ fun uciLineToText(fen: String, uci: List<String>, max: Int = 10): String = runCa
     }
 }.getOrDefault("")
 
-/** Giudizio su una mossa in base a quanto ha fatto scendere la probabilità di vittoria di chi
- * l'ha giocata (soglie di Lichess: 10/20/30 punti percentuali). */
-enum class MoveJudgement(val symbol: String, val label: String, val plural: String, val color: Color) {
-    INACCURACY("?!", "Imprecisione", "imprecisioni", Color(0xFFE6B800)),
-    MISTAKE("?", "Errore", "errori", Color(0xFFE67E22)),
-    BLUNDER("??", "Svista", "sviste", Color(0xFFD9534F)),
+/** Categoria di ogni mossa della partita, in base a quanto ha fatto scendere la probabilità di
+ * vittoria di chi l'ha giocata (soglie di Lichess per imprecisione/errore/errore grave:
+ * 10/20/30 punti percentuali). [negative] = mosse da segnalare nell'elenco degli sbagli. */
+enum class MoveJudgement(val symbol: String, val label: String, val plural: String, val color: Color, val negative: Boolean) {
+    GREAT("!", "Grande", "grandi", Color(0xFF749BBF), false),
+    BEST("★", "Migliore", "migliori", Color(0xFF81B64C), false),
+    EXCELLENT("👍", "Ottima", "ottime", Color(0xFF96BC4B), false),
+    GOOD("✓", "Buona", "buone", Color(0xFF8FA678), false),
+    INACCURACY("?!", "Imprecisione", "imprecisioni", Color(0xFFF7C631), true),
+    MISTAKE("?", "Errore", "errori", Color(0xFFFFA459), true),
+    MISS("✕", "Mossa mancata", "mosse mancate", Color(0xFFFF7769), true),
+    BLUNDER("??", "Errore grave", "errori gravi", Color(0xFFFA412D), true),
     ;
 
     /** "1 imprecisione", "2 imprecisioni", "0 errori". */
     fun count(n: Int) = "$n " + if (n == 1) label.lowercase() else plural
 }
 
-data class JudgedMove(val ply: Int, val san: String, val judgement: MoveJudgement, val best: String?)
+data class JudgedMove(val ply: Int, val san: String, val judgement: MoveJudgement, val best: String?, val whiteMoved: Boolean)
 
 /* ------------------------------------------------------------------ stato */
 
@@ -209,6 +223,9 @@ class ComputerAnalysisViewModel(private val app: ChessoraApplication) : ViewMode
     val gameEvals: StateFlow<List<WhiteEval?>> = _gameEvals
     private val _gameBest = MutableStateFlow<List<String?>>(emptyList())
     val gameBest: StateFlow<List<String?>> = _gameBest
+    /** Valutazione della seconda scelta del motore in ogni posizione (per le mosse "Grande"). */
+    private val _gameSecond = MutableStateFlow<List<WhiteEval?>>(emptyList())
+    val gameSecond: StateFlow<List<WhiteEval?>> = _gameSecond
 
     fun start(settings: AnalysisSettings, positions: List<String>, index: Int) {
         AnalysisSettings.save(app, settings)
@@ -283,14 +300,19 @@ class ComputerAnalysisViewModel(private val app: ChessoraApplication) : ViewMode
         _status.value = AnalysisStatus.Running
         val evals = MutableList<WhiteEval?>(positions.size) { null }
         val best = MutableList<String?>(positions.size) { null }
+        val second = MutableList<WhiteEval?>(positions.size) { null }
         _gameEvals.value = evals.toList()
         _gameBest.value = best.toList()
+        _gameSecond.value = second.toList()
         positions.forEachIndexed { i, fen ->
-            val result = engine.analyse(fen, if (s.byDepth) s.depth else null, if (s.byDepth) null else s.seconds * 1000, 1)
+            // 2 linee: la seconda serve a riconoscere le mosse "Grande" (unica mossa buona).
+            val result = engine.analyse(fen, if (s.byDepth) s.depth else null, if (s.byDepth) null else s.seconds * 1000, 2)
             evals[i] = result.lines.firstOrNull()?.toWhiteEval(fen) ?: terminalEval(fen)
+            second[i] = result.lines.getOrNull(1)?.toWhiteEval(fen)
             best[i] = result.bestMove
             _gameEvals.value = evals.toList()
             _gameBest.value = best.toList()
+            _gameSecond.value = second.toList()
         }
         _status.value = AnalysisStatus.Done
     }
@@ -311,26 +333,53 @@ class ComputerAnalysisViewModel(private val app: ChessoraApplication) : ViewMode
     }
 }
 
-/** Mosse della partita con imprecisioni/errori/sviste, dalle valutazioni posizione per posizione. */
-fun judgeMoves(positions: List<String>, sanMoves: List<String>, evals: List<WhiteEval?>, best: List<String?>): List<JudgedMove> {
+/** Mossa giocata tra due posizioni, in UCI ("e2e4"): la mossa legale che porta da [from] a
+ * [to] (confronto della disposizione dei pezzi). Null se non si trova. */
+internal fun playedUci(from: String, to: String): String? = runCatching {
+    val board = Board().apply { loadFromFen(from) }
+    val target = to.substringBefore(' ')
+    board.legalMoves().firstOrNull { m ->
+        board.doMove(m)
+        val match = board.fen.substringBefore(' ') == target
+        board.undoMove()
+        match
+    }?.toString()
+}.getOrNull()
+
+/** Categoria di OGNI mossa della partita, dalle valutazioni posizione per posizione. */
+fun judgeMoves(
+    positions: List<String>,
+    sanMoves: List<String>,
+    evals: List<WhiteEval?>,
+    best: List<String?>,
+    second: List<WhiteEval?> = emptyList(),
+): List<JudgedMove> {
     val out = mutableListOf<JudgedMove>()
     for (ply in 1 until positions.size) {
         val before = evals.getOrNull(ply - 1) ?: continue
         val after = evals.getOrNull(ply) ?: continue
+        val played = sanMoves.getOrNull(ply - 1) ?: continue
         val whiteMoved = whiteToMove(positions[ply - 1])
-        val moverBefore = if (whiteMoved) before.whiteWinPct() else 100 - before.whiteWinPct()
-        val moverAfter = if (whiteMoved) after.whiteWinPct() else 100 - after.whiteWinPct()
+        fun moverPct(e: WhiteEval) = if (whiteMoved) e.whiteWinPct() else 100 - e.whiteWinPct()
+        val moverBefore = moverPct(before)
+        val moverAfter = moverPct(after)
         val loss = moverBefore - moverAfter
+        val bestUci = best.getOrNull(ply - 1)
+        val isBest = bestUci != null && bestUci.equals(playedUci(positions[ply - 1], positions[ply]), ignoreCase = true)
+        // "Grande": la migliore quando la seconda scelta faceva perdere molto (unica mossa buona).
+        val secondGap = second.getOrNull(ply - 1)?.let { moverBefore - moverPct(it) } ?: 0.0
         val judgement = when {
             loss >= 30 -> MoveJudgement.BLUNDER
+            moverBefore >= 80 && moverAfter < 65 && loss >= 10 -> MoveJudgement.MISS // vittoria lasciata sfuggire
             loss >= 20 -> MoveJudgement.MISTAKE
             loss >= 10 -> MoveJudgement.INACCURACY
-            else -> null
-        } ?: continue
-        val bestText = best.getOrNull(ply - 1)?.let { uciLineToText(positions[ply - 1], listOf(it), 1) }
-            ?.substringAfterLast(' ')
-        val played = sanMoves.getOrNull(ply - 1) ?: continue
-        out += JudgedMove(ply, played, judgement, bestText?.takeIf { it.isNotBlank() && it != played })
+            isBest && secondGap >= 15 -> MoveJudgement.GREAT
+            isBest -> MoveJudgement.BEST
+            loss < 2 -> MoveJudgement.EXCELLENT
+            else -> MoveJudgement.GOOD
+        }
+        val bestText = if (judgement.negative) bestUci?.let { uciLineToText(positions[ply - 1], listOf(it), 1) }?.substringAfterLast(' ') else null
+        out += JudgedMove(ply, played, judgement, bestText?.takeIf { it.isNotBlank() && it != played }, whiteMoved)
     }
     return out
 }
@@ -451,6 +500,7 @@ private fun GameSummary(
 ) {
     val evals by vm.gameEvals.collectAsState()
     val best by vm.gameBest.collectAsState()
+    val second by vm.gameSecond.collectAsState()
     val status by vm.status.collectAsState()
     val done = evals.count { it != null }
     if (evals.isEmpty()) return
@@ -463,11 +513,13 @@ private fun GameSummary(
         Text("Valutazione dopo questa mossa: ${it.label()}", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 4.dp))
     }
     if (status !is AnalysisStatus.Running && done == evals.size) {
-        val judged = remember(evals, best) { judgeMoves(positions, sanMoves, evals, best) }
+        val all = remember(evals, best, second) { judgeMoves(positions, sanMoves, evals, best, second) }
+        val judged = all.filter { it.judgement.negative }
         val counts = judged.groupingBy { it.judgement }.eachCount()
+        val negatives = MoveJudgement.entries.filter { it.negative }
         Text(
             if (judged.isEmpty()) "Nessuna imprecisione rilevata."
-            else MoveJudgement.entries.joinToString(" · ") { it.count(counts[it] ?: 0) },
+            else negatives.joinToString(" · ") { it.count(counts[it] ?: 0) },
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
@@ -487,6 +539,99 @@ private fun GameSummary(
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
+            }
+        }
+        JudgementLegend(all, modifier = Modifier.padding(top = 12.dp))
+    }
+}
+
+/** Cerchio colorato con il simbolo della categoria (legenda e scacchiera). */
+@Composable
+private fun JudgementBadge(j: MoveJudgement, size: androidx.compose.ui.unit.Dp, modifier: Modifier = Modifier) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier.size(size).clip(CircleShape).background(j.color),
+    ) {
+        val base = size.value * 0.55f
+        Text(j.symbol, color = Color.White, fontWeight = FontWeight.Bold, fontSize = (if (j.symbol.length > 1) base * 0.8f else base).sp)
+    }
+}
+
+/**
+ * Da mettere SOPRA la scacchiera (stesse dimensioni): dopo l'analisi della partita intera,
+ * a ogni cambio di mossa mostra per un secondo, nell'angolo in alto a destra della casella
+ * d'arrivo, il simbolo della qualità della mossa appena giocata.
+ */
+@Composable
+fun MoveQualityBoardOverlay(
+    positions: List<String>,
+    sanMoves: List<String>,
+    moveIndex: Int,
+    flipped: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val vm = chessoraViewModel { app -> ComputerAnalysisViewModel(app) }
+    val active by vm.active.collectAsState()
+    val evals by vm.gameEvals.collectAsState()
+    val best by vm.gameBest.collectAsState()
+    val second by vm.gameSecond.collectAsState()
+    if (active != AnalysisMode.GAME || moveIndex < 1) return
+    val judged = remember(evals, best, second, positions) { judgeMoves(positions, sanMoves, evals, best, second) }
+    val judgement = judged.firstOrNull { it.ply == moveIndex }?.judgement ?: return
+    val uci = remember(moveIndex, positions) { playedUci(positions[moveIndex - 1], positions[moveIndex]) } ?: return
+    var visible by remember { mutableStateOf(false) }
+    LaunchedEffect(moveIndex) {
+        visible = true
+        kotlinx.coroutines.delay(1000)
+        visible = false
+    }
+    androidx.compose.foundation.layout.BoxWithConstraints(modifier = modifier.fillMaxWidth().aspectRatio(1f)) {
+        val square = maxWidth / 8
+        val badge = square * 0.5f
+        val file = uci[2] - 'a'
+        val rankFromTop = 8 - (uci[3] - '0')
+        val col = if (flipped) 7 - file else file
+        val row = if (flipped) 7 - rankFromTop else rankFromTop
+        // Angolo in alto a destra della casella, un po' sporgente, mai fuori dalla scacchiera.
+        val x = (square * (col + 1) - badge * 0.8f).coerceIn(0.dp, maxWidth - badge)
+        val y = (square * row - badge * 0.2f).coerceIn(0.dp, maxWidth - badge)
+        androidx.compose.animation.AnimatedVisibility(
+            visible = visible,
+            enter = androidx.compose.animation.fadeIn() + androidx.compose.animation.scaleIn(initialScale = 0.6f),
+            exit = androidx.compose.animation.fadeOut(),
+            modifier = Modifier.offset(x = x, y = y),
+        ) {
+            JudgementBadge(judgement, badge)
+        }
+    }
+}
+
+/** Legenda finale: per ogni categoria quante mosse ha giocato il Bianco (a sinistra) e il Nero
+ * (a destra), con il simbolo colorato in mezzo. */
+@Composable
+private fun JudgementLegend(moves: List<JudgedMove>, modifier: Modifier = Modifier) {
+    if (moves.isEmpty()) return
+    val white = moves.filter { it.whiteMoved }.groupingBy { it.judgement }.eachCount()
+    val black = moves.filter { !it.whiteMoved }.groupingBy { it.judgement }.eachCount()
+    Column(modifier = modifier.fillMaxWidth()) {
+        HorizontalDivider(modifier = Modifier.padding(bottom = 8.dp))
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 4.dp)) {
+            Text("", modifier = Modifier.weight(1f))
+            Text("Bianco", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, modifier = Modifier.width(56.dp))
+            Box(modifier = Modifier.width(40.dp))
+            Text("Nero", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, modifier = Modifier.width(56.dp))
+        }
+        MoveJudgement.entries.forEach { j ->
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 5.dp)) {
+                Text(j.label, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                Text("${white[j] ?: 0}", color = j.color, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, modifier = Modifier.width(56.dp))
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.width(40.dp),
+                ) {
+                    JudgementBadge(j, 24.dp)
+                }
+                Text("${black[j] ?: 0}", color = j.color, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, modifier = Modifier.width(56.dp))
             }
         }
     }

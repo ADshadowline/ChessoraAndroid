@@ -1,6 +1,7 @@
 package org.chessora.app.ui.mygames
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,6 +45,7 @@ import org.chessora.app.ui.chessboard.ChessBoardView
 import org.chessora.app.ui.chessboard.ChessPositions
 import org.chessora.app.ui.chessboard.PgnMoveList
 import org.chessora.app.ui.analysis.ComputerAnalysisSection
+import org.chessora.app.ui.analysis.MoveQualityBoardOverlay
 import org.chessora.app.ui.performance.CenteredMessage
 
 /** Sola lettura di una partita registrata in "Le mie partite" - stessa struttura di
@@ -117,11 +119,15 @@ fun MyGameViewerScreen(gameId: Int, onEdit: (Int) -> Unit, onDeleted: () -> Unit
                 modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
             )
         }
-        ChessBoardView(
-            fen = positions.getOrElse(moveIndex) { ChessPositions.STANDARD_START_FEN },
-            modifier = Modifier.fillMaxWidth(),
-            flipped = flipped,
-        )
+        Box(modifier = Modifier.fillMaxWidth()) {
+            ChessBoardView(
+                fen = positions.getOrElse(moveIndex) { ChessPositions.STANDARD_START_FEN },
+                modifier = Modifier.fillMaxWidth(),
+                flipped = flipped,
+            )
+            // Simbolo della qualità della mossa per un secondo, dopo l'analisi della partita.
+            MoveQualityBoardOverlay(positions, sanMoves, moveIndex, flipped)
+        }
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             Text(
                 stringResource(R.string.lichess_move_of, moveIndex, (positions.size - 1).coerceAtLeast(0)),

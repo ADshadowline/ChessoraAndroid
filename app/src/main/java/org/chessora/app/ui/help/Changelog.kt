@@ -13,6 +13,10 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
+    AppRelease("1.62.1", "novembre 2026", listOf(
+        "Analisi della partita: ogni mossa ha una categoria (grande, migliore, ottima, buona, imprecisione, errore, mossa mancata, errore grave) e in fondo c'è la legenda con il conto per il Bianco e per il Nero.",
+        "Scorrendo le mosse di una partita analizzata, sulla casella d'arrivo compare per un secondo il simbolo della qualità della mossa.",
+    )),
     AppRelease("1.62.0", "novembre 2026", listOf(
         "Gestione tornei: a fine torneo, accanto a Premiazione, il pulsante \"Chiudi torneo\" (con conferma).",
         "Gestione tornei: quando i pulsanti in basso sono tre o più, diventano icone per starci tutti.",

@@ -3,6 +3,7 @@ package org.chessora.app.ui.performance.lichess
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,6 +39,7 @@ import org.chessora.app.R
 import org.chessora.app.data.remote.dto.LichessGame
 import org.chessora.app.data.repository.LichessRepository
 import org.chessora.app.ui.analysis.ComputerAnalysisSection
+import org.chessora.app.ui.analysis.MoveQualityBoardOverlay
 import org.chessora.app.ui.chessboard.ChessBoardView
 import org.chessora.app.ui.chessboard.ChessPositions
 import org.chessora.app.ui.chessboard.PgnMoveList
@@ -78,11 +80,15 @@ fun LichessGameViewerScreen(gameId: String) {
                 // Scacchiera a piena larghezza, senza margini laterali: la priorità è
                 // vederla il più grande possibile (richiesta esplicita), i controlli sotto
                 // restano invece con il solito margine di lettura.
-                ChessBoardView(
-                    fen = data.positions.getOrElse(moveIndex) { ChessPositions.STANDARD_START_FEN },
-                    modifier = Modifier.fillMaxWidth(),
-                    flipped = flipped,
-                )
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    ChessBoardView(
+                        fen = data.positions.getOrElse(moveIndex) { ChessPositions.STANDARD_START_FEN },
+                        modifier = Modifier.fillMaxWidth(),
+                        flipped = flipped,
+                    )
+                    // Simbolo della qualità della mossa per un secondo, dopo l'analisi della partita.
+                    MoveQualityBoardOverlay(data.positions, sanMoves, moveIndex, flipped)
+                }
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Text(
                         stringResource(R.string.lichess_move_of, moveIndex, (data.positions.size - 1).coerceAtLeast(0)),
