@@ -193,8 +193,8 @@ fun SplashScreen(
                                 scaleY = iconScale.value
                             }
                             .padding(bottom = 8.dp)
-                            .width(220.dp)
-                            .height(120.dp),
+                            .width(230.dp)
+                            .height(140.dp),
                         cornerRadius = 18.dp,
                         contentPadding = 12.dp,
                     )

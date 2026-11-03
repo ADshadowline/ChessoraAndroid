@@ -25,14 +25,13 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 
-private val LIGHT_CHIP = Color.White
 private val DARK_CHIP = Color(0xFF1E2A44)
 
 /**
- * Logo del circolo intero (Fit, mai ritagliato) su un riquadro con bordo e ombra leggera.
- * Lo sfondo dipende dal logo: scuro per un logo chiaro (es. PoliTO, scritte bianche su
- * trasparente, che su bianco spariva), bianco per un logo scuro - deciso dalla luminosità
- * media dei pixel non trasparenti appena l'immagine è caricata.
+ * Logo del circolo intero (Fit, mai ritagliato in un cerchio). Un logo chiaro (es. PoliTO,
+ * scritte bianche su trasparente, che sui fondi chiari spariva) va su un riquadro scuro con
+ * bordo e ombra leggera; uno scuro resta senza cornice, grande quanto lo spazio - deciso
+ * dalla luminosità media dei pixel non trasparenti appena l'immagine è caricata.
  */
 @Composable
 fun ClubLogoChip(url: String, modifier: Modifier = Modifier, cornerRadius: Dp = 12.dp, contentPadding: Dp = 5.dp) {
@@ -41,16 +40,19 @@ fun ClubLogoChip(url: String, modifier: Modifier = Modifier, cornerRadius: Dp = 
     // allowHardware(false): un bitmap "hardware" non si può leggere pixel per pixel.
     val request = remember(url) { ImageRequest.Builder(context).data(url).allowHardware(false).build() }
     val shape = RoundedCornerShape(cornerRadius)
-    val background = if (lightLogo == true) DARK_CHIP else LIGHT_CHIP
-    Box(
-        modifier = modifier
+    // Solo un logo chiaro ha bisogno del riquadro scuro; uno scuro (es. il tondo del LTB,
+    // già con il suo fondo) si vede meglio grande e senza cornice, come prima.
+    val chipModifier = if (lightLogo == true) {
+        Modifier
             .shadow(3.dp, shape)
             .clip(shape)
-            .background(background)
-            .border(1.dp, if (lightLogo == true) Color.White.copy(alpha = 0.12f) else Color.Black.copy(alpha = 0.08f), shape)
-            .padding(contentPadding),
-        contentAlignment = Alignment.Center,
-    ) {
+            .background(DARK_CHIP)
+            .border(1.dp, Color.White.copy(alpha = 0.12f), shape)
+            .padding(contentPadding)
+    } else {
+        Modifier.clip(shape)
+    }
+    Box(modifier = modifier.then(chipModifier), contentAlignment = Alignment.Center) {
         AsyncImage(
             model = request,
             contentDescription = null,
