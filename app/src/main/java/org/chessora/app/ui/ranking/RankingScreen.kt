@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
@@ -100,14 +101,21 @@ private fun RankingList(players: List<RankingPlayer>) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                // weight + ellipsis: un nome lungo si accorcia con "…" invece di finire sopra il punteggio.
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                     PlayerAvatar(idPlayer = player.idPlayer, modifier = Modifier.padding(end = 10.dp))
                     Text(
                         if (player.elo != null) "${index + 1}. ${player.name}" else player.name,
                         fontWeight = if (player.elo != null) FontWeight.Medium else FontWeight.Normal,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
-                Text(player.elo?.toString() ?: "—", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    player.elo?.toString() ?: "—",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(start = 12.dp),
+                )
             }
         }
     }
