@@ -1,13 +1,13 @@
 package org.chessora.app.ui.more
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import org.chessora.app.ui.common.ClubLogoChip
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.background
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.ShowChart
@@ -24,11 +24,8 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
 import org.chessora.app.R
 
 /**
@@ -97,14 +94,12 @@ fun MoreScreen(
                 headlineContent = { Text(stringResource(R.string.nav_club)) },
                 leadingContent = {
                     if (clubLogoUrl != null) {
-                        Image(
-                            painter = rememberAsyncImagePainter(clubLogoUrl),
-                            contentDescription = null,
-                            // Intero su fondo chiaro: ritagliato in un cerchio un logo con
-                            // scritte perdeva metà del testo (vedi TileIcon in HomeScreen).
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier.size(48.dp).clip(RoundedCornerShape(10.dp))
-                                .background(androidx.compose.ui.graphics.Color.White).padding(4.dp),
+                        // Intero, con lo sfondo adatto al logo (vedi ClubLogoChip).
+                        ClubLogoChip(
+                            url = clubLogoUrl,
+                            modifier = Modifier.width(72.dp).height(48.dp),
+                            cornerRadius = 10.dp,
+                            contentPadding = 4.dp,
                         )
                     } else {
                         Icon(Icons.Default.Groups, contentDescription = null)
