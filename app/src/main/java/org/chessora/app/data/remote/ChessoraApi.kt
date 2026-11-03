@@ -20,6 +20,7 @@ import org.chessora.app.data.remote.dto.GoogleLoginResponseDto
 import org.chessora.app.data.remote.dto.GoogleReviewsResponse
 import org.chessora.app.data.remote.dto.MarkReadRequest
 import org.chessora.app.data.remote.dto.MeDto
+import org.chessora.app.data.remote.dto.SetMyClubRequestDto
 import org.chessora.app.data.remote.dto.MessagingPlayerSettings
 import org.chessora.app.data.remote.dto.PlayerAuthResponseDto
 import org.chessora.app.data.remote.dto.PlayerLoginRequestDto
@@ -122,6 +123,10 @@ interface ChessoraApi {
      * nel completamento profilo come utente della piattaforma. */
     @GET("api/me")
     suspend fun getMe(): MeDto
+
+    /** Il socio di più circoli sceglie quale usare: diventa il circolo dell'account. */
+    @PUT("api/me/club")
+    suspend fun setMyClub(@Body request: SetMyClubRequestDto)
 
     /** "Elimina il mio account" (Impostazioni): cancella account e dati dell'app sul
      * server - obbligatorio per il Play Store. */

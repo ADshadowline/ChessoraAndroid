@@ -14,6 +14,7 @@ import org.chessora.app.data.local.AuthPreferences
 import org.chessora.app.data.local.AuthSession
 import org.chessora.app.data.local.OrganizerSession
 import org.chessora.app.data.local.ClubPreferences
+import org.chessora.app.data.remote.dto.MemberClubDto
 import org.chessora.app.data.remote.dto.SiteBranding
 import org.chessora.app.data.repository.ChessoraRepository
 import org.chessora.app.push.DeviceRegistration
@@ -139,6 +140,11 @@ class SessionViewModel(
     // DataStore che emetterebbe con un frame di ritardo.
     private val _identityResolved = MutableStateFlow(false)
     val identityResolved: StateFlow<Boolean> = _identityResolved
+
+    /** Circoli tra cui scegliere (null = nessuna domanda da fare): mostrati in un dialogo
+     * da ChessoraNavHost a chi è socio di più circoli nello stesso anno. */
+    private val _memberClubChoice = MutableStateFlow<List<MemberClubDto>?>(null)
+    val memberClubChoice: StateFlow<List<MemberClubDto>?> = _memberClubChoice
 
     private val _identifiedPlayerName = MutableStateFlow<String?>(null)
     val identifiedPlayerName: StateFlow<String?> = _identifiedPlayerName
@@ -299,7 +305,26 @@ class SessionViewModel(
             }
             _identifiedIdFide.value = me.idFide
             _identifiedIdFsi.value = me.idFsi
+            // Socio di più circoli: chiede quale usare, una volta per ogni elenco di circoli
+            // (torna a chiederlo solo se cambia, es. una tessera nuova).
+            val clubs = me.memberClubs.filter { !it.publicCode.isNullOrBlank() }
+            val key = clubs.map { it.idClub }.sorted().joinToString(",")
+            _memberClubChoice.value =
+                if (clubs.size > 1 && clubPreferences.memberClubsChoiceKey.first() != key) clubs else null
         }
+    }
+
+    /** Scelta dal dialogo: circolo selezionato nell'app e circolo dell'account sul server
+     * (proposto ai prossimi accessi). */
+    fun chooseMemberClub(club: MemberClubDto) {
+        val clubs = _memberClubChoice.value ?: return
+        _memberClubChoice.value = null
+        val code = club.publicCode ?: return
+        viewModelScope.launch {
+            clubPreferences.setMemberClubsChoiceKey(clubs.map { it.idClub }.sorted().joinToString(","))
+            repository.setMyClub(club.idClub)
+        }
+        if (_selectedClub.value != code) selectClub(code)
     }
 
     /** Chiamata dall'onboarding (o dalle Impostazioni, per cambiare circolo). */

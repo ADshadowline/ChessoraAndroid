@@ -61,6 +61,16 @@ class ClubPreferences(context: Context) {
         val DESKTOP_HIDDEN_ICONS = stringPreferencesKey("desktop_hidden_icons")
         val INFO_SEEN_VERSION_CODE = intPreferencesKey("info_seen_version_code")
         val USE_GRAPHIC_ICONS = booleanPreferencesKey("use_graphic_icons")
+        val MEMBER_CLUBS_CHOICE_KEY = stringPreferencesKey("member_clubs_choice_key")
+    }
+
+    /** Elenco (id ordinati, separati da virgola) dei circoli di cui l'account era socio
+     * l'ultima volta che ha scelto quale usare: la domanda torna solo se l'elenco cambia
+     * (vedi SessionViewModel.memberClubChoice). */
+    val memberClubsChoiceKey: Flow<String?> = dataStore.data.map { it[Keys.MEMBER_CLUBS_CHOICE_KEY] }
+
+    suspend fun setMemberClubsChoiceKey(key: String) {
+        dataStore.edit { it[Keys.MEMBER_CLUBS_CHOICE_KEY] = key }
     }
 
     val selectedClub: Flow<String?> = dataStore.data.map { it[Keys.SELECTED_CLUB_CODE] }

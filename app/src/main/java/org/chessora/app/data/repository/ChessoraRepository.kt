@@ -14,6 +14,7 @@ import org.chessora.app.data.remote.dto.ClubRosterEntryDto
 import org.chessora.app.data.remote.dto.ClubSearchResult
 import org.chessora.app.data.remote.dto.CompletePlayerProfileRequestDto
 import org.chessora.app.data.remote.dto.MeDto
+import org.chessora.app.data.remote.dto.SetMyClubRequestDto
 import org.chessora.app.data.remote.dto.ConversationSummary
 import org.chessora.app.data.remote.dto.EntrantDto
 import org.chessora.app.data.remote.dto.EventType
@@ -100,6 +101,8 @@ class ChessoraRepository(private val api: ChessoraApi) {
         safeCall { api.completeProfile(request) }
 
     suspend fun getMe(): Result<MeDto> = safeCall { api.getMe() }
+
+    suspend fun setMyClub(idClub: Int): Result<Unit> = safeCall { api.setMyClub(SetMyClubRequestDto(idClub)) }
 
     suspend fun deleteMyAccount(): Result<Unit> = safeCall { api.deleteMyAccount() }
 

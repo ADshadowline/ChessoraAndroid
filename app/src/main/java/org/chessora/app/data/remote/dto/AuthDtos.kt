@@ -71,7 +71,17 @@ data class MeDto(
     /** ID FIDE dell'account o del giocatore collegato, tessera FSI del giocatore collegato. */
     val idFide: Int? = null,
     val idFsi: Int? = null,
+    /** Circolo dell'account e circoli di cui è socio quest'anno (si può esserlo di più
+     * d'uno): con più di uno l'app chiede quale usare (vedi SessionViewModel.memberClubChoice). */
+    val idClub: Int? = null,
+    val memberClubs: List<MemberClubDto> = emptyList(),
 )
+
+@Serializable
+data class MemberClubDto(val idClub: Int, val publicCode: String? = null, val name: String? = null)
+
+@Serializable
+data class SetMyClubRequestDto(val idClub: Int)
 
 /** Usato quando un ID FIDE risulta valido ma non ancora associato a nessun utente
  * (FLUSSO 6, accesso con ID FIDE) - crea l'account SUBITO associato a quell'IdFide,

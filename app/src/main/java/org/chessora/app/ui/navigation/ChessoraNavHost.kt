@@ -217,6 +217,19 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
         TournamentRoundEvents.events.collect { event -> roundPublishedEvent = event }
     }
 
+    // Socio di più circoli nello stesso anno: chiede quale usare, solo su una schermata
+    // stabile (mai sopra splash/login).
+    val memberClubChoice by sessionViewModel.memberClubChoice.collectAsState()
+    memberClubChoice?.let { clubs ->
+        if (currentRoute in ChessoraDestinations.BOTTOM_BAR_ROUTES) {
+            org.chessora.app.ui.session.MemberClubChoiceDialog(
+                clubs = clubs,
+                selectedClubCode = selectedClub,
+                onChoose = { club -> sessionViewModel.chooseMemberClub(club) },
+            )
+        }
+    }
+
     val branding by sessionViewModel.branding.collectAsState()
     val identifiedPlayerName by sessionViewModel.identifiedPlayerName.collectAsState()
     val identifiedIdFide by sessionViewModel.identifiedIdFide.collectAsState()
