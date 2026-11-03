@@ -29,6 +29,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -167,11 +168,13 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
     val displayMode by sessionViewModel.displayMode.collectAsState()
-    val showTopBar = currentRoute in ChessoraDestinations.BOTTOM_BAR_ROUTES
+    // Nome del circolo e utente collegato restano visibili anche nei menu e nelle schermate
+    // interne (richiesta esplicita), con l'icona Home per tornare alla Home dell'app.
+    val showTopBar = currentRoute != null && currentRoute !in ChessoraDestinations.NO_TOP_BAR_ROUTES
     // In visualizzazione desktop la navigazione avviene tramite la griglia di icone della
     // Home (vedi ui/home/HomeScreen.kt), mai dalla bottom bar - nascosta su ogni schermata
     // (la barra superiore con branding/soci/Elo resta invece visibile).
-    val showBottomBar = showTopBar && displayMode != ClubPreferences.DISPLAY_MODE_DESKTOP
+    val showBottomBar = currentRoute in ChessoraDestinations.BOTTOM_BAR_ROUTES && displayMode != ClubPreferences.DISPLAY_MODE_DESKTOP
 
     // Instradamento automatico oltre lo SPLASH (che decide da solo la prima volta,
     // vedi il composable SPLASH sotto): se da ONBOARDING un circolo risulta già
@@ -270,6 +273,14 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                     // credenziali separate (create dall'admin del circolo).
                     onManageTournamentsClick = {
                         context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.chessora.org/wizard/")))
+                    },
+                    onHomeClick = if (currentRoute == ChessoraDestinations.HOME) null else {
+                        {
+                            navController.navigate(ChessoraDestinations.HOME) {
+                                popUpTo(ChessoraDestinations.HOME) { inclusive = false }
+                                launchSingleTop = true
+                            }
+                        }
                     },
                 )
             }
@@ -875,9 +886,18 @@ private fun ClubBrandingTopBar(
     identifiedIdFsi: Int? = null,
     isTournamentManager: Boolean = false,
     onManageTournamentsClick: () -> Unit = {},
+    /** Icona Home a sinistra del nome del circolo: null sulla Home stessa (non serve). */
+    onHomeClick: (() -> Unit)? = null,
 ) {
     Column {
         TopAppBar(
+            navigationIcon = {
+                if (onHomeClick != null) {
+                    IconButton(onClick = onHomeClick) {
+                        Icon(Icons.Default.Home, contentDescription = stringResource(R.string.nav_home_app))
+                    }
+                }
+            },
             title = {
                 val clubName = branding?.let { "${it.namePrefix}${it.nameHighlight}" }?.takeIf { it.isNotBlank() }
                 val title = clubName ?: stringResource(R.string.app_name)

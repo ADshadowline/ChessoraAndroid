@@ -43,6 +43,7 @@ import org.chessora.app.ui.common.chessoraViewModel
 import org.chessora.app.ui.chessboard.ChessBoardView
 import org.chessora.app.ui.chessboard.ChessPositions
 import org.chessora.app.ui.chessboard.PgnMoveList
+import org.chessora.app.ui.analysis.ComputerAnalysisSection
 import org.chessora.app.ui.performance.CenteredMessage
 
 /** Sola lettura di una partita registrata in "Le mie partite" - stessa struttura di
@@ -150,6 +151,13 @@ fun MyGameViewerScreen(gameId: Int, onEdit: (Int) -> Unit, onDeleted: () -> Unit
                     Icon(Icons.Filled.SwapVert, contentDescription = stringResource(R.string.chessboard_flip))
                 }
             }
+            ComputerAnalysisSection(
+                positions = positions,
+                sanMoves = sanMoves,
+                moveIndex = moveIndex,
+                onJumpTo = { moveIndex = it.coerceIn(0, positions.size - 1) },
+                modifier = Modifier.padding(top = 8.dp),
+            )
             PgnMoveList(
                 moves = sanMoves,
                 currentMoveIndex = moveIndex,

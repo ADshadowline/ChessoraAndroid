@@ -282,6 +282,7 @@
          ui/settings/IconSettingsScreen.kt) -->
     <string name="desktop_icon_board">Comité directeur</string>
     <string name="nav_club">Le Club</string>
+    <string name="nav_home_app">Retour à l\'accueil</string>
     <string name="club_menu_statuto">Statuts</string>
     <string name="club_menu_statuto_empty">Aucun statut téléversé pour l\'instant.</string>
     <string name="club_menu_contacts">Contacts</string>

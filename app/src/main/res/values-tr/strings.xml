@@ -281,6 +281,7 @@
          ui/settings/IconSettingsScreen.kt) -->
     <string name="desktop_icon_board">Yönetim kurulu</string>
     <string name="nav_club">Kulüp</string>
+    <string name="nav_home_app">Ana sayfaya dön</string>
     <string name="club_menu_statuto">Tüzük</string>
     <string name="club_menu_statuto_empty">Henüz tüzük yüklenmedi.</string>
     <string name="club_menu_contacts">İletişim</string>

@@ -168,4 +168,13 @@ object ChessoraDestinations {
 
     /** Route che mostrano la bottom bar - tutte le altre sono "a schermo pieno" con solo la freccia indietro. */
     val BOTTOM_BAR_ROUTES = setOf(HOME, NEWS_LIST, REGISTRATIONS, MESSAGING, MORE)
+
+    /** Schermate SENZA la barra in alto (nome del circolo, utente collegato, icona Home):
+     * apertura, scelta lingua/circolo, accesso e orologio a tutto schermo. In tutte le altre,
+     * compresi i menu, la barra resta sempre visibile. */
+    val NO_TOP_BAR_ROUTES = setOf(
+        SPLASH, LANGUAGE_PICKER, MEMBERSHIP_QUESTION, ONBOARDING,
+        AUTH_LOGIN, AUTH_LOGIN_EMAIL, AUTH_LOGIN_FIDE, AUTH_FORGOT_PASSWORD, AUTH_COMPLETE_PROFILE, AUTH_EMAIL_PENDING,
+        CHESS_CLOCK,
+    )
 }

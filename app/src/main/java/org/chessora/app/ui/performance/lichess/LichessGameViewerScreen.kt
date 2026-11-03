@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import org.chessora.app.R
 import org.chessora.app.data.remote.dto.LichessGame
 import org.chessora.app.data.repository.LichessRepository
+import org.chessora.app.ui.analysis.ComputerAnalysisSection
 import org.chessora.app.ui.chessboard.ChessBoardView
 import org.chessora.app.ui.chessboard.ChessPositions
 import org.chessora.app.ui.chessboard.PgnMoveList
@@ -111,6 +112,13 @@ fun LichessGameViewerScreen(gameId: String) {
                             Icon(Icons.Filled.SwapVert, contentDescription = stringResource(R.string.chessboard_flip))
                         }
                     }
+                    ComputerAnalysisSection(
+                        positions = data.positions,
+                        sanMoves = sanMoves,
+                        moveIndex = moveIndex,
+                        onJumpTo = { moveIndex = it.coerceIn(0, data.positions.size - 1) },
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
                     PgnMoveList(
                         moves = sanMoves,
                         currentMoveIndex = moveIndex,

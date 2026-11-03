@@ -281,6 +281,7 @@
          ui/settings/IconSettingsScreen.kt) -->
     <string name="desktop_icon_board">Vorstand</string>
     <string name="nav_club">Der Verein</string>
+    <string name="nav_home_app">Zur Startseite</string>
     <string name="club_menu_statuto">Satzung</string>
     <string name="club_menu_statuto_empty">Noch keine Satzung hochgeladen.</string>
     <string name="club_menu_contacts">Kontakte</string>

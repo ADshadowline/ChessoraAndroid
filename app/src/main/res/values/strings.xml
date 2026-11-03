@@ -292,6 +292,7 @@
          nav_club è la voce di primo livello (Home/Altro) che apre quel sotto-menu. -->
     <string name="desktop_icon_board">Direttivo</string>
     <string name="nav_club">Il Circolo</string>
+    <string name="nav_home_app">Torna alla Home</string>
     <string name="desktop_icon_shop">Negozio</string>
     <string name="desktop_icon_video">Video</string>
     <!-- ui/club/ - sotto-menu "Il Circolo": Direttivo (desktop_icon_board sopra),

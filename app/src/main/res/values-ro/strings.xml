@@ -284,6 +284,7 @@
          ui/settings/IconSettingsScreen.kt) -->
     <string name="desktop_icon_board">Conducere</string>
     <string name="nav_club">Clubul</string>
+    <string name="nav_home_app">Înapoi la pagina principală</string>
     <string name="club_menu_statuto">Statut</string>
     <string name="club_menu_statuto_empty">Niciun statut încărcat încă.</string>
     <string name="club_menu_contacts">Contacte</string>

@@ -13,6 +13,12 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
+    AppRelease("1.61.0", "novembre 2026", listOf(
+        "Analisi computer con Stockfish 17: nelle partite di persona e online un pulsante apre i parametri (posizione o partita intera, profondità o tempo, linee, processori, memoria).",
+        "Analisi della posizione: valutazione e linee migliori, aggiornate mentre scorri le mosse. Analisi della partita: grafico della valutazione e imprecisioni, errori e sviste.",
+        "Alla prima analisi l'app scarica una sola volta la rete neurale di Stockfish (circa 75 MB).",
+        "Il nome del circolo e il tuo nome restano in alto anche nei menu, con l'icona Home per tornare alla Home.",
+    )),
     AppRelease("1.60.0", "novembre 2026", listOf(
         "\"I miei progressi\" si chiama ora \"Il mio gioco\" e apre un menu: Andamento Elo, Le mie partite di persona, Le mie partite online.",
         "L'icona \"Le mie partite\" non c'è più in Home: le trovi in Il mio gioco → Le mie partite di persona.",

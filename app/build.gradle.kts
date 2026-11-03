@@ -34,8 +34,8 @@ android {
         // valerne la pena su un'app di sola consultazione.
         minSdk = 26
         targetSdk = 36
-        versionCode = 120
-        versionName = "1.60.0"
+        versionCode = 121
+        versionName = "1.61.0"
 
         // URL base dell'Api Chessora in produzione: iniettato come BuildConfig
         // string invece che hard-codato nel client Retrofit, cosi' un domani un
@@ -99,6 +99,13 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+        // Stockfish (src/main/jniLibs/<abi>/libstockfish.so, compilato con
+        // tools/stockfish/build-android.ps1) è un ESEGUIBILE, non una libreria: deve finire
+        // estratto su disco in nativeLibraryDir, l'unica cartella da cui Android permette a
+        // un'app di eseguire un programma (vedi engine/StockfishEngine.kt).
+        jniLibs {
+            useLegacyPackaging = true
         }
     }
 }
