@@ -492,7 +492,7 @@ private fun DesktopHomeGrid(
                 val badgeCount = if (descriptor.id == "registrations") registeredTournamentsCount else 0
                 val countdownTarget = when (descriptor.id) {
                     "registrations" -> registeredTournamentStartingSoon
-                    "events" -> nextEventStart
+                    // Niente conto alla rovescia su Tornei&Eventi (su richiesta).
                     else -> null
                 }
                 val showLiveDot = descriptor.id == "registrations" && hasTournamentInProgress
@@ -895,9 +895,7 @@ private fun AppointmentCard(event: UpcomingEvent, isNext: Boolean, isRegistered:
                         }
                     }
                 }
-                if (isNext) {
-                    CountdownTimer(event.startDateTime)
-                }
+                // Conto alla rovescia del prossimo torneo tolto da Tornei&Eventi (su richiesta).
             }
         }
     }
