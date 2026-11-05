@@ -127,7 +127,7 @@
     <string name="online_games_opening_all">Todas las partidas con esta apertura</string>
     <string name="online_games_opening_variants">%1$d variantes</string>
     <string name="more_my_games">Mis partidas</string>
-    <string name="my_game_menu_otb">Mis partidas presenciales</string>
+    <string name="my_game_menu_otb">Archivo de partidas</string>
     <string name="my_game_menu_online">Mis partidas online</string>
     <string name="mygames_not_identified">Inicia sesión para registrar tus partidas.</string>
     <string name="mygames_empty">Ninguna partida registrada.</string>

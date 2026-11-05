@@ -15,7 +15,8 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
 val APP_CHANGELOG: List<AppRelease> = listOf(
     AppRelease("1.66.0", "novembre 2026", listOf(
         "Tornei&Eventi del desktop: tolto il conto alla rovescia del prossimo torneo (elenco e icona). Negli Eventi del circolo resta.",
-        "Le mie partite: selezionate una o più partite, \"Condividi\" apre un menu per esportarle in PDF, inviarle con WhatsApp o nella chat Chessora (il PDF arriva in chat e si apre con un tocco).",
+        "\"Le mie partite di persona\" si chiama ora \"Archivio Partite\".",
+        "Archivio Partite: selezionate una o più partite, \"Condividi\" apre un menu per esportarle in PDF, inviarle con WhatsApp o nella chat Chessora (il PDF arriva in chat e si apre con un tocco).",
         "Icona Video: a ogni apertura della Home compare a caso una delle due grafiche.",
         "Calendario: giorni a riquadri quadrati e mese in un riquadro color carta con una leggera sfumatura.",
     )),

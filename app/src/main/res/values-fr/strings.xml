@@ -127,7 +127,7 @@
     <string name="online_games_opening_all">Toutes les parties avec cette ouverture</string>
     <string name="online_games_opening_variants">%1$d variantes</string>
     <string name="more_my_games">Mes parties</string>
-    <string name="my_game_menu_otb">Mes parties sur l\'échiquier</string>
+    <string name="my_game_menu_otb">Archive des parties</string>
     <string name="my_game_menu_online">Mes parties en ligne</string>
     <string name="mygames_not_identified">Connectez-vous pour enregistrer vos parties.</string>
     <string name="mygames_empty">Aucune partie enregistrée.</string>

@@ -131,7 +131,7 @@
     <string name="online_games_opening_all">Все партии с этим дебютом</string>
     <string name="online_games_opening_variants">Вариантов: %1$d</string>
     <string name="more_my_games">Мои партии</string>
-    <string name="my_game_menu_otb">Мои очные партии</string>
+    <string name="my_game_menu_otb">Архив партий</string>
     <string name="my_game_menu_online">Мои онлайн-партии</string>
     <string name="mygames_not_identified">Войдите, чтобы сохранять свои партии.</string>
     <string name="mygames_empty">Нет сохранённых партий.</string>

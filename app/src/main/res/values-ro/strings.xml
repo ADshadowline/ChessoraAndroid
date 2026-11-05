@@ -129,7 +129,7 @@
     <string name="online_games_opening_all">Toate partidele cu această deschidere</string>
     <string name="online_games_opening_variants">%1$d variante</string>
     <string name="more_my_games">Partidele mele</string>
-    <string name="my_game_menu_otb">Partidele mele față în față</string>
+    <string name="my_game_menu_otb">Arhiva partidelor</string>
     <string name="my_game_menu_online">Partidele mele online</string>
     <string name="mygames_not_identified">Conectează-te pentru a-ți înregistra partidele.</string>
     <string name="mygames_empty">Nicio partidă înregistrată.</string>

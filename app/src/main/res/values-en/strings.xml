@@ -127,7 +127,7 @@
     <string name="online_games_opening_all">All games with this opening</string>
     <string name="online_games_opening_variants">%1$d variations</string>
     <string name="more_my_games">My Games</string>
-    <string name="my_game_menu_otb">My over-the-board games</string>
+    <string name="my_game_menu_otb">Game Archive</string>
     <string name="my_game_menu_online">My online games</string>
     <string name="mygames_not_identified">Sign in to record your games.</string>
     <string name="mygames_empty">No games recorded.</string>

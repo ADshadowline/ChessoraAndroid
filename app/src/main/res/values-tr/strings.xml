@@ -127,7 +127,7 @@
     <string name="online_games_opening_all">Bu açılışla oynanan tüm partiler</string>
     <string name="online_games_opening_variants">%1$d varyant</string>
     <string name="more_my_games">Partilerim</string>
-    <string name="my_game_menu_otb">Yüz yüze partilerim</string>
+    <string name="my_game_menu_otb">Parti Arşivi</string>
     <string name="my_game_menu_online">Çevrimiçi partilerim</string>
     <string name="mygames_not_identified">Partilerini kaydetmek için giriş yap.</string>
     <string name="mygames_empty">Kayıtlı parti yok.</string>

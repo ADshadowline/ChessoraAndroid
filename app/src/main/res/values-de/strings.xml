@@ -127,7 +127,7 @@
     <string name="online_games_opening_all">Alle Partien mit dieser Eröffnung</string>
     <string name="online_games_opening_variants">%1$d Varianten</string>
     <string name="more_my_games">Meine Partien</string>
-    <string name="my_game_menu_otb">Meine Partien am Brett</string>
+    <string name="my_game_menu_otb">Partiearchiv</string>
     <string name="my_game_menu_online">Meine Online-Partien</string>
     <string name="mygames_not_identified">Melde dich an, um deine Partien zu erfassen.</string>
     <string name="mygames_empty">Keine Partie erfasst.</string>
