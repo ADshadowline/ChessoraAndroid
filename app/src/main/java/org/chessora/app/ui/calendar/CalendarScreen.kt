@@ -18,7 +18,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import org.chessora.app.ui.common.UiState
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.compose.material.icons.Icons
@@ -84,26 +89,43 @@ fun CalendarScreen(club: String?, onOpenBando: (url: String) -> Unit) {
         selectedDate = LocalDate.now().takeIf { YearMonth.from(it) == month }
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        MonthHeader(month = month, onPrevious = { viewModel.goToMonth(-1) }, onNext = { viewModel.goToMonth(1) })
-        UiStateContent(state = state, onRetry = { viewModel.retry() }) { events ->
-            val eventsByDate = events.groupBy { it.eventDate }
-            // Un giorno "lampeggia" se una delle sue righe è un torneo (o un fratello
-            // dello stesso evento, vedi tournamentEventGroupId) a cui il chiamante
-            // risulta preiscritto - stesso Set già usato in Home per il segno di spunta.
-            val preRegisteredDates = events
-                .filter { it.idTournament != null && it.idTournament in registeredTournamentIds }
-                .mapTo(mutableSetOf()) { it.eventDate }
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                item {
-                    MonthGrid(
-                        month = month,
-                        eventsByDate = eventsByDate,
-                        preRegisteredDates = preRegisteredDates,
-                        selectedDate = selectedDate,
-                        onDaySelected = { selectedDate = it },
-                    )
+    // Mese e giorni in un unico riquadro color carta (con sfumatura e ombra), sempre visibile
+    // - anche mentre gli eventi si caricano; sotto, gli eventi del giorno scelto.
+    val events = (state as? UiState.Success)?.data.orEmpty()
+    val eventsByDate = events.groupBy { it.eventDate }
+    // Un giorno "lampeggia" se una delle sue righe è un torneo (o un fratello dello stesso
+    // evento, vedi tournamentEventGroupId) a cui il chiamante risulta preiscritto - stesso
+    // Set già usato in Home per il segno di spunta.
+    val preRegisteredDates = events
+        .filter { it.idTournament != null && it.idTournament in registeredTournamentIds }
+        .mapTo(mutableSetOf()) { it.eventDate }
+
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        item {
+            PaperCalendarCard {
+                MonthHeader(month = month, onPrevious = { viewModel.goToMonth(-1) }, onNext = { viewModel.goToMonth(1) })
+                MonthGrid(
+                    month = month,
+                    eventsByDate = eventsByDate,
+                    preRegisteredDates = preRegisteredDates,
+                    selectedDate = selectedDate,
+                    onDaySelected = { selectedDate = it },
+                )
+            }
+        }
+        when (val s = state) {
+            is UiState.Loading -> item {
+                Box(modifier = Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
                 }
+            }
+            is UiState.Error -> item {
+                Column(modifier = Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(s.message, style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center)
+                    TextButton(onClick = { viewModel.retry() }) { Text(stringResource(R.string.events_network_retry)) }
+                }
+            }
+            is UiState.Success -> {
                 val selected = selectedDate
                 if (selected != null) {
                     val dayEvents = eventsByDate[selected.format(ISO_DATE)].orEmpty()
@@ -146,28 +168,55 @@ fun CalendarScreen(club: String?, onOpenBando: (url: String) -> Unit) {
     }
 }
 
+// Colori "carta" del riquadro del calendario: fondo crema con una leggera sfumatura verso
+// il basso, testo scuro, celle dei giorni appena più chiare con un bordino.
+private val PaperTop = Color(0xFFFBF6EA)
+private val PaperBottom = Color(0xFFEFE4CC)
+private val PaperInk = Color(0xFF2E2A24)
+private val PaperInkSoft = Color(0xFF7A705F)
+private val PaperCell = Color(0xFFFFFCF4)
+private val PaperCellBorder = Color(0x1F5A4A2A)
+private val PaperFrame = Color(0x665A4A2A)
+private val DayShape = RoundedCornerShape(6.dp)
+
+@Composable
+private fun PaperCalendarCard(content: @Composable () -> Unit) {
+    val shape = RoundedCornerShape(16.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 10.dp)
+            .shadow(elevation = 8.dp, shape = shape, clip = false)
+            .clip(shape)
+            .background(Brush.verticalGradient(listOf(PaperTop, PaperBottom)))
+            .border(1.dp, PaperFrame, shape)
+            .padding(bottom = 10.dp),
+    ) {
+        content()
+    }
+}
+
 @Composable
 private fun MonthHeader(month: YearMonth, onPrevious: () -> Unit, onNext: () -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        IconButton(onClick = onPrevious) { Icon(Icons.Filled.ChevronLeft, contentDescription = "Mese precedente") }
+        IconButton(onClick = onPrevious) { Icon(Icons.Filled.ChevronLeft, contentDescription = "Mese precedente", tint = PaperInk) }
         Text(
             month.format(DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ITALIAN)).replaceFirstChar { it.uppercase() },
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
+            color = PaperInk,
         )
-        IconButton(onClick = onNext) { Icon(Icons.Filled.ChevronRight, contentDescription = "Mese successivo") }
+        IconButton(onClick = onNext) { Icon(Icons.Filled.ChevronRight, contentDescription = "Mese successivo", tint = PaperInk) }
     }
 }
 
-// Griglia mensile stile calendario nativo Android (Samsung/AOSP): l'intero
-// cerchio del giorno si colora (in tono tenue) se ci sono eventi quel giorno,
-// il riquadro pieno oro è il giorno selezionato, il bordo oro è "oggi", il
-// numero è colorato diversamente se il giorno è festivo (domenica o festività
-// nazionale, vedi isItalianHoliday sotto).
+// Griglia mensile a celle quadrate (non più cerchi): la cella si colora in oro tenue se ci
+// sono eventi quel giorno, oro pieno se è il giorno selezionato, bordo oro per "oggi"; il
+// numero è rosso nei festivi (domenica o festività nazionale, vedi isItalianHoliday sotto).
 @Composable
 private fun MonthGrid(
     month: YearMonth,
@@ -182,15 +231,16 @@ private fun MonthGrid(
     val weeks = (totalCells + 6) / 7
     val today = LocalDate.now()
 
-    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp)) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 2.dp)) {
         Row(modifier = Modifier.fillMaxWidth()) {
             for (dow in 1..7) {
                 Text(
                     DayOfWeek.of(dow).getDisplayName(TextStyle.NARROW, Locale.ITALIAN).uppercase(),
-                    modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = PaperInkSoft,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f).padding(bottom = 4.dp),
                 )
             }
         }
@@ -230,20 +280,20 @@ private fun DayCell(
 ) {
     val backgroundColor = when {
         isSelected -> ChessoraGold
-        hasEvents -> ChessoraGold.copy(alpha = 0.28f)
-        else -> Color.Transparent
+        hasEvents -> ChessoraGold.copy(alpha = 0.38f)
+        else -> PaperCell
     }
     val numberColor = when {
         isSelected -> Color.White
         isHoliday -> ChessoraError
-        else -> MaterialTheme.colorScheme.onSurface
+        else -> PaperInk
     }
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .clip(CircleShape)
+            .clip(DayShape)
             .background(backgroundColor)
-            .border(if (isToday && !isSelected) 1.5.dp else 0.dp, ChessoraGold, CircleShape)
+            .border(if (isToday && !isSelected) 2.dp else 1.dp, if (isToday && !isSelected) ChessoraGold else PaperCellBorder, DayShape)
             .let {
                 // Bagliore lento e discreto sul bordo per il giorno a cui si è preiscritti -
                 // un ciclo di ~2.4s tra appena visibile e ben visibile, mai un lampeggio a
@@ -257,7 +307,7 @@ private fun DayCell(
                         animationSpec = infiniteRepeatable(animation = tween(2400), repeatMode = RepeatMode.Reverse),
                         label = "preRegisteredGlowAlpha",
                     )
-                    it.border(2.dp, ChessoraGold.copy(alpha = glowAlpha), CircleShape)
+                    it.border(2.dp, ChessoraGold.copy(alpha = glowAlpha), DayShape)
                 } else {
                     it
                 }

@@ -15,6 +15,7 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
 val APP_CHANGELOG: List<AppRelease> = listOf(
     AppRelease("1.65.2", "novembre 2026", listOf(
         "Tornei&Eventi del desktop: tolto il conto alla rovescia del prossimo torneo (elenco e icona). Negli Eventi del circolo resta.",
+        "Calendario: giorni a riquadri quadrati e mese in un riquadro color carta con una leggera sfumatura.",
     )),
     AppRelease("1.65.0", "novembre 2026", listOf(
         "Sul desktop \"Eventi\" diventa \"Tornei&Eventi\".",
