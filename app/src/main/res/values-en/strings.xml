@@ -460,4 +460,10 @@
     <string name="chess_clock_settings">Change time control</string>
     <string name="settings_use_graphic_icons">Use graphics</string>
     <string name="settings_use_graphic_icons_hint">Colourful illustrated icons on the icon Home instead of the plain ones.</string>
+    <string name="events_tab_club">Club</string>
+    <string name="events_tab_network">Network</string>
+    <string name="events_network_empty">No upcoming network tournaments.</string>
+    <string name="events_network_error">Could not load network tournaments.</string>
+    <string name="events_network_retry">Retry</string>
+    <string name="events_network_count">%1$d network tournaments from today on</string>
 </resources>

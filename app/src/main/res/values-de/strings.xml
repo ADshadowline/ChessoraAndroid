@@ -460,4 +460,10 @@
     <string name="chess_clock_settings">Bedenkzeit ändern</string>
     <string name="settings_use_graphic_icons">Grafik verwenden</string>
     <string name="settings_use_graphic_icons_hint">Farbige illustrierte Symbole auf der Symbol-Startseite statt der einfachen.</string>
+    <string name="events_tab_club">Verein</string>
+    <string name="events_tab_network">Im Netz</string>
+    <string name="events_network_empty">Keine anstehenden Turniere im Netz.</string>
+    <string name="events_network_error">Turniere im Netz konnten nicht geladen werden.</string>
+    <string name="events_network_retry">Erneut versuchen</string>
+    <string name="events_network_count">%1$d Turniere im Netz ab heute</string>
 </resources>

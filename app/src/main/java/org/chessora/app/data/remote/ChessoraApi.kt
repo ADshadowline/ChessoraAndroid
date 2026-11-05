@@ -417,6 +417,16 @@ interface ChessoraApi {
     @GET("api/tornei")
     suspend fun getTornei(): List<TournamentSummary>
 
+    /** "Tornei in rete" (vesus.org + Chessora non pubblicati lì), paginati lato server.
+     * periodo: "futuri" (da oggi in avanti) o "passati". */
+    @GET("api/tornei/in-rete")
+    suspend fun getNetworkTournaments(
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int,
+        @Query("periodo") periodo: String? = "futuri",
+        @Query("search") search: String? = null,
+    ): org.chessora.app.data.remote.dto.NetworkTournamentsPage
+
     /** PREISCRIZIONE (non conferma di partecipazione) - richiede login (vedi ui/auth/),
      * l'identità è quella dell'utente autenticato (Bearer), mai passata nel corpo. Il
      * corpo vuoto è comunque necessario: IIS in produzione rifiuta con 411 "Length

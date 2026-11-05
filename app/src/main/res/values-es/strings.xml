@@ -461,4 +461,10 @@
     <string name="chess_clock_settings">Cambiar ritmo</string>
     <string name="settings_use_graphic_icons">Usar gráficos</string>
     <string name="settings_use_graphic_icons_hint">Iconos ilustrados a color en el Inicio de iconos en lugar de los simples.</string>
+    <string name="events_tab_club">Club</string>
+    <string name="events_tab_network">En red</string>
+    <string name="events_network_empty">No hay torneos en red programados.</string>
+    <string name="events_network_error">No se pudieron cargar los torneos en red.</string>
+    <string name="events_network_retry">Reintentar</string>
+    <string name="events_network_count">%1$d torneos en red desde hoy</string>
 </resources>

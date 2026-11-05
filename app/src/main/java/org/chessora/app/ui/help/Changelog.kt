@@ -13,6 +13,9 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
+    AppRelease("1.64.0", "novembre 2026", listOf(
+        "Eventi: nuova scheda \"In rete\" con tutti i tornei da oggi in avanti della rete vesus.org e di Chessora, ricercabili dallo stesso campo; un tocco apre la pagina del torneo.",
+    )),
     AppRelease("1.63.0", "novembre 2026", listOf(
         "Partite online: sotto il campo di ricerca una barra a tre colori mostra quante partite hai perso, pattato e vinto (segue ricerca e filtro apertura).",
         "Aperture in ordine alfabetico e raggruppate per variante principale: tocca un'apertura per vedere le sue sottovarianti e scegline una per filtrare le partite.",

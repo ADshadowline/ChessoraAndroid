@@ -170,6 +170,10 @@ class ChessoraRepository(private val api: ChessoraApi) {
     suspend fun getNetworkNews(limit: Int = 30, search: String? = null): Result<List<NetworkNewsItem>> =
         safeCall { api.getNetworkNews(limit, search) }
 
+    /** "Tornei in rete" da oggi in avanti (vedi ChessoraApi.getNetworkTournaments). */
+    suspend fun getNetworkTournaments(page: Int, pageSize: Int, search: String? = null): Result<org.chessora.app.data.remote.dto.NetworkTournamentsPage> =
+        safeCall { api.getNetworkTournaments(page, pageSize, "futuri", search?.takeIf { it.isNotBlank() }) }
+
     // ---------- Calendario ----------
 
     suspend fun getEventTypes(): Result<List<EventType>> = safeCall { api.getEventTypes() }

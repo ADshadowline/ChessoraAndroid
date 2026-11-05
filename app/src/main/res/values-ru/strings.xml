@@ -466,4 +466,10 @@
     <string name="chess_clock_settings">Изменить контроль</string>
     <string name="settings_use_graphic_icons">Использовать графику</string>
     <string name="settings_use_graphic_icons_hint">Цветные иллюстрированные значки на главном экране вместо простых.</string>
+    <string name="events_tab_club">Клуб</string>
+    <string name="events_tab_network">В сети</string>
+    <string name="events_network_empty">Нет предстоящих турниров в сети.</string>
+    <string name="events_network_error">Не удалось загрузить турниры в сети.</string>
+    <string name="events_network_retry">Повторить</string>
+    <string name="events_network_count">Турниров в сети с сегодняшнего дня: %1$d</string>
 </resources>

@@ -77,6 +77,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.shape.CircleShape
@@ -219,6 +223,7 @@ fun HomeScreen(
 /** Elenco eventi in ordine cronologico - contenuto della Home in visualizzazione classica
  * (vedi [HomeScreen]), raggiungibile anche dalla griglia di icone (route EVENTS, tile
  * "Eventi") quando la Home è in visualizzazione desktop. */
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun EventsListScreen(club: String?, onOpenTournament: (Int) -> Unit) {
     val viewModel = chessoraViewModel { app -> HomeViewModel(app.repository, app.clubPreferences) }
@@ -226,6 +231,8 @@ fun EventsListScreen(club: String?, onOpenTournament: (Int) -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var query by remember { mutableStateOf("") }
+    // false = eventi del circolo (come prima), true = tornei in rete (vesus.org + Chessora).
+    var showNetwork by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(club) { viewModel.load(club) }
     // Tornare qui dal dettaglio di un torneo (dopo una (pre)iscrizione/ritiro) non
@@ -238,6 +245,18 @@ fun EventsListScreen(club: String?, onOpenTournament: (Int) -> Unit) {
             if (query.isBlank()) data.upcoming else data.upcoming.filter { it.title.contains(query, ignoreCase = true) }
         }
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)) {
+                SegmentedButton(
+                    selected = !showNetwork,
+                    onClick = { showNetwork = false },
+                    shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+                ) { Text(stringResource(R.string.events_tab_club)) }
+                SegmentedButton(
+                    selected = showNetwork,
+                    onClick = { showNetwork = true },
+                    shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+                ) { Text(stringResource(R.string.events_tab_network)) }
+            }
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
@@ -246,7 +265,9 @@ fun EventsListScreen(club: String?, onOpenTournament: (Int) -> Unit) {
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 singleLine = true,
             )
-            if (filtered.isEmpty()) {
+            if (showNetwork) {
+                NetworkEventsList(query = query)
+            } else if (filtered.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(if (query.isBlank()) stringResource(R.string.home_no_upcoming) else stringResource(R.string.home_no_results))
                 }

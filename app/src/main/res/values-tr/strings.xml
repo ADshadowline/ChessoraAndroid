@@ -460,4 +460,10 @@
     <string name="chess_clock_settings">Süreyi değiştir</string>
     <string name="settings_use_graphic_icons">Grafik kullan</string>
     <string name="settings_use_graphic_icons_hint">Simge ana ekranında sade simgeler yerine renkli çizimli simgeler.</string>
+    <string name="events_tab_club">Kulüp</string>
+    <string name="events_tab_network">Ağda</string>
+    <string name="events_network_empty">Planlanmış ağ turnuvası yok.</string>
+    <string name="events_network_error">Ağ turnuvaları yüklenemedi.</string>
+    <string name="events_network_retry">Tekrar dene</string>
+    <string name="events_network_count">Bugünden itibaren %1$d ağ turnuvası</string>
 </resources>
