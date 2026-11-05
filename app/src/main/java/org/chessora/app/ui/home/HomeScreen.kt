@@ -282,6 +282,8 @@ fun EventsListScreen(club: String?, onOpenTournament: (Int) -> Unit) {
                         AppointmentCard(
                             event = event,
                             isNext = index == 0 && query.isBlank(),
+                            // Desktop (Tornei&Eventi, club == null): niente conto alla rovescia.
+                            showCountdown = !withNetwork,
                             isRegistered = event.tournamentIds.any { it in data.registeredTournamentIds },
                             onClick = {
                                 val idTournament = event.idTournament
@@ -820,7 +822,7 @@ private fun rememberIconCountdownText(target: LocalDateTime): String? {
 }
 
 @Composable
-private fun AppointmentCard(event: UpcomingEvent, isNext: Boolean, isRegistered: Boolean, onClick: () -> Unit) {
+private fun AppointmentCard(event: UpcomingEvent, isNext: Boolean, isRegistered: Boolean, onClick: () -> Unit, showCountdown: Boolean = true) {
     val imageUrl = NetworkModule.resolveAssetUrl(event.tournamentImmagineCopertinaPath)
     // Con un'immagine di sfondo il testo va forzato chiaro (leggibile sopra lo scrim
     // scuro sempre applicato) invece di seguire il tema/i colori "isNext" di sotto.
@@ -895,7 +897,11 @@ private fun AppointmentCard(event: UpcomingEvent, isNext: Boolean, isRegistered:
                         }
                     }
                 }
-                // Conto alla rovescia del prossimo torneo tolto da Tornei&Eventi (su richiesta).
+                // Conto alla rovescia solo negli Eventi del circolo, non in Tornei&Eventi del
+                // desktop (su richiesta) - vedi showCountdown in EventsListScreen.
+                if (isNext && showCountdown) {
+                    CountdownTimer(event.startDateTime)
+                }
             }
         }
     }

@@ -13,8 +13,8 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
-    AppRelease("1.65.1", "novembre 2026", listOf(
-        "Tornei&Eventi: tolto il conto alla rovescia del prossimo torneo, sia nell'elenco sia sull'icona del desktop.",
+    AppRelease("1.65.2", "novembre 2026", listOf(
+        "Tornei&Eventi del desktop: tolto il conto alla rovescia del prossimo torneo (elenco e icona). Negli Eventi del circolo resta.",
     )),
     AppRelease("1.65.0", "novembre 2026", listOf(
         "Sul desktop \"Eventi\" diventa \"Tornei&Eventi\".",
