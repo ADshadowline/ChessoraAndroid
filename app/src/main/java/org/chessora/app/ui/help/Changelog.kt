@@ -13,6 +13,10 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
+    AppRelease("1.63.0", "novembre 2026", listOf(
+        "Partite online: sotto il campo di ricerca una barra a tre colori mostra quante partite hai perso, pattato e vinto (segue ricerca e filtro apertura).",
+        "Aperture in ordine alfabetico e raggruppate per variante principale: tocca un'apertura per vedere le sue sottovarianti e scegline una per filtrare le partite.",
+    )),
     AppRelease("1.62.3", "novembre 2026", listOf(
         "L'icona Home in alto a sinistra è ora dentro un cerchio con una leggera ombra, più visibile.",
     )),

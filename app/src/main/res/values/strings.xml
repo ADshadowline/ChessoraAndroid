@@ -129,6 +129,10 @@
     <string name="online_games_opening_filter_active">Apertura: %1$s</string>
     <string name="online_games_openings_empty">Nessuna apertura disponibile.</string>
     <string name="online_games_opening_count">%1$d partite (Li %2$d · CC %3$d)</string>
+    <string name="online_games_results_bar">%1$d perse · %2$d patte · %3$d vinte</string>
+    <string name="online_games_opening_main_line">Linea principale</string>
+    <string name="online_games_opening_all">Tutte le partite di questa apertura</string>
+    <string name="online_games_opening_variants">%1$d varianti</string>
     <string name="more_my_games">Le mie partite</string>
     <string name="my_game_menu_otb">Le mie partite di persona</string>
     <string name="my_game_menu_online">Le mie partite online</string>

@@ -122,6 +122,10 @@
     <string name="online_games_opening_filter_active">Eröffnung: %1$s</string>
     <string name="online_games_openings_empty">Keine Eröffnung verfügbar.</string>
     <string name="online_games_opening_count">%1$d Partien (Li %2$d · CC %3$d)</string>
+    <string name="online_games_results_bar">%1$d verloren · %2$d remis · %3$d gewonnen</string>
+    <string name="online_games_opening_main_line">Hauptvariante</string>
+    <string name="online_games_opening_all">Alle Partien mit dieser Eröffnung</string>
+    <string name="online_games_opening_variants">%1$d Varianten</string>
     <string name="more_my_games">Meine Partien</string>
     <string name="my_game_menu_otb">Meine Partien am Brett</string>
     <string name="my_game_menu_online">Meine Online-Partien</string>

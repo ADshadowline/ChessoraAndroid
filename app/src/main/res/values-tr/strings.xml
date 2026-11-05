@@ -122,6 +122,10 @@
     <string name="online_games_opening_filter_active">Açılış: %1$s</string>
     <string name="online_games_openings_empty">Kullanılabilir açılış yok.</string>
     <string name="online_games_opening_count">%1$d parti (Li %2$d · CC %3$d)</string>
+    <string name="online_games_results_bar">%1$d kayıp · %2$d berabere · %3$d galibiyet</string>
+    <string name="online_games_opening_main_line">Ana hat</string>
+    <string name="online_games_opening_all">Bu açılışla oynanan tüm partiler</string>
+    <string name="online_games_opening_variants">%1$d varyant</string>
     <string name="more_my_games">Partilerim</string>
     <string name="my_game_menu_otb">Yüz yüze partilerim</string>
     <string name="my_game_menu_online">Çevrimiçi partilerim</string>

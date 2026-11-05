@@ -122,6 +122,10 @@
     <string name="online_games_opening_filter_active">Opening: %1$s</string>
     <string name="online_games_openings_empty">No openings available.</string>
     <string name="online_games_opening_count">%1$d games (Li %2$d · CC %3$d)</string>
+    <string name="online_games_results_bar">%1$d lost · %2$d drawn · %3$d won</string>
+    <string name="online_games_opening_main_line">Main line</string>
+    <string name="online_games_opening_all">All games with this opening</string>
+    <string name="online_games_opening_variants">%1$d variations</string>
     <string name="more_my_games">My Games</string>
     <string name="my_game_menu_otb">My over-the-board games</string>
     <string name="my_game_menu_online">My online games</string>
