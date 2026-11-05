@@ -480,11 +480,18 @@ private fun DesktopHomeGrid(
     /** Impostazioni → "Usa grafica": vedi [GRAPHIC_ICONS]. */
     useGraphicIcons: Boolean = true,
 ) {
-    fun graphicFor(id: String): Int? = if (useGraphicIcons) GRAPHIC_ICONS[id] else null
+    // Icona "Video": a ogni ingresso nella Home si sceglie a caso tra le due grafiche (su
+    // richiesta) - remember senza chiavi, quindi resta la stessa finché si resta qui.
+    val videoAlt = remember { kotlin.random.Random.nextBoolean() }
+    fun graphicFor(id: String): Int? = when {
+        !useGraphicIcons -> null
+        id == "video" && videoAlt -> R.drawable.gfx_icon_video_alt
+        else -> GRAPHIC_ICONS[id]
+    }
     // Messaggi e Impostazioni sono ancorate agli angoli in basso (sinistra/destra), non
     // parte della griglia scorrevole - posizione fissa richiesta esplicitamente, non
     // riordinabili/nascondibili da Impostazioni > Icone Home.
-    val baseIcons = remember(desktop, isPlatformMode, iconOrder, hiddenIcons, registeredTournamentsCount, registeredTournamentStartingSoon, hasTournamentInProgress, nextEventStart, hasManageableTournaments, hasShopItems, clubLogoUrl, useGraphicIcons) {
+    val baseIcons = remember(desktop, isPlatformMode, iconOrder, hiddenIcons, registeredTournamentsCount, registeredTournamentStartingSoon, hasTournamentInProgress, nextEventStart, hasManageableTournaments, hasShopItems, clubLogoUrl, useGraphicIcons, videoAlt) {
         val defaults = DESKTOP_ICON_DESCRIPTORS
             .filter { !(isPlatformMode && it.hiddenInPlatformMode) }
             .filter { it.id != "tournamentManager" || hasManageableTournaments }
