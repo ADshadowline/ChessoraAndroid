@@ -13,6 +13,9 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
+    AppRelease("1.62.3", "novembre 2026", listOf(
+        "L'icona Home in alto a sinistra è ora dentro un cerchio con una leggera ombra, più visibile.",
+    )),
     AppRelease("1.62.2", "novembre 2026", listOf(
         "Le notifiche hanno il logo Chessora; gli avvisi di aggiornamento e le comunicazioni della piattaforma mostrano anche il logo a colori.",
         "I messaggi di chat arrivano come notifiche ad alta priorità, con banner in alto, suono e vibrazione.",

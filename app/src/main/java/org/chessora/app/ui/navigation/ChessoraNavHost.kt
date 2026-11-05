@@ -893,8 +893,26 @@ private fun ClubBrandingTopBar(
         TopAppBar(
             navigationIcon = {
                 if (onHomeClick != null) {
-                    IconButton(onClick = onHomeClick) {
-                        Icon(Icons.Default.Home, contentDescription = stringResource(R.string.nav_home_app))
+                    // Icona Home dentro un cerchio con una leggera ombra (su richiesta esplicita).
+                    androidx.compose.material3.Surface(
+                        onClick = onHomeClick,
+                        shape = androidx.compose.foundation.shape.CircleShape,
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shadowElevation = 4.dp,
+                        tonalElevation = 2.dp,
+                        border = androidx.compose.foundation.BorderStroke(1.dp, ChessoraGold.copy(alpha = 0.55f)),
+                        modifier = Modifier
+                            .padding(start = 8.dp, end = 4.dp)
+                            .size(40.dp),
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Default.Home,
+                                contentDescription = stringResource(R.string.nav_home_app),
+                                tint = ChessoraGold,
+                                modifier = Modifier.size(22.dp),
+                            )
+                        }
                     }
                 }
             },
