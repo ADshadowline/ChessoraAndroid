@@ -471,5 +471,6 @@
     <string name="events_network_empty">Нет предстоящих турниров в сети.</string>
     <string name="events_network_error">Не удалось загрузить турниры в сети.</string>
     <string name="events_network_retry">Повторить</string>
+    <string name="events_network_header">Турниры в сети (vesus.org)</string>
     <string name="events_network_count">Турниров в сети с сегодняшнего дня: %1$d</string>
 </resources>

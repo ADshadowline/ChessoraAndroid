@@ -14,7 +14,7 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
     AppRelease("1.64.0", "novembre 2026", listOf(
-        "Eventi: nuova scheda \"In rete\" con tutti i tornei da oggi in avanti della rete vesus.org e di Chessora, ricercabili dallo stesso campo; un tocco apre la pagina del torneo.",
+        "Eventi (dal desktop): in coda agli eventi dei circoli compaiono anche i tornei in rete di vesus.org da oggi in avanti, ricercabili dallo stesso campo; un tocco apre la pagina del torneo. Gli eventi dentro \"Il Circolo\" restano solo quelli del circolo.",
     )),
     AppRelease("1.63.0", "novembre 2026", listOf(
         "Partite online: sotto il campo di ricerca una barra a tre colori mostra quante partite hai perso, pattato e vinto (segue ricerca e filtro apertura).",

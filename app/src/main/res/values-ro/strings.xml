@@ -468,5 +468,6 @@
     <string name="events_network_empty">Niciun turneu în rețea programat.</string>
     <string name="events_network_error">Nu s-au putut încărca turneele din rețea.</string>
     <string name="events_network_retry">Reîncearcă</string>
+    <string name="events_network_header">Turnee în rețea (vesus.org)</string>
     <string name="events_network_count">%1$d turnee în rețea de azi înainte</string>
 </resources>

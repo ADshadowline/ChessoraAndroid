@@ -465,5 +465,6 @@
     <string name="events_network_empty">Planlanmış ağ turnuvası yok.</string>
     <string name="events_network_error">Ağ turnuvaları yüklenemedi.</string>
     <string name="events_network_retry">Tekrar dene</string>
+    <string name="events_network_header">Ağ turnuvaları (vesus.org)</string>
     <string name="events_network_count">Bugünden itibaren %1$d ağ turnuvası</string>
 </resources>

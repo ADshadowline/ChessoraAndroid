@@ -465,5 +465,6 @@
     <string name="events_network_empty">No upcoming network tournaments.</string>
     <string name="events_network_error">Could not load network tournaments.</string>
     <string name="events_network_retry">Retry</string>
+    <string name="events_network_header">Network tournaments (vesus.org)</string>
     <string name="events_network_count">%1$d network tournaments from today on</string>
 </resources>

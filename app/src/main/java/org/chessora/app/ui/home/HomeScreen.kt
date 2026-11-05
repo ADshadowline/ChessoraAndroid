@@ -77,7 +77,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -231,8 +231,10 @@ fun EventsListScreen(club: String?, onOpenTournament: (Int) -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var query by remember { mutableStateOf("") }
-    // false = eventi del circolo (come prima), true = tornei in rete (vesus.org + Chessora).
-    var showNetwork by rememberSaveable { mutableStateOf(false) }
+    // Dal desktop (club == null, tutti i circoli) in coda agli eventi compaiono anche i
+    // tornei in rete; da "Il Circolo" > Eventi (club valorizzato) solo quelli del circolo.
+    val withNetwork = club == null
+    val listState = rememberLazyListState()
 
     LaunchedEffect(club) { viewModel.load(club) }
     // Tornare qui dal dettaglio di un torneo (dopo una (pre)iscrizione/ritiro) non
@@ -244,19 +246,8 @@ fun EventsListScreen(club: String?, onOpenTournament: (Int) -> Unit) {
         val filtered = remember(data.upcoming, query) {
             if (query.isBlank()) data.upcoming else data.upcoming.filter { it.title.contains(query, ignoreCase = true) }
         }
+        val network = if (withNetwork) rememberNetworkEvents(query, listState) else null
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)) {
-                SegmentedButton(
-                    selected = !showNetwork,
-                    onClick = { showNetwork = false },
-                    shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
-                ) { Text(stringResource(R.string.events_tab_club)) }
-                SegmentedButton(
-                    selected = showNetwork,
-                    onClick = { showNetwork = true },
-                    shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
-                ) { Text(stringResource(R.string.events_tab_network)) }
-            }
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
@@ -265,19 +256,28 @@ fun EventsListScreen(club: String?, onOpenTournament: (Int) -> Unit) {
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 singleLine = true,
             )
-            if (showNetwork) {
-                NetworkEventsList(query = query)
-            } else if (filtered.isEmpty()) {
+            if (filtered.isEmpty() && network == null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(if (query.isBlank()) stringResource(R.string.home_no_upcoming) else stringResource(R.string.home_no_results))
                 }
             } else {
-                Text(
-                    stringResource(R.string.home_upcoming_appointments),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                )
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
+                    item(key = "club-header") {
+                        Text(
+                            stringResource(R.string.home_upcoming_appointments),
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(bottom = 8.dp),
+                        )
+                    }
+                    if (filtered.isEmpty()) {
+                        item(key = "club-empty") {
+                            Text(
+                                if (query.isBlank()) stringResource(R.string.home_no_upcoming) else stringResource(R.string.home_no_results),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
                     itemsIndexed(filtered, key = { _, event -> event.key }) { index, event ->
                         AppointmentCard(
                             event = event,
@@ -299,6 +299,11 @@ fun EventsListScreen(club: String?, onOpenTournament: (Int) -> Unit) {
                                 }
                             },
                         )
+                    }
+                    network?.let { (netVm, netState) ->
+                        networkEventsSection(netVm, netState) { url ->
+                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                        }
                     }
                 }
             }

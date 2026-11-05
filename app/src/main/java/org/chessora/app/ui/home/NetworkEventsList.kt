@@ -13,7 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -115,16 +116,15 @@ class NetworkEventsViewModel(private val repository: ChessoraRepository) : ViewM
 private const val TOURN_DETAIL_URL = "https://tourn.chessora.org/prototype/torneo-dettaglio.html?id="
 
 /** Elenco "In rete" della schermata Eventi: [query] è lo stesso campo di ricerca in alto. */
+/** Tornei in rete in coda all'elenco eventi del desktop (route EVENTS, tutti i circoli):
+ * collega ricerca e "carica altri in fondo" alla [listState] dell'elenco che li contiene. */
 @Composable
-fun NetworkEventsList(query: String) {
+fun rememberNetworkEvents(query: String, listState: LazyListState): Pair<NetworkEventsViewModel, NetworkEventsState> {
     val viewModel = chessoraViewModel { app -> NetworkEventsViewModel(app.repository) }
     val state by viewModel.state.collectAsState()
-    val context = LocalContext.current
-    val listState = rememberLazyListState()
 
     LaunchedEffect(query) { viewModel.setSearch(query, debounce = state.page > 0) }
 
-    // Pagina successiva quando si arriva in fondo.
     val nearEnd by remember {
         derivedStateOf {
             val last = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
@@ -132,41 +132,47 @@ fun NetworkEventsList(query: String) {
         }
     }
     LaunchedEffect(nearEnd, state.items.size) { if (nearEnd && state.page > 0) viewModel.loadMore() }
+    return viewModel to state
+}
 
+/** Solo i tornei vesus.org: quelli creati su Chessora sono già tra gli eventi dei circoli. */
+private fun NetworkEventsState.vesusItems() = items.filter { it.fonte == "Vesus" }
+
+fun LazyListScope.networkEventsSection(
+    viewModel: NetworkEventsViewModel,
+    state: NetworkEventsState,
+    onOpenUrl: (String) -> Unit,
+) {
+    val rows = state.vesusItems()
+    item(key = "network-header") {
+        Text(
+            stringResource(R.string.events_network_header),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
+        )
+    }
     when {
-        state.items.isEmpty() && state.loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-        state.items.isEmpty() && state.error -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(stringResource(R.string.events_network_error))
+        rows.isEmpty() && state.error -> item(key = "network-error") {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.events_network_error), style = MaterialTheme.typography.bodySmall)
                 TextButton(onClick = viewModel::retry) { Text(stringResource(R.string.events_network_retry)) }
             }
         }
-        state.items.isEmpty() && state.page > 0 -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(if (query.isBlank()) stringResource(R.string.events_network_empty) else stringResource(R.string.home_no_results))
+        rows.isEmpty() && !state.loading && state.page > 0 && !state.canLoadMore -> item(key = "network-empty") {
+            Text(
+                stringResource(R.string.events_network_empty),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
-        else -> LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
-            item {
-                Text(
-                    stringResource(R.string.events_network_count, state.totalCount),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                )
-            }
-            itemsIndexed(state.items, key = { i, t -> "${t.fonte}:${t.idEventoVesus ?: t.id ?: i}:$i" }) { _, t ->
-                NetworkTournamentCard(t) {
-                    val url = t.vesusUrl ?: t.id?.takeIf { t.fonte == "Chessora" }?.let { TOURN_DETAIL_URL + it }
-                    if (url != null) context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                }
-            }
-            if (state.loading) {
-                item {
-                    Box(Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(modifier = Modifier.size(28.dp))
-                    }
-                }
+        else -> itemsIndexed(rows, key = { i, t -> "net:${t.idEventoVesus ?: i}:$i" }) { _, t ->
+            NetworkTournamentCard(t) { t.vesusUrl?.let(onOpenUrl) }
+        }
+    }
+    if (state.loading) {
+        item(key = "network-loading") {
+            Box(Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(modifier = Modifier.size(28.dp))
             }
         }
     }

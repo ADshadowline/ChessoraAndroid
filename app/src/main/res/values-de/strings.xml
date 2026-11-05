@@ -465,5 +465,6 @@
     <string name="events_network_empty">Keine anstehenden Turniere im Netz.</string>
     <string name="events_network_error">Turniere im Netz konnten nicht geladen werden.</string>
     <string name="events_network_retry">Erneut versuchen</string>
+    <string name="events_network_header">Turniere im Netz (vesus.org)</string>
     <string name="events_network_count">%1$d Turniere im Netz ab heute</string>
 </resources>
