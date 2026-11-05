@@ -164,7 +164,7 @@
     <string name="mygames_edit">Modifică</string>
     <string name="mygames_delete">Șterge</string>
     <string name="mygames_delete_confirm_title">Ștergi partida?</string>
-    <string name="mygames_select_hint">Ține apăsat pe o partidă pentru a o selecta și a crea un PDF.</string>
+    <string name="mygames_select_hint">Ține apăsat pe o partidă pentru a o selecta, apoi export-o în PDF sau trimite-o pe WhatsApp ori în chatul Chessora.</string>
     <string name="mygames_cancel_selection">Anulează selecția</string>
     <string name="mygames_select_all">Selectează tot</string>
     <string name="mygames_pdf_create">Creează PDF</string>
@@ -482,4 +482,12 @@
     <string name="chess960_copy_fen">Copiază FEN</string>
     <string name="chess960_copied">FEN copiat</string>
     <string name="chess960_back_rank">Prima linie: %1$s</string>
+    <string name="mygames_share">Distribuie</string>
+    <string name="mygames_share_pdf">Exportă în PDF</string>
+    <string name="mygames_share_whatsapp">Trimite pe WhatsApp</string>
+    <string name="mygames_share_chat">Trimite în chatul Chessora</string>
+    <string name="mygames_whatsapp_missing">WhatsApp nu este instalat pe acest telefon.</string>
+    <string name="chat_pdf_title">Partide (PDF)</string>
+    <string name="chat_pdf_open">Atinge pentru a deschide</string>
+    <string name="chat_pdf_open_failed">PDF-ul nu a putut fi deschis.</string>
 </resources>

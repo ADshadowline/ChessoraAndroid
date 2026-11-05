@@ -352,6 +352,7 @@ private fun MessageBubble(message: ChatMessage, myIdPlayer: Int) {
             when {
                 attachmentUrl != null && message.attachmentKind == "image" -> ChatImage(attachmentUrl, myIdPlayer)
                 attachmentUrl != null && message.attachmentKind == "audio" -> ChatAudioPlayer(attachmentUrl, myIdPlayer, message.attachmentDurationMs)
+                attachmentUrl != null && message.attachmentKind == "pdf" -> ChatPdf(attachmentUrl, myIdPlayer, message.id)
             }
             if (message.body.isNotBlank()) {
                 Text(message.body, style = MaterialTheme.typography.bodyMedium)

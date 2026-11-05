@@ -24,6 +24,11 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SelectAll
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -68,7 +73,13 @@ import org.chessora.app.ui.performance.CenteredMessage
  * condividere/salvare/stampare. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyGamesListScreen(onIdentify: () -> Unit, onAddGame: () -> Unit, onOpenGame: (Int) -> Unit) {
+fun MyGamesListScreen(
+    onIdentify: () -> Unit,
+    onAddGame: () -> Unit,
+    onOpenGame: (Int) -> Unit,
+    /** "Invia in chat Chessora": il PDF è già in PendingChatShare, si sceglie il destinatario. */
+    onShareToChat: () -> Unit = {},
+) {
     val viewModel = chessoraViewModel { app -> MyGamesViewModel(app.repository, app.clubPreferences) }
     val state by viewModel.state.collectAsState()
     val pdfState by viewModel.pdfState.collectAsState()
@@ -76,6 +87,10 @@ fun MyGamesListScreen(onIdentify: () -> Unit, onAddGame: () -> Unit, onOpenGame:
     var searchQuery by remember { mutableStateOf("") }
     var selected by remember { mutableStateOf(emptySet<Int>()) }
     val selectionMode = selected.isNotEmpty()
+    // Menu "Condividi" delle partite selezionate e destinazione scelta (il PDF si genera
+    // dopo la scelta e va lì): PDF (scelta dell'app come prima), WhatsApp o chat Chessora.
+    var shareMenuOpen by remember { mutableStateOf(false) }
+    var shareTarget by remember { mutableStateOf(ShareTarget.PDF) }
 
     LaunchedEffect(Unit) { viewModel.load() }
     BackHandler(enabled = selectionMode) { selected = emptySet() }
@@ -89,11 +104,31 @@ fun MyGamesListScreen(onIdentify: () -> Unit, onAddGame: () -> Unit, onOpenGame:
                     putExtra(Intent.EXTRA_STREAM, uri)
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
-                try {
-                    context.startActivity(Intent.createChooser(send, context.getString(R.string.mygames_pdf_share_title)))
-                    selected = emptySet()
-                } catch (e: ActivityNotFoundException) {
-                    Toast.makeText(context, R.string.mygames_pdf_failed, Toast.LENGTH_LONG).show()
+                when (shareTarget) {
+                    ShareTarget.PDF -> try {
+                        context.startActivity(Intent.createChooser(send, context.getString(R.string.mygames_pdf_share_title)))
+                        selected = emptySet()
+                    } catch (e: ActivityNotFoundException) {
+                        Toast.makeText(context, R.string.mygames_pdf_failed, Toast.LENGTH_LONG).show()
+                    }
+                    ShareTarget.WHATSAPP -> {
+                        // WhatsApp o WhatsApp Business, quello installato.
+                        val sent = listOf("com.whatsapp", "com.whatsapp.w4b").any { pkg ->
+                            try {
+                                context.startActivity(Intent(send).setPackage(pkg))
+                                true
+                            } catch (e: ActivityNotFoundException) {
+                                false
+                            }
+                        }
+                        if (sent) selected = emptySet()
+                        else Toast.makeText(context, R.string.mygames_whatsapp_missing, Toast.LENGTH_LONG).show()
+                    }
+                    ShareTarget.CHAT -> {
+                        org.chessora.app.ui.messaging.PendingChatShare.pdf = current.file
+                        selected = emptySet()
+                        onShareToChat()
+                    }
                 }
                 viewModel.pdfHandled()
             }
@@ -124,11 +159,33 @@ fun MyGamesListScreen(onIdentify: () -> Unit, onAddGame: () -> Unit, onOpenGame:
                         if (pdfState is MyGamesPdfState.Generating) {
                             CircularProgressIndicator(modifier = Modifier.padding(horizontal = 12.dp).size(24.dp), strokeWidth = 2.dp)
                         } else {
-                            IconButton(onClick = {
-                                // Stesso ordine dell'elenco, non quello in cui sono state toccate.
-                                viewModel.generatePdf(context, allGames.filter { it.id in selected })
-                            }) {
-                                Icon(Icons.Default.PictureAsPdf, contentDescription = stringResource(R.string.mygames_pdf_create))
+                            Box {
+                                IconButton(onClick = { shareMenuOpen = true }) {
+                                    Icon(Icons.Default.Share, contentDescription = stringResource(R.string.mygames_share))
+                                }
+                                DropdownMenu(expanded = shareMenuOpen, onDismissRequest = { shareMenuOpen = false }) {
+                                    fun share(target: ShareTarget) {
+                                        shareMenuOpen = false
+                                        shareTarget = target
+                                        // Stesso ordine dell'elenco, non quello in cui sono state toccate.
+                                        viewModel.generatePdf(context, allGames.filter { it.id in selected })
+                                    }
+                                    DropdownMenuItem(
+                                        text = { Text(stringResource(R.string.mygames_share_pdf)) },
+                                        leadingIcon = { Icon(Icons.Default.PictureAsPdf, contentDescription = null) },
+                                        onClick = { share(ShareTarget.PDF) },
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text(stringResource(R.string.mygames_share_whatsapp)) },
+                                        leadingIcon = { Icon(Icons.Default.Send, contentDescription = null) },
+                                        onClick = { share(ShareTarget.WHATSAPP) },
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text(stringResource(R.string.mygames_share_chat)) },
+                                        leadingIcon = { Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = null) },
+                                        onClick = { share(ShareTarget.CHAT) },
+                                    )
+                                }
                             }
                         }
                     },
@@ -212,6 +269,9 @@ fun MyGamesListScreen(onIdentify: () -> Unit, onAddGame: () -> Unit, onOpenGame:
 }
 
 private fun Set<Int>.toggle(id: Int): Set<Int> = if (id in this) this - id else this + id
+
+/** Dove va il PDF delle partite selezionate (menu "Condividi"). */
+private enum class ShareTarget { PDF, WHATSAPP, CHAT }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

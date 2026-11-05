@@ -162,7 +162,7 @@
     <string name="mygames_edit">Düzenle</string>
     <string name="mygames_delete">Sil</string>
     <string name="mygames_delete_confirm_title">Oyun silinsin mi?</string>
-    <string name="mygames_select_hint">Seçmek ve PDF oluşturmak için bir oyuna basılı tutun.</string>
+    <string name="mygames_select_hint">Seçmek için bir oyuna basılı tutun, ardından PDF olarak dışa aktarın veya WhatsApp ya da Chessora sohbetiyle gönderin.</string>
     <string name="mygames_cancel_selection">Seçimi iptal et</string>
     <string name="mygames_select_all">Tümünü seç</string>
     <string name="mygames_pdf_create">PDF oluştur</string>
@@ -479,4 +479,12 @@
     <string name="chess960_copy_fen">FEN kopyala</string>
     <string name="chess960_copied">FEN kopyalandı</string>
     <string name="chess960_back_rank">İlk sıra: %1$s</string>
+    <string name="mygames_share">Paylaş</string>
+    <string name="mygames_share_pdf">PDF olarak dışa aktar</string>
+    <string name="mygames_share_whatsapp">WhatsApp ile gönder</string>
+    <string name="mygames_share_chat">Chessora sohbetinde gönder</string>
+    <string name="mygames_whatsapp_missing">Bu telefonda WhatsApp yüklü değil.</string>
+    <string name="chat_pdf_title">Partiler (PDF)</string>
+    <string name="chat_pdf_open">Açmak için dokunun</string>
+    <string name="chat_pdf_open_failed">PDF açılamadı.</string>
 </resources>

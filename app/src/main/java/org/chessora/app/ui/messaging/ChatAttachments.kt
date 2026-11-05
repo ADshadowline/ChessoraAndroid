@@ -53,6 +53,17 @@ import coil.request.ImageRequest
 import java.io.ByteArrayOutputStream
 import java.io.File
 import kotlinx.coroutines.delay
+import android.content.Intent
+import android.widget.Toast
+import androidx.compose.material.icons.filled.PictureAsPdf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.core.content.FileProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.chessora.app.R
 import org.chessora.app.data.local.AuthSession
 import org.chessora.app.data.remote.NetworkModule
 
@@ -222,6 +233,64 @@ fun ChatImage(relativeUrl: String, idPlayer: Int) {
                     modifier = Modifier.fillMaxSize(),
                 )
             }
+        }
+    }
+}
+
+/** PDF in una bolla (es. "Le mie partite" condivise): un tocco lo scarica (autenticato) nella
+ * cache e lo apre con il lettore PDF del telefono. */
+@Composable
+fun ChatPdf(relativeUrl: String, idPlayer: Int, idMessage: Int) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val url = remember(relativeUrl, idPlayer) { chatAttachmentUrl(relativeUrl, idPlayer) }
+    var loading by remember { mutableStateOf(false) }
+
+    fun open() {
+        if (url == null || loading) return
+        loading = true
+        scope.launch {
+            val file = withContext(Dispatchers.IO) {
+                runCatching {
+                    val target = File(File(context.cacheDir, "pdf").apply { mkdirs() }, "chat-$idMessage.pdf")
+                    if (!target.exists() || target.length() == 0L) {
+                        val conn = (java.net.URL(url).openConnection() as java.net.HttpURLConnection)
+                        authHeaders().forEach { (k, v) -> conn.setRequestProperty(k, v) }
+                        conn.inputStream.use { input -> target.outputStream().use { input.copyTo(it) } }
+                        conn.disconnect()
+                    }
+                    target
+                }.getOrNull()
+            }
+            loading = false
+            val opened = file != null && runCatching {
+                val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+                context.startActivity(
+                    Intent(Intent.ACTION_VIEW).setDataAndType(uri, "application/pdf")
+                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK),
+                )
+            }.isSuccess
+            if (!opened) Toast.makeText(context, R.string.chat_pdf_open_failed, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .width(220.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.6f))
+            .clickable { open() }
+            .padding(10.dp),
+    ) {
+        if (loading) {
+            Box(Modifier.size(36.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator(Modifier.size(22.dp)) }
+        } else {
+            Icon(Icons.Default.PictureAsPdf, contentDescription = null, tint = Color(0xFFE53935), modifier = Modifier.size(36.dp))
+        }
+        androidx.compose.foundation.layout.Column(modifier = Modifier.padding(start = 10.dp)) {
+            Text(stringResource(R.string.chat_pdf_title), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.chat_pdf_open), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

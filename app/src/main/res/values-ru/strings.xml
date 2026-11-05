@@ -166,7 +166,7 @@
     <string name="mygames_edit">Изменить</string>
     <string name="mygames_delete">Удалить</string>
     <string name="mygames_delete_confirm_title">Удалить партию?</string>
-    <string name="mygames_select_hint">Нажмите и удерживайте партию, чтобы выбрать её и создать PDF.</string>
+    <string name="mygames_select_hint">Нажмите и удерживайте партию, чтобы выбрать её, затем экспортируйте в PDF или отправьте через WhatsApp или чат Chessora.</string>
     <string name="mygames_cancel_selection">Отменить выбор</string>
     <string name="mygames_select_all">Выбрать все</string>
     <string name="mygames_pdf_create">Создать PDF</string>
@@ -485,4 +485,12 @@
     <string name="chess960_copy_fen">Копировать FEN</string>
     <string name="chess960_copied">FEN скопирован</string>
     <string name="chess960_back_rank">Первая горизонталь: %1$s</string>
+    <string name="mygames_share">Поделиться</string>
+    <string name="mygames_share_pdf">Экспорт в PDF</string>
+    <string name="mygames_share_whatsapp">Отправить через WhatsApp</string>
+    <string name="mygames_share_chat">Отправить в чат Chessora</string>
+    <string name="mygames_whatsapp_missing">WhatsApp не установлен на этом телефоне.</string>
+    <string name="chat_pdf_title">Партии (PDF)</string>
+    <string name="chat_pdf_open">Нажмите, чтобы открыть</string>
+    <string name="chat_pdf_open_failed">Не удалось открыть PDF.</string>
 </resources>

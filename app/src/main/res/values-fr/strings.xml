@@ -162,7 +162,7 @@
     <string name="mygames_edit">Modifier</string>
     <string name="mygames_delete">Supprimer</string>
     <string name="mygames_delete_confirm_title">Supprimer la partie ?</string>
-    <string name="mygames_select_hint">Appuyez longuement sur une partie pour la sélectionner et créer un PDF.</string>
+    <string name="mygames_select_hint">Appuyez longuement sur une partie pour la sélectionner, puis exportez-la en PDF ou envoyez-la via WhatsApp ou le chat Chessora.</string>
     <string name="mygames_cancel_selection">Annuler la sélection</string>
     <string name="mygames_select_all">Tout sélectionner</string>
     <string name="mygames_pdf_create">Créer un PDF</string>
@@ -480,4 +480,12 @@
     <string name="chess960_copy_fen">Copier le FEN</string>
     <string name="chess960_copied">FEN copié</string>
     <string name="chess960_back_rank">Première rangée : %1$s</string>
+    <string name="mygames_share">Partager</string>
+    <string name="mygames_share_pdf">Exporter en PDF</string>
+    <string name="mygames_share_whatsapp">Envoyer via WhatsApp</string>
+    <string name="mygames_share_chat">Envoyer dans le chat Chessora</string>
+    <string name="mygames_whatsapp_missing">WhatsApp n\'est pas installé sur ce téléphone.</string>
+    <string name="chat_pdf_title">Parties (PDF)</string>
+    <string name="chat_pdf_open">Touchez pour ouvrir</string>
+    <string name="chat_pdf_open_failed">Impossible d\'ouvrir le PDF.</string>
 </resources>

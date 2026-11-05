@@ -162,7 +162,7 @@
     <string name="mygames_edit">Edit</string>
     <string name="mygames_delete">Delete</string>
     <string name="mygames_delete_confirm_title">Delete this game?</string>
-    <string name="mygames_select_hint">Long-press a game to select it and create a PDF.</string>
+    <string name="mygames_select_hint">Long-press a game to select it, then export it as a PDF or send it via WhatsApp or Chessora chat.</string>
     <string name="mygames_cancel_selection">Cancel selection</string>
     <string name="mygames_select_all">Select all</string>
     <string name="mygames_pdf_create">Create PDF</string>
@@ -479,4 +479,12 @@
     <string name="chess960_copy_fen">Copy FEN</string>
     <string name="chess960_copied">FEN copied</string>
     <string name="chess960_back_rank">Back rank: %1$s</string>
+    <string name="mygames_share">Share</string>
+    <string name="mygames_share_pdf">Export as PDF</string>
+    <string name="mygames_share_whatsapp">Send via WhatsApp</string>
+    <string name="mygames_share_chat">Send in Chessora chat</string>
+    <string name="mygames_whatsapp_missing">WhatsApp is not installed on this phone.</string>
+    <string name="chat_pdf_title">Games (PDF)</string>
+    <string name="chat_pdf_open">Tap to open</string>
+    <string name="chat_pdf_open_failed">Could not open the PDF.</string>
 </resources>

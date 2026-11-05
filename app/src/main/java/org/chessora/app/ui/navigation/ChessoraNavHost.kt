@@ -573,6 +573,8 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                     onIdentify = { navController.navigate(ChessoraDestinations.AUTH_LOGIN) },
                     onAddGame = { navController.navigate(ChessoraDestinations.MY_GAMES_ADD) },
                     onOpenGame = { id -> navController.navigate(ChessoraDestinations.myGameViewer(id)) },
+                    // PDF già in PendingChatShare: si sceglie il destinatario e la chat lo invia.
+                    onShareToChat = { navController.navigate(ChessoraDestinations.NEW_MESSAGE) },
                 )
             }
             composable(ChessoraDestinations.CHESS_CLOCK) {

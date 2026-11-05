@@ -63,6 +63,13 @@ class ConversationViewModel(
                     .onFailure { _state.value = ConversationState.Error("Connessione non riuscita, riprova.") }
             }
             refreshBlockStatus()
+            // PDF in attesa (condivisione da "Le mie partite"): parte appena la chat è pronta.
+            if (idConversationArg != 0) {
+                PendingChatShare.take()?.let { file ->
+                    val bytes = runCatching { file.readBytes() }.getOrNull()
+                    if (bytes != null) sendAttachment("pdf", bytes, "application/pdf", file.name, null)
+                }
+            }
         }
     }
 
@@ -204,7 +211,11 @@ class ConversationViewModel(
                 _state.value = current.copy(sending = false)
                 refreshBlockStatus()
                 if ((_state.value as? ConversationState.Ready)?.isBlocked != true) {
-                    _attachmentError.value = if (kind == "image") "Invio della foto non riuscito, riprova." else "Invio del vocale non riuscito, riprova."
+                    _attachmentError.value = when (kind) {
+                        "image" -> "Invio della foto non riuscito, riprova."
+                        "pdf" -> "Invio del PDF non riuscito, riprova."
+                        else -> "Invio del vocale non riuscito, riprova."
+                    }
                 }
             }
         }
