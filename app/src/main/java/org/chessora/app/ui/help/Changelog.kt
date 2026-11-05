@@ -16,6 +16,7 @@ val APP_CHANGELOG: List<AppRelease> = listOf(
     AppRelease("1.65.0", "novembre 2026", listOf(
         "Sul desktop \"Eventi\" diventa \"Tornei&Eventi\".",
         "L'icona \"Orologio\" diventa \"Utilità\", con una nuova grafica: dentro trovi l'orologio da scacchi e la nuova \"Combinazione 960\".",
+        "Nuova grafica per l'icona \"Video\".",
         "Combinazione 960 (Fischer Random): scegli una delle 960 posizioni iniziali a caso, per numero o scorrendo con le frecce, e la vedi sulla scacchiera per disporre i pezzi. Puoi anche copiare il FEN.",
     )),
     AppRelease("1.64.0", "novembre 2026", listOf(
