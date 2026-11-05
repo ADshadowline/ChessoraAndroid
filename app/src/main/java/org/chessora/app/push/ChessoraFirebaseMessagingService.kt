@@ -2,6 +2,7 @@ package org.chessora.app.push
 
 import android.app.PendingIntent
 import android.content.Intent
+import android.graphics.BitmapFactory
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessaging
@@ -117,8 +118,12 @@ class ChessoraFirebaseMessagingService : FirebaseMessagingService() {
             getString(R.string.default_notification_channel_id)
         }
 
+        // Avvisi della piattaforma (nuova versione dell'app, comunicazioni): logo Chessora
+        // a colori come icona grande, oltre alla silhouette del logo nella barra di stato.
+        val logo = runCatching { BitmapFactory.decodeResource(resources, R.drawable.ic_launcher_foreground) }.getOrNull()
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_notification)
+            .setLargeIcon(logo)
             .setContentTitle(title)
             .setContentText(body)
             .setAutoCancel(true)
@@ -157,6 +162,9 @@ class ChessoraFirebaseMessagingService : FirebaseMessagingService() {
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+            .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
             .build()
 
         try {

@@ -13,6 +13,10 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
+    AppRelease("1.62.2", "novembre 2026", listOf(
+        "Le notifiche hanno il logo Chessora; gli avvisi di aggiornamento e le comunicazioni della piattaforma mostrano anche il logo a colori.",
+        "I messaggi di chat arrivano come notifiche ad alta priorità, con banner in alto, suono e vibrazione.",
+    )),
     AppRelease("1.62.1", "novembre 2026", listOf(
         "Analisi della partita: ogni mossa ha una categoria (grande, migliore, ottima, buona, imprecisione, errore, mossa mancata, errore grave) e in fondo c'è la legenda con il conto per il Bianco e per il Nero.",
         "Scorrendo le mosse di una partita analizzata, sulla casella d'arrivo compare per un secondo il simbolo della qualità della mossa.",
