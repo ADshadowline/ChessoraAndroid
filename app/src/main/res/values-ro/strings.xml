@@ -470,4 +470,16 @@
     <string name="events_network_retry">Reîncearcă</string>
     <string name="events_network_header">Turnee în rețea (vesus.org)</string>
     <string name="events_network_count">%1$d turnee în rețea de azi înainte</string>
+    <string name="desktop_icon_events">Turnee&amp;Evenimente</string>
+    <string name="desktop_icon_utilities">Utilitare</string>
+    <string name="utilities_chess960">Șah 960 (Fischer Random)</string>
+    <string name="chess960_title">Poziție 960</string>
+    <string name="chess960_position">Poziția nr. %1$d</string>
+    <string name="chess960_random">Aleatorie</string>
+    <string name="chess960_standard">Clasică (518)</string>
+    <string name="chess960_number_hint">Număr (0–959)</string>
+    <string name="chess960_rules">Reguli Fischer Random: nebunii pe câmpuri de culori diferite și regele între cele două turnuri. Pionii rămân pe loc, iar negrul oglindește albul. Există 960 de poziții posibile (518 este cea clasică).</string>
+    <string name="chess960_copy_fen">Copiază FEN</string>
+    <string name="chess960_copied">FEN copiat</string>
+    <string name="chess960_back_rank">Prima linie: %1$s</string>
 </resources>

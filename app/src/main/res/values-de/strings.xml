@@ -467,4 +467,16 @@
     <string name="events_network_retry">Erneut versuchen</string>
     <string name="events_network_header">Turniere im Netz (vesus.org)</string>
     <string name="events_network_count">%1$d Turniere im Netz ab heute</string>
+    <string name="desktop_icon_events">Turniere&amp;Events</string>
+    <string name="desktop_icon_utilities">Werkzeuge</string>
+    <string name="utilities_chess960">Chess960 (Fischer Random)</string>
+    <string name="chess960_title">Chess960-Stellung</string>
+    <string name="chess960_position">Stellung Nr. %1$d</string>
+    <string name="chess960_random">Zufällig</string>
+    <string name="chess960_standard">Klassisch (518)</string>
+    <string name="chess960_number_hint">Nummer (0–959)</string>
+    <string name="chess960_rules">Fischer-Random-Regeln: Läufer auf verschiedenfarbigen Feldern, der König zwischen den beiden Türmen. Die Bauern bleiben stehen, Schwarz spiegelt Weiß. Es gibt 960 mögliche Stellungen (518 ist die klassische).</string>
+    <string name="chess960_copy_fen">FEN kopieren</string>
+    <string name="chess960_copied">FEN kopiert</string>
+    <string name="chess960_back_rank">Grundreihe: %1$s</string>
 </resources>

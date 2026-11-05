@@ -467,4 +467,16 @@
     <string name="events_network_retry">Tekrar dene</string>
     <string name="events_network_header">Ağ turnuvaları (vesus.org)</string>
     <string name="events_network_count">Bugünden itibaren %1$d ağ turnuvası</string>
+    <string name="desktop_icon_events">Turnuvalar&amp;Etkinlikler</string>
+    <string name="desktop_icon_utilities">Araçlar</string>
+    <string name="utilities_chess960">Satranç 960 (Fischer Random)</string>
+    <string name="chess960_title">960 pozisyonu</string>
+    <string name="chess960_position">Pozisyon no. %1$d</string>
+    <string name="chess960_random">Rastgele</string>
+    <string name="chess960_standard">Klasik (518)</string>
+    <string name="chess960_number_hint">Numara (0–959)</string>
+    <string name="chess960_rules">Fischer Random kuralları: filler farklı renkteki karelerde, şah iki kalenin arasında. Piyonlar yerinde kalır, siyah beyazın aynısını yansıtır. 960 olası pozisyon vardır (518 klasik olandır).</string>
+    <string name="chess960_copy_fen">FEN kopyala</string>
+    <string name="chess960_copied">FEN kopyalandı</string>
+    <string name="chess960_back_rank">İlk sıra: %1$s</string>
 </resources>

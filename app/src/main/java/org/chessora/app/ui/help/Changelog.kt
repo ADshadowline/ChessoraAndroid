@@ -13,6 +13,11 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
+    AppRelease("1.65.0", "novembre 2026", listOf(
+        "Sul desktop \"Eventi\" diventa \"Tornei&Eventi\".",
+        "L'icona \"Orologio\" diventa \"Utilità\", con una nuova grafica: dentro trovi l'orologio da scacchi e la nuova \"Combinazione 960\".",
+        "Combinazione 960 (Fischer Random): scegli una delle 960 posizioni iniziali a caso, per numero o scorrendo con le frecce, e la vedi sulla scacchiera per disporre i pezzi. Puoi anche copiare il FEN.",
+    )),
     AppRelease("1.64.0", "novembre 2026", listOf(
         "Eventi (dal desktop): in coda agli eventi dei circoli compaiono anche i tornei in rete di vesus.org da oggi in avanti, ricercabili dallo stesso campo; un tocco apre la pagina del torneo. Gli eventi dentro \"Il Circolo\" restano solo quelli del circolo.",
     )),

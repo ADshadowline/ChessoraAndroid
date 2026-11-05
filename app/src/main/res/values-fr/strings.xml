@@ -468,4 +468,16 @@
     <string name="events_network_retry">Réessayer</string>
     <string name="events_network_header">Tournois en réseau (vesus.org)</string>
     <string name="events_network_count">%1$d tournois en réseau à partir d\'aujourd\'hui</string>
+    <string name="desktop_icon_events">Tournois&amp;Événements</string>
+    <string name="desktop_icon_utilities">Utilitaires</string>
+    <string name="utilities_chess960">Échecs 960 (Fischer Random)</string>
+    <string name="chess960_title">Position 960</string>
+    <string name="chess960_position">Position n° %1$d</string>
+    <string name="chess960_random">Aléatoire</string>
+    <string name="chess960_standard">Classique (518)</string>
+    <string name="chess960_number_hint">Numéro (0–959)</string>
+    <string name="chess960_rules">Règles Fischer Random : fous sur des cases de couleur différente et roi entre les deux tours. Les pions ne bougent pas et les Noirs reproduisent les Blancs en miroir. Il existe 960 positions (la 518 est la classique).</string>
+    <string name="chess960_copy_fen">Copier le FEN</string>
+    <string name="chess960_copied">FEN copié</string>
+    <string name="chess960_back_rank">Première rangée : %1$s</string>
 </resources>

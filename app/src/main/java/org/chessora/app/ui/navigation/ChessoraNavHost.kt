@@ -475,7 +475,8 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
                             onOpenRanking = { navController.navigate(ChessoraDestinations.RANKING) },
                             onOpenPerformance = { navController.navigate(ChessoraDestinations.MY_GAME_MENU) },
                             onOpenMyGames = { navController.navigate(ChessoraDestinations.MY_GAMES) },
-                            onOpenChessClock = { navController.navigate(ChessoraDestinations.CHESS_CLOCK) },
+                            // Icona "Utilità" (id storico "chessClock"): menu orologio + combinazione 960.
+                            onOpenChessClock = { navController.navigate(ChessoraDestinations.UTILITIES) },
                             onOpenClub = { navController.navigate(ChessoraDestinations.CLUB) },
                             onOpenShop = { navController.navigate(ChessoraDestinations.SHOP) },
                             onOpenVideo = { navController.navigate(ChessoraDestinations.VIDEO) },
@@ -576,6 +577,15 @@ fun ChessoraNavHost(pendingConversationId: Int? = null, pendingTournamentId: Int
             }
             composable(ChessoraDestinations.CHESS_CLOCK) {
                 ChessClockScreen(onBack = { navController.popBackStack() })
+            }
+            composable(ChessoraDestinations.UTILITIES) {
+                org.chessora.app.ui.utilities.UtilitiesMenuScreen(
+                    onOpenClock = { navController.navigate(ChessoraDestinations.CHESS_CLOCK) },
+                    onOpenChess960 = { navController.navigate(ChessoraDestinations.CHESS960) },
+                )
+            }
+            composable(ChessoraDestinations.CHESS960) {
+                org.chessora.app.ui.utilities.Chess960Screen()
             }
             composable(ChessoraDestinations.MY_GAMES_ADD) {
                 AddMyGameScreen(onSaved = { navController.popBackStack() })

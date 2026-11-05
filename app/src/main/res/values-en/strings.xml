@@ -467,4 +467,16 @@
     <string name="events_network_retry">Retry</string>
     <string name="events_network_header">Network tournaments (vesus.org)</string>
     <string name="events_network_count">%1$d network tournaments from today on</string>
+    <string name="desktop_icon_events">Tournaments&amp;Events</string>
+    <string name="desktop_icon_utilities">Utilities</string>
+    <string name="utilities_chess960">Chess960 (Fischer Random)</string>
+    <string name="chess960_title">Chess960 position</string>
+    <string name="chess960_position">Position no. %1$d</string>
+    <string name="chess960_random">Random</string>
+    <string name="chess960_standard">Classic (518)</string>
+    <string name="chess960_number_hint">Number (0–959)</string>
+    <string name="chess960_rules">Fischer Random rules: bishops on opposite-coloured squares and the king between the two rooks. Pawns stay in place and Black mirrors White. There are 960 possible positions (518 is the classic one).</string>
+    <string name="chess960_copy_fen">Copy FEN</string>
+    <string name="chess960_copied">FEN copied</string>
+    <string name="chess960_back_rank">Back rank: %1$s</string>
 </resources>

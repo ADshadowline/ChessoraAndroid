@@ -373,7 +373,7 @@ data class DesktopIconDescriptor(
 )
 
 val DESKTOP_ICON_DESCRIPTORS = listOf(
-    DesktopIconDescriptor("events", R.string.nav_home, Icons.AutoMirrored.Filled.EventNote),
+    DesktopIconDescriptor("events", R.string.desktop_icon_events, Icons.AutoMirrored.Filled.EventNote),
     DesktopIconDescriptor("calendar", R.string.more_calendar, Icons.Default.CalendarMonth, hiddenInPlatformMode = true),
     DesktopIconDescriptor("news", R.string.nav_news, Icons.Default.Newspaper),
     DesktopIconDescriptor("registrations", R.string.nav_registrations, Icons.Default.HowToReg),
@@ -381,7 +381,9 @@ val DESKTOP_ICON_DESCRIPTORS = listOf(
     // "Il mio gioco": apre il menu con Andamento Elo, partite di persona ("Le mie partite",
     // non più un'icona a sé) e partite online - vedi ui/performance/MyGameMenuScreen.kt.
     DesktopIconDescriptor("performance", R.string.more_performance, Icons.AutoMirrored.Filled.ShowChart),
-    DesktopIconDescriptor("chessClock", R.string.chess_clock_title, Icons.Default.Timer),
+    // "Utilità" (prima "Orologio", id invariato per non perdere ordine/visibilità salvati):
+    // apre il menu con orologio e combinazione 960 - vedi ui/utilities/.
+    DesktopIconDescriptor("chessClock", R.string.desktop_icon_utilities, Icons.Default.Timer),
     DesktopIconDescriptor("board", R.string.nav_club, Icons.Default.Groups, hiddenInPlatformMode = true),
     DesktopIconDescriptor("shop", R.string.desktop_icon_shop, Icons.Default.ShoppingCart, hiddenInPlatformMode = true),
     DesktopIconDescriptor("video", R.string.desktop_icon_video, Icons.Default.PlayCircle, hiddenInPlatformMode = true),

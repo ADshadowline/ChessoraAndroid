@@ -473,4 +473,16 @@
     <string name="events_network_retry">Повторить</string>
     <string name="events_network_header">Турниры в сети (vesus.org)</string>
     <string name="events_network_count">Турниров в сети с сегодняшнего дня: %1$d</string>
+    <string name="desktop_icon_events">Турниры&amp;События</string>
+    <string name="desktop_icon_utilities">Утилиты</string>
+    <string name="utilities_chess960">Шахматы 960 (Фишер)</string>
+    <string name="chess960_title">Позиция 960</string>
+    <string name="chess960_position">Позиция № %1$d</string>
+    <string name="chess960_random">Случайная</string>
+    <string name="chess960_standard">Классическая (518)</string>
+    <string name="chess960_number_hint">Номер (0–959)</string>
+    <string name="chess960_rules">Правила шахмат Фишера: слоны на полях разного цвета, король между ладьями. Пешки на своих местах, чёрные зеркально повторяют белых. Всего 960 позиций (518 — классическая).</string>
+    <string name="chess960_copy_fen">Копировать FEN</string>
+    <string name="chess960_copied">FEN скопирован</string>
+    <string name="chess960_back_rank">Первая горизонталь: %1$s</string>
 </resources>

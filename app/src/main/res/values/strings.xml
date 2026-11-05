@@ -488,4 +488,16 @@
     <string name="events_network_retry">Riprova</string>
     <string name="events_network_header">Tornei in rete (vesus.org)</string>
     <string name="events_network_count">%1$d tornei in rete da oggi in avanti</string>
+    <string name="desktop_icon_events">Tornei&amp;Eventi</string>
+    <string name="desktop_icon_utilities">Utilità</string>
+    <string name="utilities_chess960">Combinazione 960 (Fischer Random)</string>
+    <string name="chess960_title">Combinazione 960</string>
+    <string name="chess960_position">Posizione n. %1$d</string>
+    <string name="chess960_random">Casuale</string>
+    <string name="chess960_standard">Classica (518)</string>
+    <string name="chess960_number_hint">Numero (0–959)</string>
+    <string name="chess960_rules">Regole Fischer Random: alfieri su case di colore diverso e re tra le due torri. I pedoni restano al loro posto e il Nero mette i pezzi a specchio del Bianco. Le posizioni possibili sono 960 (la 518 è quella classica).</string>
+    <string name="chess960_copy_fen">Copia FEN</string>
+    <string name="chess960_copied">FEN copiato</string>
+    <string name="chess960_back_rank">Prima traversa: %1$s</string>
 </resources>
