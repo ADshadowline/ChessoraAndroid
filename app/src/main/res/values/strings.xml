@@ -133,7 +133,7 @@
     <string name="online_games_opening_main_line">Linea principale</string>
     <string name="online_games_opening_all">Tutte le partite di questa apertura</string>
     <string name="online_games_opening_variants">%1$d varianti</string>
-    <string name="more_my_games">Le mie partite</string>
+    <string name="more_my_games">Archivio Partite</string>
     <string name="my_game_menu_otb">Archivio Partite</string>
     <string name="my_game_menu_online">Le mie partite online</string>
     <string name="mygames_not_identified">Accedi per registrare le tue partite.</string>
@@ -445,7 +445,7 @@
         <item>Se organizzi tornei, da \"Gestione tornei\" generi e pubblichi i turni, inserisci i risultati e gestisci classifica e premiazione.</item>
         <item>Guarda la classifica nazionale e del circolo e l\'andamento del tuo Elo nel tempo.</item>
         <item>In \"I miei progressi\" analizzi le tue partite online di Lichess e Chess.com: risultati, avversari e aperture.</item>
-        <item>In \"Le mie partite\" salvi le tue partite (incollando il PGN o componendole sulla scacchiera) e le rivedi mossa per mossa.</item>
+        <item>In \"Archivio Partite\" salvi le tue partite (incollando il PGN o componendole sulla scacchiera) e le rivedi mossa per mossa.</item>
         <item>Scrivi ad altri giocatori e ai circoli, vedi se i messaggi sono stati letti, elimina le chat e blocca chi non vuoi sentire.</item>
         <item>Leggi le News e guarda i Video del tuo circolo e della rete.</item>
         <item>Ricevi notifiche per le novità, i turni pubblicati e i nuovi messaggi.</item>

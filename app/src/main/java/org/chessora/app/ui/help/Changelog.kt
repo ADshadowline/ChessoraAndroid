@@ -13,6 +13,9 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
+    AppRelease("1.66.1", "novembre 2026", listOf(
+        "Nuova icona per la \"Classifica\": il podio con le medaglie davanti al mondo.",
+    )),
     AppRelease("1.66.0", "novembre 2026", listOf(
         "Tornei&Eventi del desktop: tolto il conto alla rovescia del prossimo torneo (elenco e icona). Negli Eventi del circolo resta.",
         "\"Le mie partite di persona\" si chiama ora \"Archivio Partite\".",
