@@ -13,6 +13,9 @@ data class AppRelease(val version: String, val date: String, val changes: List<S
  * build.gradle.kts.
  */
 val APP_CHANGELOG: List<AppRelease> = listOf(
+    AppRelease("1.66.2", "novembre 2026", listOf(
+        "Compatibilità con i telefoni Android più recenti (memoria a pagine da 16 KB), richiesta da Google Play.",
+    )),
     AppRelease("1.66.1", "novembre 2026", listOf(
         "Nuova icona per la \"Classifica\": il podio con le medaglie davanti al mondo.",
     )),

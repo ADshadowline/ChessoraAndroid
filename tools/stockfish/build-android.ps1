@@ -21,7 +21,10 @@ foreach ($abi in $targets.Keys) {
     New-Item -ItemType Directory -Force $dir | Out-Null
     $out = Join-Path $dir 'libstockfish.so'
     Write-Host "== $abi"
-    & "$ndk\clang++.exe" @($targets[$abi]) @common @sources '-static-libstdc++' '-pie' '-lm' '-o' $out
+    # -z max-page-size=16384: segmenti allineati a 16 KB, richiesto da Google Play (dispositivi
+    # Android 15+ con pagine di memoria da 16 KB) - senza, Play Console rifiuta il bundle.
+    & "$ndk\clang++.exe" @($targets[$abi]) @common @sources '-static-libstdc++' '-pie' '-lm' `
+        '-Wl,-z,max-page-size=16384' '-Wl,-z,common-page-size=16384' '-o' $out
     if ($LASTEXITCODE -ne 0) { throw "compilazione $abi fallita" }
     & "$ndk\llvm-strip.exe" $out
     "{0}: {1:N2} MB" -f $abi, ((Get-Item $out).Length / 1MB)
